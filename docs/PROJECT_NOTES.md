@@ -2756,6 +2756,172 @@ For Milestone 9, the Rooms page reads room records from FastAPI through `roomSer
 
 This decision keeps the frontend modular, beginner-friendly, production-oriented, and aligned with the project rule that FastAPI remains the source of truth.
 
+---
+
+### Frontend AD 10: Rooms Module Create Foundation Through Service Layer
+
+**Status:** Accepted
+**Date Recorded:** 2026-07-03
+**Milestone:** Frontend Milestone 10 — Rooms Module Create Foundation
+
+HelloStay now supports creating room records from the React frontend while keeping FastAPI as the source of truth for validation, persistence, and room data.
+
+**Decision:**
+Add room creation to the existing Rooms module by introducing a `createRoom()` function inside `roomService.js` and connecting it to an inline controlled form inside `RoomsPage.jsx`.
+
+The frontend sends new room data to the backend using `POST /rooms` through the existing API client and service layer. After successful creation, the frontend clears the form and refreshes the room list from the backend.
+
+**Why this decision was made:**
+Milestone 9 introduced read-only room listing using `GET /rooms`. Creating rooms is the next natural step because the user can now move from viewing backend records to creating real backend records.
+
+Room creation was implemented only after the read-only foundation because write operations require more frontend responsibility:
+
+* controlled form fields
+* form state
+* submit handling
+* frontend validation
+* loading state
+* error state
+* request payload preparation
+* backend persistence verification
+* list refresh after successful creation
+
+Keeping this milestone focused only on creation avoids mixing too many concepts at once.
+
+**Architecture reasoning:**
+Room creation belongs in the React renderer UI and the frontend service layer, not in Electron and not in local storage.
+
+React is responsible for:
+
+* displaying the room creation form
+* storing temporary form input in component state
+* validating basic user input before submission
+* calling the room service
+* showing loading and error feedback
+* refreshing the UI after creation
+
+`roomService.js` is responsible for:
+
+* exposing a clear `createRoom(roomData)` function
+* keeping room API calls in one place
+* using the existing `apiClient.js`
+
+FastAPI remains responsible for:
+
+* validating request data
+* enforcing backend rules
+* writing room records to SQLite
+* returning the saved room data
+
+Electron remains responsible only for desktop shell behavior and does not contain room API logic.
+
+**Affected files:**
+
+* `frontend/src/services/roomService.js`
+* `frontend/src/pages/RoomsPage.jsx`
+* `frontend/src/styles/global.css` if styling additions were needed
+
+**Implementation summary:**
+`roomService.js` was updated to include:
+
+```js
+export function createRoom(roomData) {
+  return apiRequest("/rooms", {
+    method: "POST",
+    body: roomData,
+  });
+}
+```
+
+`RoomsPage.jsx` was updated with:
+
+* `initialRoomFormData`
+* `formData` state
+* `isCreating` state
+* `createError` state
+* controlled form inputs
+* `handleInputChange`
+* `validateRoomForm`
+* `handleCreateRoom`
+* room list refresh after successful creation
+
+**Validation decision:**
+Basic frontend validation was added before submitting the form:
+
+* `room_number` is required
+* `price_per_night` is required
+* `price_per_night` must be a positive number
+* `room_status` is required
+* `max_occupancy` must be a positive whole number if provided
+
+Frontend validation improves user experience, but it does not replace backend validation. FastAPI and the database remain the real source of truth.
+
+**Data flow:**
+
+```txt
+User fills Add Room form
+  ↓
+RoomsPage stores input in controlled form state
+  ↓
+Frontend validates basic input
+  ↓
+RoomsPage calls createRoom(roomPayload)
+  ↓
+roomService calls apiClient
+  ↓
+apiClient sends POST /rooms
+  ↓
+FastAPI validates and saves room
+  ↓
+RoomsPage refreshes rooms list
+  ↓
+Updated room appears in UI
+```
+
+**Important constraint discovered:**
+Room numbers must be unique. During verification, creating a duplicate room number caused the backend/database to reject the request because `rooms.room_number` has a unique constraint.
+
+This confirmed that:
+
+* the frontend POST request was reaching the backend
+* the backend was attempting to save the room
+* SQLite was enforcing room-number uniqueness
+* duplicate room handling should be improved in a future backend polish task
+
+**What was intentionally not added:**
+
+* edit room
+* delete room
+* inline room status update
+* booking-based availability
+* room images
+* pagination
+* sorting
+* advanced filtering
+* modal-based create form
+* optimistic UI updates
+* Electron-based room API logic
+* localStorage room persistence
+
+**Consequences:**
+The Rooms module now has its first complete write workflow. The frontend can create real backend records while still preserving clean separation between React, service layer, API client, FastAPI, and SQLite.
+
+This decision also establishes the pattern future create workflows should follow:
+
+```txt
+Page form → service function → apiClient → FastAPI endpoint → database → refetch UI
+```
+
+**Future considerations:**
+Future milestones may add:
+
+* room edit foundation using `PUT /rooms/{room_id}`
+* room delete foundation using `DELETE /rooms/{room_id}`
+* better backend duplicate-room handling with clear HTTP errors
+* room status update rules
+* booking-based room availability
+* room filtering and search
+* component extraction if `RoomsPage.jsx` becomes too larg
 
 ---
 
@@ -6620,3 +6786,217 @@ Milestone 9 successfully established the read-only foundation for the Rooms modu
 HelloStay now has its first real dashboard module connected to the backend through the frontend service layer.
 
 This creates a safe foundation for future room workflows such as creating, editing, deleting, and managing room availability.
+
+---
+
+### Frontend Milestone 10 — Rooms Module Create Foundation
+
+**Status:** Completed
+**Date Completed:** 2026-07-03
+**Related AD:** Frontend AD 10 — Rooms Module Create Foundation Through Service Layer
+
+**Goal:**
+Add the ability to create new room records from the Rooms page using the existing backend `POST /rooms` endpoint.
+
+**Starting point:**
+Milestone 9 had already completed the read-only Rooms foundation:
+
+* `RoomsPage.jsx` displayed rooms from the backend
+* `roomService.js` had `getRooms()`
+* `GET /rooms` was connected through `apiClient.js`
+* loading state was implemented
+* error state was implemented
+* empty state was implemented
+* rooms were displayed in a card-based read-only UI
+
+Milestone 10 continued from that foundation without rebuilding the Rooms page from scratch.
+
+**Completed work:**
+
+* Added `createRoom()` to `roomService.js`
+* Connected `createRoom()` to `POST /rooms`
+* Kept room API calls inside the service layer
+* Added an inline Add New Room form to `RoomsPage.jsx`
+* Used existing reusable UI components:
+
+  * `Card`
+  * `Button`
+  * `Input`
+  * `Loading`
+  * `ErrorMessage`
+* Added controlled form state using `useState`
+* Added form input handling with `handleInputChange`
+* Added frontend validation with `validateRoomForm`
+* Added submit handling with `handleCreateRoom`
+* Used `event.preventDefault()` to stop default browser form submission
+* Converted input strings into backend-friendly payload values
+* Added `isCreating` loading state for room creation
+* Added `createError` state for creation errors
+* Cleared the form after successful room creation
+* Refreshed the rooms list after successful creation
+* Verified backend persistence by refreshing the page
+* Verified duplicate room-number behavior
+* Fixed a React effect warning by avoiding the problematic `loadRooms()` call pattern inside `useEffect`
+
+**Final frontend behavior:**
+
+The Rooms page now supports this flow:
+
+```txt
+Open Rooms page
+  ↓
+Existing rooms load from backend
+  ↓
+User fills Add New Room form
+  ↓
+Frontend validates the form
+  ↓
+User submits the form
+  ↓
+POST /rooms is sent through roomService
+  ↓
+Room is created in backend database
+  ↓
+Form clears
+  ↓
+Rooms list refreshes
+  ↓
+New room appears on the page
+```
+
+**Form fields added:**
+
+* Room Number
+* Room Type
+* Price Per Night
+* Max Occupancy
+* Room Status
+* Facilities
+
+**Validation rules added:**
+
+* Room number is required
+* Price per night is required
+* Price per night must be a valid positive number
+* Room status is required
+* Max occupancy must be a valid positive whole number if provided
+
+**Important React concepts practiced:**
+
+* controlled components
+* `useState`
+* `useEffect`
+* event handling
+* form submission
+* `event.preventDefault()`
+* conditional rendering
+* loading states
+* error states
+* async/await
+* service-layer API calls
+* refreshing data after mutation
+
+**Important JavaScript concepts practiced:**
+
+* object state
+* object spreading
+* computed property names
+* string trimming
+* number conversion
+* async functions
+* try/catch/finally
+* validation functions
+* conditional payload values
+
+**Important frontend architecture concepts practiced:**
+
+* page components should not directly contain raw fetch logic
+* service functions make API usage cleaner
+* backend remains the source of truth
+* frontend validation improves UX but does not replace backend validation
+* refetching after create is safer than optimistic updates in early milestones
+* Electron should not contain room business logic
+* features should be added in small, testable milestones
+
+**Verification completed:**
+
+The following behavior was confirmed:
+
+* Rooms page loads successfully
+* Existing rooms are displayed
+* Add New Room form appears
+* New room can be created successfully
+* Form clears after successful creation
+* Rooms list refreshes after successful creation
+* Created room remains after page refresh
+* Duplicate room number produces backend/database uniqueness behavior
+* React effect warning was resolved
+* No edit/delete/status update behavior was added
+
+**Known backend improvement discovered:**
+When a duplicate room number is submitted, the database correctly blocks the duplicate because room numbers are unique. However, the backend currently surfaces this as an internal server error. A future backend polish task should convert this into a clean user-facing error such as:
+
+```txt
+Room number already exists.
+```
+
+This is not part of Milestone 10 frontend scope but should be tracked for production readiness.
+
+**Files changed:**
+
+```txt
+frontend/
+  src/
+    services/
+      roomService.js
+
+    pages/
+      RoomsPage.jsx
+```
+
+Optional styling may also have been added or adjusted in:
+
+```txt
+frontend/
+  src/
+    styles/
+      global.css
+```
+
+**What was not included in this milestone:**
+
+* room editing
+* room deletion
+* room status mutation
+* booking integration
+* availability calculation
+* room images
+* pagination
+* sorting
+* advanced filtering
+* modal form
+* room-specific component extraction
+* Electron backend startup
+* packaging
+* guest, booking, finance, history, or settings logic
+
+**Completion summary:**
+Milestone 10 successfully introduced the first create workflow in the Rooms module. The implementation stayed beginner-friendly and production-oriented by using the existing service layer, controlled form state, basic validation, backend submission, loading/error handling, and post-create refetching.
+
+**Suggested next milestone:**
+Milestone 11 should be:
+
+```txt
+Milestone 11 — Rooms Module Edit Foundation
+```
+
+Recommended focus:
+
+* add `updateRoom()` in `roomService.js`
+* connect to `PUT /rooms/{room_id}`
+* allow selecting one room for editing
+* reuse the existing room form pattern where reasonable
+* keep delete separate
+* keep room status mutation separate
+* keep booking availability separate
+* avoid advanced filters and pagination for now

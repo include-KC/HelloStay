@@ -1,11 +1,12 @@
 import { apiRequest } from "./apiClient";
 
-export async function getRooms() {
-  const rooms = await apiRequest("/rooms");
+export function getRooms() {
+  return apiRequest("/rooms");
+}
 
-  if (!Array.isArray(rooms)) {
-    return [];
-  }
-
-  return rooms;
+export function createRoom(roomData) {
+  return apiRequest("/rooms", {
+    method: "POST",
+    body: roomData,
+  });
 }

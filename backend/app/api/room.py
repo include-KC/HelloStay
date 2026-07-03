@@ -9,19 +9,28 @@ router = APIRouter(
     tags = ["Rooms"]
 )
 
-@router.post("/rooms", response_model = RoomResponse)
+@router.post("/rooms", response_model=RoomResponse)
 def create_room(
-  room: RoomCreate,
-  db: Session = Depends(get_db)
-
+    room: RoomCreate,
+    db: Session = Depends(get_db)
 ):
+    existing_room = db.query(Room)\
+        .filter(Room.room_number == room.room_number)\
+        .first()
+
+    if existing_room is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="Room number already exists."
+        )
+
     new_room = Room(
         room_number=room.room_number,
         room_type=room.room_type,
         price_per_night=room.price_per_night,
         max_occupancy=room.max_occupancy,
         facilities=room.facilities,
-        room_status=room.room_status 
+        room_status=room.room_status
     )
 
     db.add(new_room)
