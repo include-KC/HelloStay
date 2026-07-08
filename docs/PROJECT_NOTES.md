@@ -3301,6 +3301,76 @@ This decision keeps the Guests module simple, testable, beginner-friendly, and r
 
 ---
 
+### Frontend AD 14: Guest Creation Through Service Layer and Backend Source of Truth
+
+**Status:** Accepted
+**Date Recorded:** 2026-07-08
+**Milestone:** Frontend Milestone 14 — Guests Module Create Foundation
+
+The Guests module will create guest records through the FastAPI backend using a dedicated guest service function instead of handling API calls directly inside the page component or storing guest records locally in the frontend.
+
+**Decision:**
+
+Add guest creation by extending the existing Guests module with a `createGuest(guestData)` function inside `guestService.js`. The function sends a `POST /guests` request through the shared `apiClient.js`.
+
+The `GuestsPage.jsx` component owns only the UI state required for the create flow, including form values, frontend validation messages, create loading state, and create error state. After a guest is created successfully, the frontend clears the form and refetches the guest list from the backend.
+
+**Why this decision was made:**
+
+FastAPI remains the source of truth for guest records, backend validation, duplicate constraints, database writes, and API contracts. React should not directly perform database-like operations or treat local state as the permanent source of truth for guests.
+
+Using `guestService.js` keeps API communication organized and consistent with earlier milestones. This follows the same service-layer pattern already used by the Rooms module and the read-only Guests module.
+
+Refetching the guest list after successful creation was chosen instead of optimistic updates because this milestone prioritizes correctness, simplicity, and beginner-friendly learning. Refetching ensures the UI reflects the actual backend/database state after creation.
+
+**Architecture rules confirmed:**
+
+* React renderer process handles the guest form, UI state, validation messages, and user interactions.
+* `guestService.js` handles guest API functions.
+* `apiClient.js` handles shared request behavior.
+* FastAPI handles validation, persistence, duplicate constraints, and returned guest records.
+* Electron main process does not contain guest creation logic.
+* Preload/IPC is not used for normal guest CRUD API calls in this milestone.
+* Local storage is not used as the source of truth for guest records.
+
+**Implementation notes:**
+
+The guest creation form uses controlled components. Each input value is stored in React state and updated through an `onChange` handler. The input `name` attributes match the backend field names so the frontend form data maps directly to the backend guest creation schema.
+
+Basic frontend validation was added for all required fields:
+
+* Guest name is required
+* Guest phone number is required
+* Guest address is required
+* ID proof type is required
+* ID proof number is required
+
+Frontend validation improves user experience by catching missing fields before sending the request. Backend validation and database constraints still remain the final authority.
+
+The initial guest loading logic was adjusted to avoid the React Hooks `set-state-in-effect` lint issue. Data fetching was separated from immediate state updates so that `useEffect` starts the asynchronous fetch and state updates occur after the request resolves.
+
+**Affected files:**
+
+* `frontend/src/services/guestService.js`
+* `frontend/src/pages/GuestsPage.jsx`
+
+**Rejected alternatives:**
+
+Directly calling `fetch()` inside `GuestsPage.jsx` was rejected because it would mix page UI logic with API implementation details.
+
+Using optimistic updates was rejected for this milestone because it adds complexity and can make the frontend temporarily show data that may not match the backend.
+
+Creating a separate `GuestForm.jsx` component was deferred because the current milestone benefits from keeping the create flow visible and beginner-friendly inside `GuestsPage.jsx`.
+
+Using a modal form was rejected because it would add extra UI state, accessibility concerns, and unnecessary complexity before the basic create flow is fully understood.
+
+**Result:**
+
+Guest creation now follows the established HelloStay frontend architecture: React manages the UI, the service layer manages API calls, and FastAPI remains the source of truth for guest data.
+
+
+---
+
 ## Backend Milestone History
 
 ### Frontend Rebuild Note
@@ -7715,3 +7785,65 @@ This milestone respected the responsibility separation of the HelloStay architec
 * Electron main process is not involved in guest data fetching.
 
 This milestone successfully established the read-only Guests module foundation and prepared the project for future guest creation, editing, deletion, and guest-stay integration milestones.
+
+---
+
+### Frontend Milestone 14: Guests Module Create Foundation
+
+**Status:** Completed
+**Milestone:** Frontend Milestone 14 — Guests Module Create Foundation
+**Project:** HelloStay — Offline Hotel Management System
+
+Frontend Milestone 14 added the create foundation for the Guests module. This milestone continued directly from the Milestone 13 read-only Guests module and introduced the ability to create new guest records from the React frontend using the existing FastAPI backend.
+
+The goal of this milestone was not to build the full Guests module. The milestone focused only on adding a beginner-friendly, production-oriented create flow while keeping the backend as the source of truth for guest data, validation, database operations, and duplicate constraints.
+
+The existing `GuestsPage.jsx` was preserved and extended instead of being rebuilt from scratch. A new guest creation form was added to the Guests page using controlled React form inputs. The form collects the required guest fields expected by the backend:
+
+* `guest_name`
+* `guest_phone_number`
+* `guest_address`
+* `id_proof_type`
+* `id_proof_number`
+
+The `guestService.js` file was updated with a new `createGuest(guestData)` function. This function sends a `POST /guests` request through the existing `apiClient.js`, keeping all guest-related API communication inside the service layer.
+
+The Guests page now supports:
+
+* Fetching existing guests from the backend
+* Displaying loading, error, empty, and success states
+* Entering guest details through a controlled form
+* Basic frontend validation for required fields
+* Submitting guest data to the backend
+* Showing creation errors clearly
+* Clearing the form after successful guest creation
+* Refreshing the guest list after a new guest is created
+
+A React Hooks ESLint issue appeared during the milestone because `loadGuests()` was called inside `useEffect`, and that function immediately triggered synchronous state updates. The implementation was corrected by separating pure guest fetching from state-updating logic. A `fetchGuests()` function was introduced to only fetch and return data, while state updates were handled after the asynchronous request completed. This kept the code aligned with React Hooks linting expectations and improved the structure of the data-fetching logic.
+
+This milestone also reinforced important frontend concepts:
+
+* Controlled components
+* `useState` for form data
+* `useEffect` for initial data loading
+* Form submission using `onSubmit`
+* `event.preventDefault()`
+* Client-side validation
+* Backend validation as the final source of truth
+* Service-layer API organization
+* Refetching data after create operations
+* Avoiding direct state mutation
+* Avoiding premature abstraction
+
+Electron responsibilities did not change in this milestone. Guest creation remains a renderer process concern that communicates with the FastAPI backend through the frontend service layer. No guest business logic was moved into Electron main process, preload scripts, or IPC.
+
+This milestone intentionally did not add guest edit, guest delete, guest stay history, booking integration, ID document upload, OCR, advanced filtering, pagination, sorting, finance, history, or settings logic.
+
+**Files affected:**
+
+* `frontend/src/services/guestService.js`
+* `frontend/src/pages/GuestsPage.jsx`
+
+**Outcome:**
+
+The Guests module can now create new guest records through the backend, clear the form after successful creation, and refresh the guest list so the newly created guest appears in the UI.
