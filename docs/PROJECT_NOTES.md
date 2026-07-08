@@ -3133,6 +3133,111 @@ FastAPI remains the source of truth for room data and validation.
 
 This decision completes the basic CRUD foundation for the Rooms module while preserving HelloStay’s clean frontend architecture.
 
+---
+
+### Frontend AD 12 — Refine Rooms Module Through Small Component Extraction
+
+**Status:** Accepted
+**Date Recorded:** 2026-07-08
+**Milestone:** Frontend Milestone 12 — Rooms Module UX Refinement and Code Cleanup
+
+After completing room listing, creation, editing, and deletion in Milestones 9, 10, and 11, the Rooms page had enough behavior to justify a small refactor.
+
+The decision was made to refine the Rooms module through limited component extraction and visual cleanup while preserving all existing behavior.
+
+**Decision:**
+
+Keep `RoomsPage.jsx` as the page-level coordinator for the Rooms module, but extract focused room-specific UI into smaller components where it improves readability.
+
+The accepted structure is:
+
+* `RoomsPage.jsx` for page state, API coordination, loading state, error state, success messages, create/edit mode, and refresh behavior.
+* `RoomForm.jsx` for the create/edit room form UI.
+* `RoomTable.jsx` for displaying the room list and room-level actions.
+* `roomService.js` for all room API calls.
+* `global.css` for visual layout and styling improvements.
+
+**Why this decision was made:**
+
+The Rooms module had become more complex after adding read, create, update, and delete behavior. Keeping everything inside one page file would still work, but the file would become harder to read and maintain as the application grows.
+
+Extracting `RoomForm.jsx` and `RoomTable.jsx` improves readability because the form and list are separate UI concerns. This allows `RoomsPage.jsx` to focus on feature behavior instead of being overloaded with all JSX details.
+
+This refactor is intentionally small. It improves code clarity without introducing unnecessary architecture such as custom hooks, reducers, global state, or external state libraries.
+
+**Architecture rules confirmed:**
+
+* FastAPI remains the source of truth for room data and validation.
+* React does not store room data as the permanent source of truth.
+* `localStorage` is not used as the source of truth for rooms.
+* All room API calls remain inside `roomService.js`.
+* `RoomsPage.jsx` coordinates API calls through `roomService.js`.
+* `RoomForm.jsx` and `RoomTable.jsx` do not call the backend directly.
+* Electron main process does not contain room UI logic or room API logic.
+* React renderer owns UI, form state, interaction, loading states, and error display.
+* Backend business logic is not moved into React or Electron.
+
+**Component responsibility decision:**
+
+`RoomsPage.jsx` owns state because create/edit/delete behavior affects the whole page.
+
+`RoomForm.jsx` receives form data, validation errors, mode, loading state, and handlers through props. It does not own the main room form state.
+
+`RoomTable.jsx` receives rooms and action handlers through props. It does not perform API requests directly.
+
+This keeps data flow simple:
+
+`RoomsPage.jsx → RoomForm.jsx`
+`RoomsPage.jsx → RoomTable.jsx`
+`RoomsPage.jsx → roomService.js → FastAPI`
+
+**Design decision:**
+
+The Rooms page should follow the HelloStay V1 frontend design direction: clean, modern, desktop-first, professional, and easy for hotel staff to scan.
+
+The UI should use:
+
+* clear page headings,
+* card-based surfaces,
+* consistent spacing,
+* readable typography,
+* clean form layout,
+* desktop-friendly room table,
+* visible status badges,
+* clear edit and delete actions,
+* understandable loading, empty, error, and success states.
+
+The UI should not become flashy or overly complex. Clarity is more important than visual decoration.
+
+**Rejected alternatives:**
+
+A full rewrite of the Rooms module was rejected because the existing behavior was already working.
+
+A large abstraction using custom hooks was rejected because it would hide important learning concepts too early.
+
+Global state for rooms was rejected because only the Rooms page currently needs this data.
+
+Reducers were rejected because the current state transitions are still understandable with `useState`.
+
+External state libraries were rejected because they are unnecessary for this stage of the project.
+
+A modal-based create/edit flow was rejected for now because it would add extra UI complexity before the basic page flow is fully mastered.
+
+**Consequences:**
+
+The Rooms module is now easier to understand and maintain.
+
+The page has a cleaner separation between feature behavior and UI rendering.
+
+The create/edit/delete flow remains connected to the backend through the existing service layer.
+
+The project remains beginner-friendly while still moving toward production-quality structure.
+
+Future milestones can build on this pattern when implementing Guests, Bookings, Stays, Finance, History, and Settings.
+
+**Final decision:**
+
+Use small, practical component extraction for the Rooms module and keep the architecture simple. Preserve backend integration, avoid premature abstraction, and improve the user experience without changing the business behavior.
 
 ---
 
@@ -7382,3 +7487,110 @@ Delete → DELETE /rooms/{room_id}
 This milestone strengthened the project’s frontend architecture by keeping API communication inside the service layer, keeping form and interaction state inside React, and preserving FastAPI as the source of truth for room data.
 
 The Rooms module is now ready for future UX cleanup, filtering, and later booking/stay integration.
+
+---
+
+### Frontend Milestone 12 — Rooms Module UX Refinement and Code Cleanup
+
+**Status:** Completed
+**Date Completed:** 2026-07-08
+**Project:** HelloStay — Offline Hotel Management System
+**Frontend Stack:** React, JavaScript, Vite, Electron Renderer
+**Backend Stack:** FastAPI, SQLAlchemy, SQLite
+
+Milestone 12 focused on refining the already-working Rooms module after Milestones 9, 10, and 11.
+
+The goal of this milestone was not to add new backend features or start a new module. The goal was to improve the readability, structure, user experience, and visual consistency of the Rooms page while preserving the existing get, create, edit, and delete behavior.
+
+The Rooms module remains connected to the FastAPI backend through the existing room service layer. FastAPI continues to be the source of truth for room data, validation, database operations, and API contracts.
+
+**What was completed:**
+
+* Reviewed the existing `RoomsPage.jsx` after room listing, creation, editing, and deletion had already been implemented.
+* Identified that the page had grown large enough to benefit from small, focused component extraction.
+* Refactored the Rooms module without rewriting it from scratch.
+* Preserved existing backend integration and CRUD behavior.
+* Kept room API calls inside `roomService.js`.
+* Improved the visual layout of the Rooms page.
+* Improved the page heading, spacing, card surfaces, form layout, and room list display.
+* Improved the create/edit form experience.
+* Made edit mode easier to understand by changing the form heading and showing a cancel edit action.
+* Improved success and error message placement.
+* Improved validation messages for required room fields.
+* Improved delete confirmation behavior and delete loading feedback.
+* Ensured errors do not break the entire Rooms page.
+* Preserved room list refresh behavior after create, update, and delete operations.
+* Kept reusable UI components generic.
+* Extracted room-specific components only where they improved readability.
+
+**Files added or refined:**
+
+* `src/pages/RoomsPage.jsx`
+* `src/components/rooms/RoomForm.jsx`
+* `src/components/rooms/RoomTable.jsx`
+* `src/styles/global.css`
+
+**Responsibilities after this milestone:**
+
+`RoomsPage.jsx` is responsible for page-level behavior, including room state, form state, loading state, error state, success messages, create/edit mode, and calls to `roomService.js`.
+
+`RoomForm.jsx` is responsible for rendering the create/edit room form. It receives form data, validation errors, mode, submit state, and event handlers through props.
+
+`RoomTable.jsx` is responsible for rendering the room list in a clean desktop-friendly table format. It receives room data and edit/delete handlers through props.
+
+`roomService.js` remains the only frontend service layer for room-related API requests.
+
+`global.css` contains the visual styling required for the improved Rooms page layout, form, table, buttons, alerts, empty state, and status badges.
+
+**Important concepts learned:**
+
+* Refactoring means improving code structure without changing behavior.
+* Refactoring is different from rewriting.
+* Refactoring is safest after a feature already works.
+* Component extraction should be done only when it improves readability.
+* Too many components too early can make code harder to understand.
+* Props allow parent components to pass data and functions to child components.
+* Page components should coordinate feature behavior.
+* Feature components should render focused parts of the UI.
+* Service files should isolate API communication.
+* React renderer owns UI, state, forms, and user interaction.
+* Electron main process should not contain room API logic or UI logic.
+* Backend business rules should not be moved into React or Electron.
+
+**Verification completed or required:**
+
+The following behavior should work after Milestone 12:
+
+* Rooms load from the backend.
+* A new room can be created.
+* The room list refreshes after creation.
+* Existing rooms can be edited.
+* The form clearly switches into edit mode.
+* Edit mode can be cancelled.
+* The room list refreshes after update.
+* Rooms can be deleted after confirmation.
+* Delete state is visible while deletion is happening.
+* Validation messages appear for invalid form input.
+* Success messages appear after successful create, update, and delete actions.
+* API errors are shown clearly without crashing the page.
+* The Rooms page still feels like part of the dashboard layout introduced in Milestone 8.
+
+**What was intentionally not added:**
+
+* No Guests module.
+* No Bookings or Stays workflow.
+* No finance, history, or settings logic.
+* No room availability calculation based on bookings.
+* No room image upload.
+* No dashboard metrics.
+* No backend changes.
+* No Electron backend startup.
+* No packaging work.
+* No global room state.
+* No reducers.
+* No external state library.
+* No custom room hook yet.
+
+**Result:**
+
+Milestone 12 completed the first cleanup pass of the Rooms module. The feature now has clearer structure, better user experience, improved visual consistency, and better separation between page logic, room-specific UI components, reusable UI, and backend service calls.

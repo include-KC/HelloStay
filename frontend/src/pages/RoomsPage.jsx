@@ -1,126 +1,67 @@
 import { useEffect, useState } from "react";
 
-import Button from "../components/ui/Button.jsx";
-import Card from "../components/ui/Card.jsx";
-import ErrorMessage from "../components/ui/ErrorMessage.jsx";
-import Input from "../components/ui/Input.jsx";
-import Loading from "../components/ui/Loading.jsx";
-import {
-  createRoom,
-  deleteRoom,
-  getRooms,
-  updateRoom,
-} from "../services/roomService.js";
+import RoomForm from "../components/rooms/RoomForm.jsx";
+import RoomTable from "../components/rooms/RoomTable.jsx";
+import * as roomService from "../services/roomService.js";
 
-const INITIAL_ROOM_FORM = {
+const emptyRoomForm = {
   room_number: "",
   room_type: "",
   price_per_night: "",
   max_occupancy: "",
+  room_status: "",
   facilities: "",
-  room_status: "Available",
 };
-
-const ROOM_STATUS_OPTIONS = [
-  "Available",
-  "Occupied",
-  "Reserved",
-  "Maintenance",
-];
-
-function normalizeRoomToForm(room) {
-  return {
-    room_number: room.room_number ?? "",
-    room_type: room.room_type ?? "",
-    price_per_night: String(room.price_per_night ?? ""),
-    max_occupancy: String(room.max_occupancy ?? ""),
-    facilities: room.facilities ?? "",
-    room_status: room.room_status ?? "Available",
-  };
-}
-
-function buildRoomPayload(formData) {
-  return {
-    room_number: formData.room_number.trim(),
-    room_type: formData.room_type.trim() || null,
-    price_per_night: Number(formData.price_per_night),
-    max_occupancy: Number(formData.max_occupancy),
-    facilities: formData.facilities.trim() || null,
-    room_status: formData.room_status,
-  };
-}
-
-function validateRoomForm(formData) {
-  const price = Number(formData.price_per_night);
-  const maxOccupancy = Number(formData.max_occupancy);
-
-  if (!formData.room_number.trim()) {
-    return "Room number is required.";
-  }
-
-  if (!Number.isFinite(price) || price <= 0) {
-    return "Price per night must be greater than 0.";
-  }
-
-  if (!Number.isInteger(maxOccupancy) || maxOccupancy <= 0) {
-    return "Maximum occupancy must be a positive whole number.";
-  }
-
-  if (!formData.room_status) {
-    return "Room status is required.";
-  }
-
-  return "";
-}
 
 function RoomsPage() {
   const [rooms, setRooms] = useState([]);
-  const [isLoadingRooms, setIsLoadingRooms] = useState(true);
-  const [roomsError, setRoomsError] = useState("");
+  const [formData, setFormData] = useState(emptyRoomForm);
+  const [formErrors, setFormErrors] = useState({});
 
-  const [formData, setFormData] = useState(INITIAL_ROOM_FORM);
   const [editingRoomId, setEditingRoomId] = useState(null);
-  const [isSavingRoom, setIsSavingRoom] = useState(false);
-  const [saveError, setSaveError] = useState("");
 
-  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingRoomId, setDeletingRoomId] = useState(null);
-  const [deleteError, setDeleteError] = useState("");
+
+  const [pageError, setPageError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const isEditMode = editingRoomId !== null;
 
   useEffect(() => {
-    let isActive = true;
+    let shouldIgnoreResult = false;
 
-    async function fetchInitialRooms() {
+    async function fetchRoomsOnPageLoad() {
       try {
-        const roomsData = await getRooms();
+        const roomData = await roomService.getRooms();
 
-        if (isActive) {
-          setRooms(roomsData);
-          setRoomsError("");
+        if (!shouldIgnoreResult) {
+          setRooms(roomData);
+          setPageError("");
         }
       } catch (error) {
-        if (isActive) {
-          setRoomsError(error.message || "Unable to load rooms.");
+        if (!shouldIgnoreResult) {
+          setPageError(error.message || "Unable to load rooms.");
         }
       } finally {
-        if (isActive) {
-          setIsLoadingRooms(false);
+        if (!shouldIgnoreResult) {
+          setIsLoading(false);
         }
       }
     }
 
-    fetchInitialRooms();
+    fetchRoomsOnPageLoad();
 
     return () => {
-      isActive = false;
+      shouldIgnoreResult = true;
     };
   }, []);
 
   async function refreshRooms() {
-    const roomsData = await getRooms();
-    setRooms(roomsData);
+    const roomData = await roomService.getRooms();
+    setRooms(roomData);
   }
 
   function handleInputChange(event) {
@@ -130,284 +71,215 @@ function RoomsPage() {
       ...currentFormData,
       [name]: value,
     }));
+
+    setFormErrors((currentErrors) => ({
+      ...currentErrors,
+      [name]: "",
+    }));
+
+    setFormError("");
+    setSuccessMessage("");
+  }
+
+  function validateRoomForm() {
+    const errors = {};
+
+    if (!formData.room_number.trim()) {
+      errors.room_number = "Room number is required.";
+    }
+
+    if (!formData.price_per_night) {
+      errors.price_per_night = "Price per night is required.";
+    } else if (Number(formData.price_per_night) <= 0) {
+      errors.price_per_night = "Price must be greater than 0.";
+    }
+
+    if (!formData.max_occupancy) {
+      errors.max_occupancy = "Max occupancy is required.";
+    } else if (Number(formData.max_occupancy) <= 0) {
+      errors.max_occupancy = "Max occupancy must be greater than 0.";
+    }
+
+    if (!formData.room_status) {
+      errors.room_status = "Room status is required.";
+    }
+
+    return errors;
+  }
+
+  function buildRoomPayload() {
+    return {
+      room_number: formData.room_number.trim(),
+      room_type: formData.room_type.trim() || null,
+      price_per_night: Number(formData.price_per_night),
+      max_occupancy: Number(formData.max_occupancy),
+      room_status: formData.room_status,
+      facilities: formData.facilities.trim() || null,
+    };
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const errors = validateRoomForm();
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFormError("");
+    setSuccessMessage("");
+
+    try {
+      const payload = buildRoomPayload();
+
+      if (isEditMode) {
+        await roomService.updateRoom(editingRoomId, payload);
+        setSuccessMessage("Room updated successfully.");
+      } else {
+        await roomService.createRoom(payload);
+        setSuccessMessage("Room created successfully.");
+      }
+
+      await refreshRooms();
+      resetForm();
+    } catch (error) {
+      setFormError(error.message || "Unable to save room.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleEditRoom(room) {
     setEditingRoomId(room.id);
-    setFormData(normalizeRoomToForm(room));
-    setSaveError("");
-    setDeleteError("");
+
+    setFormData({
+      room_number: room.room_number || "",
+      room_type: room.room_type || "",
+      price_per_night: room.price_per_night || "",
+      max_occupancy: room.max_occupancy || "",
+      room_status: room.room_status || "",
+      facilities: room.facilities || "",
+    });
+
+    setFormErrors({});
+    setFormError("");
+    setSuccessMessage("");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
-  function handleCancelEdit() {
+  function resetForm() {
+    setFormData(emptyRoomForm);
     setEditingRoomId(null);
-    setFormData(INITIAL_ROOM_FORM);
-    setSaveError("");
+    setFormErrors({});
+    setFormError("");
   }
 
-  async function handleSubmitRoom(event) {
-    event.preventDefault();
+  async function handleDeleteRoom(room) {
+    const confirmed = window.confirm(
+      `Delete room ${room.room_number}? This action cannot be undone.`
+    );
 
-    const validationError = validateRoomForm(formData);
-
-    if (validationError) {
-      setSaveError(validationError);
+    if (!confirmed) {
       return;
     }
 
-    setIsSavingRoom(true);
-    setSaveError("");
+    setDeletingRoomId(room.id);
+    setPageError("");
+    setSuccessMessage("");
 
     try {
-      const roomPayload = buildRoomPayload(formData);
-
-      if (isEditMode) {
-        await updateRoom(editingRoomId, roomPayload);
-      } else {
-        await createRoom(roomPayload);
-      }
-
-      await refreshRooms();
-      handleCancelEdit();
-    } catch (error) {
-      setSaveError(error.message || "Unable to save room.");
-    } finally {
-      setIsSavingRoom(false);
-    }
-  }
-
-  function handleAskDelete(roomId) {
-    setDeleteConfirmId(roomId);
-    setDeleteError("");
-  }
-
-  function handleCancelDelete() {
-    setDeleteConfirmId(null);
-    setDeleteError("");
-  }
-
-  async function handleConfirmDelete(roomId) {
-    setDeletingRoomId(roomId);
-    setDeleteError("");
-
-    try {
-      await deleteRoom(roomId);
+      await roomService.deleteRoom(room.id);
       await refreshRooms();
 
-      if (editingRoomId === roomId) {
-        handleCancelEdit();
+      if (editingRoomId === room.id) {
+        resetForm();
       }
 
-      setDeleteConfirmId(null);
+      setSuccessMessage(`Room ${room.room_number} deleted successfully.`);
     } catch (error) {
-      setDeleteError(error.message || "Unable to delete room.");
+      setPageError(error.message || "Unable to delete room.");
     } finally {
       setDeletingRoomId(null);
     }
   }
 
   return (
-    <main className="page-stack">
-      <header className="page-header">
+    <div className="rooms-page">
+      <div className="page-header">
         <div>
           <p className="eyebrow">Rooms</p>
-          <h1 className="page-title">Manage Rooms</h1>
-          <p className="page-description">
-            Create, edit, and delete hotel room records from one place.
+          <h1>Room Management</h1>
+          <p>
+            Manage room details, prices, occupancy, facilities, and operational
+            status.
           </p>
         </div>
-      </header>
+      </div>
 
-      <Card>
-        <div className="section-header">
-          <div>
-            <h2>{isEditMode ? "Edit Room" : "Add New Room"}</h2>
-            <p>
-              {isEditMode
-                ? "Update the selected room details."
-                : "Add a new room to the hotel inventory."}
-            </p>
-          </div>
+      <div className="rooms-layout">
+        <section className="card">
+          {formError && <div className="alert alert-error">{formError}</div>}
 
-          {isEditMode && (
-            <Button type="button" onClick={handleCancelEdit}>
-              Cancel Edit
-            </Button>
+          {successMessage && (
+            <div className="alert alert-success">{successMessage}</div>
           )}
-        </div>
 
-        {saveError && <ErrorMessage message={saveError} />}
-
-        <form className="room-form" onSubmit={handleSubmitRoom}>
-          <Input
-            id="room_number"
-            name="room_number"
-            label="Room Number"
-            value={formData.room_number}
+          <RoomForm
+            formData={formData}
+            formErrors={formErrors}
+            mode={isEditMode ? "edit" : "create"}
+            isSubmitting={isSubmitting}
             onChange={handleInputChange}
-            placeholder="Example: 101"
+            onSubmit={handleSubmit}
+            onCancel={resetForm}
           />
+        </section>
 
-          <Input
-            id="room_type"
-            name="room_type"
-            label="Room Type"
-            value={formData.room_type}
-            onChange={handleInputChange}
-            placeholder="Example: Deluxe"
-          />
-
-          <Input
-            id="price_per_night"
-            name="price_per_night"
-            label="Price Per Night"
-            type="number"
-            value={formData.price_per_night}
-            onChange={handleInputChange}
-            placeholder="Example: 2500"
-          />
-
-          <Input
-            id="max_occupancy"
-            name="max_occupancy"
-            label="Maximum Occupancy"
-            type="number"
-            value={formData.max_occupancy}
-            onChange={handleInputChange}
-            placeholder="Example: 2"
-          />
-
-          <Input
-            id="facilities"
-            name="facilities"
-            label="Facilities"
-            value={formData.facilities}
-            onChange={handleInputChange}
-            placeholder="Example: Wi-Fi, AC, TV"
-          />
-
-          <div className="form-field">
-            <label htmlFor="room_status">Room Status</label>
-            <select
-              id="room_status"
-              name="room_status"
-              value={formData.room_status}
-              onChange={handleInputChange}
-            >
-              {ROOM_STATUS_OPTIONS.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+        <section className="card">
+          <div className="section-heading">
+            <div>
+              <h2>Room list</h2>
+              <p>
+                {rooms.length > 0
+                  ? `${rooms.length} room${rooms.length === 1 ? "" : "s"} found.`
+                  : "No rooms available yet."}
+              </p>
+            </div>
           </div>
 
-          <div className="form-actions">
-            <Button type="submit" disabled={isSavingRoom}>
-              {isSavingRoom
-                ? "Saving..."
-                : isEditMode
-                  ? "Update Room"
-                  : "Create Room"}
-            </Button>
-          </div>
-        </form>
-      </Card>
+          {isLoading && <p className="muted-text">Loading rooms...</p>}
 
-      <Card>
-        <div className="section-header">
-          <div>
-            <h2>Rooms List</h2>
-            <p>View, edit, or delete existing rooms.</p>
-          </div>
-        </div>
+          {!isLoading && pageError && (
+            <div className="alert alert-error">{pageError}</div>
+          )}
 
-        {deleteError && <ErrorMessage message={deleteError} />}
+          {!isLoading && !pageError && rooms.length === 0 && (
+            <div className="empty-state">
+              <h3>No rooms added yet</h3>
+              <p>
+                Use the form above to create the first room for this hotel.
+              </p>
+            </div>
+          )}
 
-        {isLoadingRooms && <Loading message="Loading rooms..." />}
-
-        {!isLoadingRooms && roomsError && <ErrorMessage message={roomsError} />}
-
-        {!isLoadingRooms && !roomsError && rooms.length === 0 && (
-          <div className="empty-state">
-            <h3>No rooms found</h3>
-            <p>Create your first room using the form above.</p>
-          </div>
-        )}
-
-        {!isLoadingRooms && !roomsError && rooms.length > 0 && (
-          <div className="rooms-table-wrapper">
-            <table className="rooms-table">
-              <thead>
-                <tr>
-                  <th>Room</th>
-                  <th>Type</th>
-                  <th>Price</th>
-                  <th>Occupancy</th>
-                  <th>Status</th>
-                  <th>Facilities</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {rooms.map((room) => (
-                  <tr key={room.id}>
-                    <td>{room.room_number}</td>
-                    <td>{room.room_type || "—"}</td>
-                    <td>₹{room.price_per_night}</td>
-                    <td>{room.max_occupancy || "—"}</td>
-                    <td>
-                      <span className="status-pill">{room.room_status}</span>
-                    </td>
-                    <td>{room.facilities || "—"}</td>
-                    <td>
-                      {deleteConfirmId === room.id ? (
-                        <div className="inline-confirm">
-                          <span>Delete?</span>
-
-                          <Button
-                            type="button"
-                            disabled={deletingRoomId === room.id}
-                            onClick={() => handleConfirmDelete(room.id)}
-                          >
-                            {deletingRoomId === room.id ? "Deleting..." : "Yes"}
-                          </Button>
-
-                          <Button
-                            type="button"
-                            disabled={deletingRoomId === room.id}
-                            onClick={handleCancelDelete}
-                          >
-                            No
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="row-actions">
-                          <Button
-                            type="button"
-                            onClick={() => handleEditRoom(room)}
-                          >
-                            Edit
-                          </Button>
-
-                          <Button
-                            type="button"
-                            onClick={() => handleAskDelete(room.id)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
-    </main>
+          {!isLoading && !pageError && rooms.length > 0 && (
+            <RoomTable
+              rooms={rooms}
+              onEdit={handleEditRoom}
+              onDelete={handleDeleteRoom}
+              deletingRoomId={deletingRoomId}
+            />
+          )}
+        </section>
+      </div>
+    </div>
   );
 }
 
