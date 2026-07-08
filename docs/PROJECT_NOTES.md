@@ -3241,6 +3241,66 @@ Use small, practical component extraction for the Rooms module and keep the arch
 
 ---
 
+### Frontend AD 13: Guests Module Read-Only Service and Page Pattern
+
+**Status:** Accepted
+**Date Recorded:** 2026-07-08
+**Milestone:** Frontend Milestone 13 — Guests Module Read-Only Foundation
+
+The HelloStay frontend will implement the Guests module using the same clean service/page separation pattern already proven in the Rooms module. Guest data must be read from the FastAPI backend through a dedicated frontend service file instead of being fetched directly inside the page component.
+
+**Decision:**
+
+Create a dedicated `guestService.js` file inside the frontend services folder and use it as the only place for guest-related API calls.
+
+For Milestone 13, the service exposes only one function:
+
+`getGuests()`
+
+This function calls:
+
+`GET /guests`
+
+through the existing `apiClient.js`.
+
+The `GuestsPage.jsx` component consumes `guestService.getGuests()` and is responsible only for UI behavior, including loading, error, empty, and success states.
+
+**Why this decision was made:**
+
+The Guests module is the second major backend-connected dashboard module after Rooms. This makes it an important opportunity to confirm that the frontend architecture is reusable and not hardcoded for only one feature.
+
+Keeping guest API calls inside `guestService.js` improves separation of concerns. The page component does not need to know how the HTTP request is built, how the base URL is handled, or how the API client processes the response. The page only needs to request guest data and render the correct UI state.
+
+This pattern also makes the module easier to grow in future milestones. Later guest features such as create, update, delete, search, filters, and guest stay history can be added to the guest service and Guests page in a controlled way without mixing too many responsibilities too early.
+
+**Architecture rules accepted in this decision:**
+
+* Guest data must come from FastAPI, not from hardcoded frontend data.
+* `localStorage` must not be used as the source of truth for guests.
+* `GuestsPage.jsx` should not directly call `fetch`.
+* Guest API logic belongs in `guestService.js`.
+* Common HTTP behavior remains inside `apiClient.js`.
+* FastAPI remains the source of truth for validation, database operations, and API contracts.
+* React is responsible for UI state and rendering.
+* Electron main process must not contain guest API logic.
+* Guest create, edit, delete, stay history, and booking integration must be handled in later milestones.
+
+**Affected files:**
+
+* `frontend/src/services/guestService.js`
+* `frontend/src/pages/GuestsPage.jsx`
+* `frontend/src/styles/global.css` if guest-specific styling was added globally
+
+**Result:**
+
+The Guests page now follows a production-oriented frontend pattern:
+
+`GuestsPage.jsx → guestService.js → apiClient.js → FastAPI GET /guests`
+
+This decision keeps the Guests module simple, testable, beginner-friendly, and ready for future expansion.
+
+---
+
 ## Backend Milestone History
 
 ### Frontend Rebuild Note
@@ -7594,3 +7654,64 @@ The following behavior should work after Milestone 12:
 **Result:**
 
 Milestone 12 completed the first cleanup pass of the Rooms module. The feature now has clearer structure, better user experience, improved visual consistency, and better separation between page logic, room-specific UI components, reusable UI, and backend service calls.
+
+---
+
+### Frontend Milestone 13: Guests Module Read-Only Foundation
+
+**Status:** Completed
+**Milestone:** Frontend Milestone 13
+**Module:** Guests
+**Focus Area:** Read-only guest listing through backend API integration
+
+Frontend Milestone 13 introduced the first real foundation of the Guests module in the HelloStay frontend. The purpose of this milestone was to connect the existing protected dashboard Guests page to the FastAPI backend and display guest records in a simple read-only interface.
+
+This milestone continued the architectural pattern already learned from the Rooms module. Instead of placing API logic directly inside the page component, a separate guest service file was created to keep backend communication organized and maintainable.
+
+The backend endpoint used in this milestone was:
+
+`GET /guests`
+
+This endpoint returns a list of guest records containing:
+
+* `id`
+* `guest_name`
+* `guest_phone_number`
+* `guest_address`
+* `id_proof_type`
+* `id_proof_number`
+
+A new service file was added:
+
+`frontend/src/services/guestService.js`
+
+This file contains the `getGuests()` function, which calls the backend through the existing `apiClient.js`. This keeps all guest-related API calls inside the guest service layer and prevents the page component from directly handling raw API request details.
+
+The existing `GuestsPage.jsx` placeholder from the dashboard area was updated into a working read-only page. The page now uses React state to manage:
+
+* guest records
+* loading state
+* error state
+
+The page uses `useEffect` to fetch guests when the component first loads. This means the guest list is requested automatically when the user opens the Guests page.
+
+The Guests page now handles the main API UI states:
+
+* Loading state while guest data is being fetched
+* Error state if the backend request fails
+* Empty state if no guests are available
+* Success state when guest records are returned and displayed
+
+Guest records are displayed in a clean, simple, read-only UI consistent with the HelloStay V1 design direction. The guest display includes useful guest information such as guest name, phone number, ID proof type, ID proof number, and address. A simple initials/avatar placeholder may be used to make the guest cards more readable and visually clear.
+
+No create, edit, delete, modal, form, stay history, booking integration, guest timeline, document upload, OCR, finance, history, settings, Electron backend startup, or packaging logic was added in this milestone.
+
+This milestone respected the responsibility separation of the HelloStay architecture:
+
+* FastAPI remains responsible for guest data, validation, database operations, and API contracts.
+* React is responsible for displaying the Guests page and managing UI state.
+* `guestService.js` is responsible for guest-related API calls.
+* `apiClient.js` remains responsible for common request handling.
+* Electron main process is not involved in guest data fetching.
+
+This milestone successfully established the read-only Guests module foundation and prepared the project for future guest creation, editing, deletion, and guest-stay integration milestones.

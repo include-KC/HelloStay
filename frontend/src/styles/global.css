@@ -1046,3 +1046,78 @@ a {
     flex-direction: column;
   }
 }
+
+.guest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.guest-card {
+  display: grid;
+  gap: 20px;
+}
+
+.guest-card__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.guest-card__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #eef2ff;
+  color: #273469;
+  font-weight: 700;
+}
+
+.guest-card__name {
+  margin: 0;
+  font-size: 18px;
+  color: #172033;
+}
+
+.guest-card__phone {
+  margin: 4px 0 0;
+  color: #667085;
+  font-size: 14px;
+}
+
+.guest-card__details {
+  display: grid;
+  gap: 14px;
+}
+
+.guest-card__details div {
+  display: grid;
+  gap: 4px;
+}
+
+.guest-card__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.empty-state {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+  padding: 28px;
+}
+
+.empty-state h2 {
+  margin: 0;
+  color: #172033;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #667085;
+}
