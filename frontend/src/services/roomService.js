@@ -10,3 +10,16 @@ export function createRoom(roomData) {
     body: roomData,
   });
 }
+
+export async function updateRoom(roomId, roomData) {
+  return apiRequest(`/rooms/${roomId}`, {
+    method: "PUT",
+    body: roomData,
+  });
+}
+
+export async function deleteRoom(roomId) {
+  return apiRequest(`/rooms/${roomId}`, {
+    method: "DELETE",
+  });
+}

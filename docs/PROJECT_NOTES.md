@@ -2925,6 +2925,217 @@ Future milestones may add:
 
 ---
 
+### Frontend AD 11 — Room Edit and Delete Through Service Layer
+
+**Status:** Accepted
+**Date Recorded:** 2026-07-08
+**Milestone:** Milestone 11 — Rooms Module Edit and Delete Foundation
+**Project:** HelloStay Frontend
+
+#### Context
+
+HelloStay is an offline desktop Hotel Management System built with FastAPI, React, and Electron.
+
+By the end of Milestone 10, the Rooms module already supported reading rooms from the backend and creating new room records. Milestone 11 required the frontend to support updating and deleting existing room records.
+
+The backend already exposes room update and delete endpoints:
+
+```txt
+PUT /rooms/{room_id}
+DELETE /rooms/{room_id}
+```
+
+The backend also supports partial room updates through the `RoomUpdate` schema. FastAPI remains the source of truth for validation, database operations, and room records.
+
+#### Decision
+
+Room edit and delete functionality will be implemented in the React renderer process using the existing frontend service-layer pattern.
+
+All room API calls must remain inside:
+
+```txt
+frontend/src/services/roomService.js
+```
+
+The Rooms page must call service functions instead of directly calling backend URLs.
+
+The following service functions are accepted:
+
+```txt
+updateRoom(roomId, roomData)
+deleteRoom(roomId)
+```
+
+`updateRoom` will call:
+
+```txt
+PUT /rooms/{room_id}
+```
+
+`deleteRoom` will call:
+
+```txt
+DELETE /rooms/{room_id}
+```
+
+The Rooms page will manage UI-specific state such as:
+
+* selected room being edited
+* form values
+* create/edit mode
+* update loading state
+* update error state
+* delete confirmation state
+* delete loading state
+* delete error state
+
+After successful update or delete, the Rooms page will refetch the rooms list from the backend instead of performing optimistic local updates.
+
+#### Why This Decision Was Made
+
+This decision keeps the frontend architecture simple, readable, and beginner-friendly.
+
+The service layer prevents API endpoint details from spreading across UI components. This makes the code easier to maintain because endpoint paths, HTTP methods, and request behavior stay centralized.
+
+Reusing the room form for both create and edit avoids duplicate form code while still keeping the implementation small enough for the current stage of the project.
+
+Refetching the rooms list after update or delete keeps the UI synchronized with the backend database. This is safer than manually updating local state because FastAPI remains the source of truth.
+
+Optimistic updates were intentionally avoided because they add rollback complexity if the backend request fails.
+
+Inline delete confirmation was chosen instead of a modal because it is simpler, easier to understand, and appropriate for this early foundation milestone.
+
+#### Responsibility Separation
+
+React renderer process is responsible for:
+
+* Displaying room data
+* Managing form state
+* Switching between create and edit mode
+* Showing update/delete loading states
+* Showing update/delete error states
+* Asking for delete confirmation
+* Calling room service functions
+
+Service layer is responsible for:
+
+* Encapsulating room API functions
+* Calling the existing API client
+* Hiding endpoint details from page components
+
+FastAPI backend is responsible for:
+
+* Validating room data
+* Updating room records
+* Deleting room records
+* Returning updated data or errors
+* Protecting database integrity
+
+Electron main process is responsible for:
+
+* Desktop shell behavior
+* App lifecycle
+* Native window management
+
+Electron main process must not contain room update or delete logic.
+
+#### Affected Files
+
+```txt
+frontend/
+  src/
+    services/
+      roomService.js
+
+    pages/
+      RoomsPage.jsx
+
+    styles/
+      global.css
+```
+
+#### Accepted Implementation Rules
+
+The Rooms page may use state such as:
+
+```txt
+editingRoomId
+formData
+isSavingRoom
+saveError
+deleteConfirmId
+deletingRoomId
+deleteError
+```
+
+The edit form should be pre-filled from the selected room record.
+
+The user must be able to cancel edit mode.
+
+Delete must require confirmation before calling the backend.
+
+The rooms list should refresh after successful update or delete.
+
+Frontend validation may be used to improve user experience, but backend validation remains authoritative.
+
+#### Rejected Alternatives
+
+Directly calling `fetch` inside `RoomsPage.jsx` was rejected because it mixes API details with UI logic.
+
+Moving room edit/delete logic into Electron was rejected because Electron should not contain hotel business logic or database workflow logic.
+
+Using localStorage as the source of truth was rejected because room records must come from the backend database.
+
+Optimistic update was rejected for this milestone because it introduces additional complexity too early.
+
+A modal confirmation system was rejected for this milestone because inline confirmation is simpler and sufficient.
+
+Creating advanced room-specific abstractions was rejected unless the page becomes too large to maintain.
+
+#### Consequences
+
+The Rooms module now follows a clearer CRUD architecture.
+
+The code remains beginner-friendly while still following production-oriented separation of concerns.
+
+The frontend remains aligned with the backend API contract.
+
+Room data stays synchronized with the backend after updates and deletes.
+
+The project is now better prepared for future Rooms module improvements such as filtering, searching, pagination, room status workflows, and booking/stay integration.
+
+#### Future Considerations
+
+Future milestones may revisit this decision when the Rooms module becomes more complex.
+
+Possible future improvements include:
+
+* Extracting a reusable `RoomForm` component
+* Extracting a `RoomList` or `RoomTable` component
+* Adding search and filters
+* Adding pagination
+* Adding room status workflows
+* Adding booking-based availability
+* Adding modal confirmation for destructive actions
+* Adding optimistic updates if the UX requires it
+* Adding stronger validation helpers
+* Adding automated tests for room service functions and Rooms page behavior
+
+#### Summary
+
+Frontend AD 11 establishes that room update and delete operations must go through the frontend service layer, not directly through page components or Electron.
+
+React manages the user interface and interaction state.
+
+The service layer manages API communication.
+
+FastAPI remains the source of truth for room data and validation.
+
+This decision completes the basic CRUD foundation for the Rooms module while preserving HelloStay’s clean frontend architecture.
+
+
+---
+
 ## Backend Milestone History
 
 ### Frontend Rebuild Note
@@ -7000,3 +7211,174 @@ Recommended focus:
 * keep room status mutation separate
 * keep booking availability separate
 * avoid advanced filters and pagination for now
+
+---
+
+### Frontend Milestone 11 — Rooms Module Edit and Delete Foundation
+
+**Status:** Completed
+**Date Completed:** 2026-07-08
+**Project:** HelloStay Frontend
+**Frontend Area:** Rooms Module
+**Related Architecture Decision:** Frontend AD 11
+
+Milestone 11 focused on completing the basic room management foundation by adding edit and delete functionality to the existing Rooms module.
+
+Before this milestone, the Rooms module already supported reading rooms from the backend and creating new rooms. In this milestone, the module was extended so that existing room records can be updated and deleted through the FastAPI backend while keeping React responsible only for UI state, user interaction, and API coordination.
+
+#### Completed Work
+
+The existing `roomService.js` file was extended with two new service functions:
+
+* `updateRoom(roomId, roomData)`
+* `deleteRoom(roomId)`
+
+The `updateRoom` function sends room updates to the backend using:
+
+```txt
+PUT /rooms/{room_id}
+```
+
+The `deleteRoom` function deletes a room through the backend using:
+
+```txt
+DELETE /rooms/{room_id}
+```
+
+All room-related API calls remain inside the room service layer instead of being written directly inside the page component.
+
+The existing `RoomsPage.jsx` implementation was enhanced to support edit mode. Each room now has an edit action. When the user clicks edit, the selected room’s current values are copied into the form so the user can update them. The same form is reused for both room creation and room editing.
+
+The page now tracks the selected room being edited using edit-related state. This allows the UI to switch between create mode and edit mode clearly.
+
+A cancel edit action was also added so the user can leave edit mode and return the form to its default create-room state.
+
+Delete functionality was added to each room item. Because deletion is a destructive action, an inline confirmation pattern was added before the room is deleted. This keeps the milestone simple and beginner-friendly without introducing modal complexity too early.
+
+Loading and error states were added for update and delete operations. After a successful update or delete, the rooms list is refreshed from the backend so the UI stays synchronized with the database.
+
+#### Files Changed
+
+```txt
+frontend/
+  src/
+    services/
+      roomService.js
+
+    pages/
+      RoomsPage.jsx
+
+    styles/
+      global.css
+```
+
+#### Key Concepts Practiced
+
+This milestone reinforced several important React and frontend engineering concepts:
+
+* Service-layer API organization
+* Controlled form inputs
+* Reusing a form for create and edit workflows
+* Pre-filling form state from selected data
+* Tracking edit mode with React state
+* Canceling edit mode safely
+* Handling destructive actions with confirmation
+* Managing update and delete loading states
+* Managing update and delete error states
+* Refreshing server data after mutations
+* Keeping FastAPI as the source of truth
+* Keeping Electron out of business logic
+
+#### Backend Integration
+
+The frontend now integrates with the existing backend room update and delete routes.
+
+Room update uses:
+
+```txt
+PUT /rooms/{room_id}
+```
+
+Room delete uses:
+
+```txt
+DELETE /rooms/{room_id}
+```
+
+The backend remains responsible for validation, database updates, database deletion, and error responses such as room-not-found cases.
+
+React does not directly modify the database. React sends requests to FastAPI through the service layer.
+
+#### UI Behavior Added
+
+The Rooms page now supports the following user flow:
+
+```txt
+Load rooms
+Create room
+Click Edit on an existing room
+Pre-fill form with room data
+Update room
+Refresh rooms list
+Cancel edit mode if needed
+Click Delete on an existing room
+Show inline confirmation
+Confirm deletion
+Refresh rooms list
+```
+
+#### Important Boundaries
+
+This milestone intentionally did not add:
+
+* Booking-based room availability
+* Room status automation
+* Stays or bookings integration
+* Guests module logic
+* Finance module logic
+* History module logic
+* Advanced filtering
+* Pagination
+* Sorting
+* Room images
+* Optimistic updates
+* Modal system
+* Electron backend startup
+* Electron room API logic
+
+These features are reserved for future milestones.
+
+#### Verification Completed
+
+Milestone 11 was considered complete after verifying that:
+
+* Rooms still load correctly.
+* New rooms can still be created.
+* Existing rooms can be selected for editing.
+* The edit form is pre-filled correctly.
+* Edited room details are saved through the backend.
+* The rooms list refreshes after update.
+* Edit mode can be canceled.
+* Delete confirmation appears before deletion.
+* Clicking cancel prevents deletion.
+* Confirming delete removes the room through the backend.
+* The rooms list refreshes after deletion.
+* Errors are shown when update or delete fails.
+* The UI remains visually consistent with the HelloStay V1 design direction.
+
+#### Summary
+
+Milestone 11 completed the basic CRUD foundation for the Rooms module.
+
+The Rooms module now supports:
+
+```txt
+Create → POST /rooms
+Read   → GET /rooms
+Update → PUT /rooms/{room_id}
+Delete → DELETE /rooms/{room_id}
+```
+
+This milestone strengthened the project’s frontend architecture by keeping API communication inside the service layer, keeping form and interaction state inside React, and preserving FastAPI as the source of truth for room data.
+
+The Rooms module is now ready for future UX cleanup, filtering, and later booking/stay integration.
