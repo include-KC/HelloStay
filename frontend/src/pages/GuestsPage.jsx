@@ -6,15 +6,28 @@ import Loading from "../components/ui/Loading.jsx";
 import ErrorMessage from "../components/ui/ErrorMessage.jsx";
 import Input from "../components/ui/Input.jsx";
 
-import { createGuest, getGuests } from "../services/guestService.js";
+import {
+  createGuest,
+  deleteGuest,
+  getGuests,
+  updateGuest,
+} from "../services/guestService.js";
 
-const emptyGuestForm = {
+const EMPTY_GUEST_FORM = {
   guest_name: "",
   guest_phone_number: "",
   guest_address: "",
   id_proof_type: "",
   id_proof_number: "",
 };
+
+const GUEST_FIELD_NAMES = [
+  "guest_name",
+  "guest_phone_number",
+  "guest_address",
+  "id_proof_type",
+  "id_proof_number",
+];
 
 function getGuestInitials(guestName) {
   if (!guestName) {
@@ -30,31 +43,93 @@ function getGuestInitials(guestName) {
     .join("");
 }
 
+function normalizeGuestForm(formData) {
+  return {
+    guest_name: formData.guest_name.trim(),
+    guest_phone_number: formData.guest_phone_number.trim(),
+    guest_address: formData.guest_address.trim(),
+    id_proof_type: formData.id_proof_type.trim(),
+    id_proof_number: formData.id_proof_number.trim(),
+  };
+}
+
+function validateGuestData(formData) {
+  const errors = {};
+
+  if (!formData.guest_name) {
+    errors.guest_name = "Guest name is required.";
+  }
+
+  if (!formData.guest_phone_number) {
+    errors.guest_phone_number = "Phone number is required.";
+  }
+
+  if (!formData.guest_address) {
+    errors.guest_address = "Guest address is required.";
+  }
+
+  if (!formData.id_proof_type) {
+    errors.id_proof_type = "ID proof type is required.";
+  }
+
+  if (!formData.id_proof_number) {
+    errors.id_proof_number = "ID proof number is required.";
+  }
+
+  return errors;
+}
+
+function getFirstValidationError(validationErrors) {
+  return Object.values(validationErrors)[0] || "";
+}
+
+function getChangedGuestFields(formData, originalGuest) {
+  return GUEST_FIELD_NAMES.reduce((changedFields, fieldName) => {
+    const originalValue = originalGuest[fieldName] ?? "";
+
+    if (formData[fieldName] !== originalValue) {
+      changedFields[fieldName] = formData[fieldName];
+    }
+
+    return changedFields;
+  }, {});
+}
+
+async function fetchGuestsFromBackend() {
+  const guestsData = await getGuests();
+
+  if (!Array.isArray(guestsData)) {
+    throw new Error("Unexpected guest data received from the backend.");
+  }
+
+  return guestsData;
+}
+
 function GuestsPage() {
   const [guests, setGuests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [guestForm, setGuestForm] = useState(emptyGuestForm);
+  const [guestForm, setGuestForm] = useState(EMPTY_GUEST_FORM);
   const [createError, setCreateError] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
-  async function fetchGuests() {
-    const guestsData = await getGuests();
+  const [editingGuest, setEditingGuest] = useState(null);
+  const [editFormData, setEditFormData] = useState(EMPTY_GUEST_FORM);
+  const [editValidationErrors, setEditValidationErrors] = useState({});
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState("");
 
-    if (!Array.isArray(guestsData)) {
-      throw new Error("Unexpected guest data received from the backend.");
-    }
-
-    return guestsData;
-  }
+  const [deleteConfirmationId, setDeleteConfirmationId] = useState(null);
+  const [deletingGuestId, setDeletingGuestId] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     let shouldIgnoreResult = false;
 
     async function loadInitialGuests() {
       try {
-        const guestsData = await fetchGuests();
+        const guestsData = await fetchGuestsFromBackend();
 
         if (shouldIgnoreResult) {
           return;
@@ -68,7 +143,8 @@ function GuestsPage() {
 
         setGuests([]);
         setError(
-          requestError.message || "Unable to load guests. Please try again."
+          requestError.message ||
+            "Unable to load guests. Please try again.",
         );
       } finally {
         if (!shouldIgnoreResult) {
@@ -84,63 +160,32 @@ function GuestsPage() {
     };
   }, []);
 
-  async function refreshGuestsAfterCreate() {
-    try {
-      setError("");
+  async function refreshGuests() {
+    const guestsData = await fetchGuestsFromBackend();
 
-      const guestsData = await fetchGuests();
-
-      setGuests(guestsData);
-    } catch (requestError) {
-      setGuests([]);
-      setError(
-        requestError.message || "Unable to refresh guests. Please try again."
-      );
-    }
+    setGuests(guestsData);
+    setError("");
   }
 
-  function handleInputChange(event) {
+  function handleCreateInputChange(event) {
     const { name, value } = event.target;
 
-    setGuestForm((currentForm) => {
-      return {
-        ...currentForm,
-        [name]: value,
-      };
-    });
-  }
+    setGuestForm((currentForm) => ({
+      ...currentForm,
+      [name]: value,
+    }));
 
-  function validateGuestForm() {
-    if (!guestForm.guest_name.trim()) {
-      return "Guest name is required.";
-    }
-
-    if (!guestForm.guest_phone_number.trim()) {
-      return "Guest phone number is required.";
-    }
-
-    if (!guestForm.guest_address.trim()) {
-      return "Guest address is required.";
-    }
-
-    if (!guestForm.id_proof_type.trim()) {
-      return "ID proof type is required.";
-    }
-
-    if (!guestForm.id_proof_number.trim()) {
-      return "ID proof number is required.";
-    }
-
-    return "";
+    setCreateError("");
   }
 
   async function handleCreateGuest(event) {
     event.preventDefault();
 
-    const validationError = validateGuestForm();
+    const normalizedGuestData = normalizeGuestForm(guestForm);
+    const validationErrors = validateGuestData(normalizedGuestData);
 
-    if (validationError) {
-      setCreateError(validationError);
+    if (Object.keys(validationErrors).length > 0) {
+      setCreateError(getFirstValidationError(validationErrors));
       return;
     }
 
@@ -148,25 +193,172 @@ function GuestsPage() {
       setIsCreating(true);
       setCreateError("");
 
-      const guestPayload = {
-        guest_name: guestForm.guest_name.trim(),
-        guest_phone_number: guestForm.guest_phone_number.trim(),
-        guest_address: guestForm.guest_address.trim(),
-        id_proof_type: guestForm.id_proof_type.trim(),
-        id_proof_number: guestForm.id_proof_number.trim(),
-      };
+      await createGuest(normalizedGuestData);
 
-      await createGuest(guestPayload);
+      setGuestForm(EMPTY_GUEST_FORM);
 
-      setGuestForm(emptyGuestForm);
-
-      await refreshGuestsAfterCreate();
+      try {
+        await refreshGuests();
+      } catch (refreshError) {
+        setError(
+          refreshError.message ||
+            "The guest was created, but the guest list could not be refreshed.",
+        );
+      }
     } catch (requestError) {
       setCreateError(
-        requestError.message || "Unable to create guest. Please try again."
+        requestError.message ||
+          "Unable to create guest. Please try again.",
       );
     } finally {
       setIsCreating(false);
+    }
+  }
+
+  function handleStartEdit(guest) {
+    setEditingGuest(guest);
+
+    setEditFormData({
+      guest_name: guest.guest_name ?? "",
+      guest_phone_number: guest.guest_phone_number ?? "",
+      guest_address: guest.guest_address ?? "",
+      id_proof_type: guest.id_proof_type ?? "",
+      id_proof_number: guest.id_proof_number ?? "",
+    });
+
+    setEditValidationErrors({});
+    setUpdateError("");
+
+    setDeleteConfirmationId(null);
+    setDeleteError("");
+  }
+
+  function handleCancelEdit() {
+    if (isUpdating) {
+      return;
+    }
+
+    setEditingGuest(null);
+    setEditFormData(EMPTY_GUEST_FORM);
+    setEditValidationErrors({});
+    setUpdateError("");
+  }
+
+  function handleEditInputChange(event) {
+    const { name, value } = event.target;
+
+    setEditFormData((currentFormData) => ({
+      ...currentFormData,
+      [name]: value,
+    }));
+
+    setEditValidationErrors((currentErrors) => ({
+      ...currentErrors,
+      [name]: "",
+    }));
+
+    setUpdateError("");
+  }
+
+  async function handleUpdateGuest(event) {
+    event.preventDefault();
+
+    if (!editingGuest) {
+      return;
+    }
+
+    const normalizedFormData = normalizeGuestForm(editFormData);
+    const validationErrors = validateGuestData(normalizedFormData);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setEditValidationErrors(validationErrors);
+      setUpdateError("");
+      return;
+    }
+
+    const changedGuestData = getChangedGuestFields(
+      normalizedFormData,
+      editingGuest,
+    );
+
+    if (Object.keys(changedGuestData).length === 0) {
+      setUpdateError("Make at least one change before saving.");
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      setUpdateError("");
+      setEditValidationErrors({});
+
+      await updateGuest(editingGuest.id, changedGuestData);
+
+      setEditingGuest(null);
+      setEditFormData(EMPTY_GUEST_FORM);
+
+      try {
+        await refreshGuests();
+      } catch (refreshError) {
+        setError(
+          refreshError.message ||
+            "The guest was updated, but the guest list could not be refreshed.",
+        );
+      }
+    } catch (requestError) {
+      setUpdateError(
+        requestError.message ||
+          "The guest could not be updated. Please try again.",
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
+  function handleRequestDelete(guestId) {
+    setDeleteConfirmationId(guestId);
+    setDeleteError("");
+  }
+
+  function handleCancelDelete() {
+    if (deletingGuestId !== null) {
+      return;
+    }
+
+    setDeleteConfirmationId(null);
+    setDeleteError("");
+  }
+
+  async function handleConfirmDelete(guest) {
+    try {
+      setDeletingGuestId(guest.id);
+      setDeleteError("");
+
+      await deleteGuest(guest.id);
+
+      if (editingGuest?.id === guest.id) {
+        setEditingGuest(null);
+        setEditFormData(EMPTY_GUEST_FORM);
+        setEditValidationErrors({});
+        setUpdateError("");
+      }
+
+      setDeleteConfirmationId(null);
+
+      try {
+        await refreshGuests();
+      } catch (refreshError) {
+        setError(
+          refreshError.message ||
+            "The guest was deleted, but the guest list could not be refreshed.",
+        );
+      }
+    } catch (requestError) {
+      setDeleteError(
+        requestError.message ||
+          "The guest could not be deleted. Please try again.",
+      );
+    } finally {
+      setDeletingGuestId(null);
     }
   }
 
@@ -175,9 +367,12 @@ function GuestsPage() {
       <div className="page-header">
         <div>
           <p className="page-eyebrow">Guest Management</p>
+
           <h1 className="page-title">Guests</h1>
+
           <p className="page-description">
-            View and register guest profiles from the HelloStay backend.
+            View, register, update, and remove guest profiles through the
+            HelloStay backend.
           </p>
         </div>
       </div>
@@ -186,8 +381,10 @@ function GuestsPage() {
         <form className="guest-form" onSubmit={handleCreateGuest}>
           <div className="form-header">
             <h2>Add New Guest</h2>
+
             <p>
-              Register a guest profile using basic contact and identity details.
+              Register a guest profile using basic contact and identity
+              details.
             </p>
           </div>
 
@@ -198,7 +395,8 @@ function GuestsPage() {
               label="Guest Name"
               placeholder="Enter guest name"
               value={guestForm.guest_name}
-              onChange={handleInputChange}
+              onChange={handleCreateInputChange}
+              disabled={isCreating}
             />
 
             <Input
@@ -207,7 +405,8 @@ function GuestsPage() {
               label="Phone Number"
               placeholder="Enter phone number"
               value={guestForm.guest_phone_number}
-              onChange={handleInputChange}
+              onChange={handleCreateInputChange}
+              disabled={isCreating}
             />
 
             <Input
@@ -216,7 +415,8 @@ function GuestsPage() {
               label="Address"
               placeholder="Enter guest address"
               value={guestForm.guest_address}
-              onChange={handleInputChange}
+              onChange={handleCreateInputChange}
+              disabled={isCreating}
             />
 
             <Input
@@ -225,7 +425,8 @@ function GuestsPage() {
               label="ID Proof Type"
               placeholder="Aadhaar, Passport, PAN, etc."
               value={guestForm.id_proof_type}
-              onChange={handleInputChange}
+              onChange={handleCreateInputChange}
+              disabled={isCreating}
             />
 
             <Input
@@ -234,7 +435,8 @@ function GuestsPage() {
               label="ID Proof Number"
               placeholder="Enter ID proof number"
               value={guestForm.id_proof_number}
-              onChange={handleInputChange}
+              onChange={handleCreateInputChange}
+              disabled={isCreating}
             />
           </div>
 
@@ -248,6 +450,137 @@ function GuestsPage() {
         </form>
       </Card>
 
+      {editingGuest && (
+        <Card>
+          <div className="guest-edit-panel">
+            <div className="guest-edit-panel__header">
+              <div>
+                <p className="page-eyebrow">Editing Guest</p>
+                <h2>{editingGuest.guest_name}</h2>
+              </div>
+
+              <Button
+                type="button"
+                onClick={handleCancelEdit}
+                disabled={isUpdating}
+              >
+                Cancel
+              </Button>
+            </div>
+
+            <form className="guest-form" onSubmit={handleUpdateGuest}>
+              <div className="form-grid">
+                <div className="guest-form__field">
+                  <Input
+                    id="edit_guest_name"
+                    name="guest_name"
+                    label="Guest Name"
+                    placeholder="Enter guest name"
+                    value={editFormData.guest_name}
+                    onChange={handleEditInputChange}
+                    disabled={isUpdating}
+                  />
+
+                  {editValidationErrors.guest_name && (
+                    <p className="field-error" role="alert">
+                      {editValidationErrors.guest_name}
+                    </p>
+                  )}
+                </div>
+
+                <div className="guest-form__field">
+                  <Input
+                    id="edit_guest_phone_number"
+                    name="guest_phone_number"
+                    label="Phone Number"
+                    placeholder="Enter phone number"
+                    value={editFormData.guest_phone_number}
+                    onChange={handleEditInputChange}
+                    disabled={isUpdating}
+                  />
+
+                  {editValidationErrors.guest_phone_number && (
+                    <p className="field-error" role="alert">
+                      {editValidationErrors.guest_phone_number}
+                    </p>
+                  )}
+                </div>
+
+                <div className="guest-form__field">
+                  <Input
+                    id="edit_guest_address"
+                    name="guest_address"
+                    label="Address"
+                    placeholder="Enter guest address"
+                    value={editFormData.guest_address}
+                    onChange={handleEditInputChange}
+                    disabled={isUpdating}
+                  />
+
+                  {editValidationErrors.guest_address && (
+                    <p className="field-error" role="alert">
+                      {editValidationErrors.guest_address}
+                    </p>
+                  )}
+                </div>
+
+                <div className="guest-form__field">
+                  <Input
+                    id="edit_id_proof_type"
+                    name="id_proof_type"
+                    label="ID Proof Type"
+                    placeholder="Aadhaar, Passport, PAN, etc."
+                    value={editFormData.id_proof_type}
+                    onChange={handleEditInputChange}
+                    disabled={isUpdating}
+                  />
+
+                  {editValidationErrors.id_proof_type && (
+                    <p className="field-error" role="alert">
+                      {editValidationErrors.id_proof_type}
+                    </p>
+                  )}
+                </div>
+
+                <div className="guest-form__field">
+                  <Input
+                    id="edit_id_proof_number"
+                    name="id_proof_number"
+                    label="ID Proof Number"
+                    placeholder="Enter ID proof number"
+                    value={editFormData.id_proof_number}
+                    onChange={handleEditInputChange}
+                    disabled={isUpdating}
+                  />
+
+                  {editValidationErrors.id_proof_number && (
+                    <p className="field-error" role="alert">
+                      {editValidationErrors.id_proof_number}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {updateError && <ErrorMessage message={updateError} />}
+
+              <div className="form-actions">
+                <Button type="submit" disabled={isUpdating}>
+                  {isUpdating ? "Saving Changes..." : "Save Changes"}
+                </Button>
+
+                <Button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  disabled={isUpdating}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Card>
+      )}
+
       {isLoading && <Loading message="Loading guests..." />}
 
       {!isLoading && error && <ErrorMessage message={error} />}
@@ -256,6 +589,7 @@ function GuestsPage() {
         <Card>
           <div className="empty-state">
             <h2>No guests found</h2>
+
             <p>
               Guest records will appear here after they are added through the
               create-guest form.
@@ -266,41 +600,123 @@ function GuestsPage() {
 
       {!isLoading && !error && guests.length > 0 && (
         <div className="guest-grid">
-          {guests.map((guest) => (
-            <Card key={guest.id}>
-              <article className="guest-card">
-                <div className="guest-card__header">
-                  <div className="guest-card__avatar">
-                    {getGuestInitials(guest.guest_name)}
+          {guests.map((guest) => {
+            const isConfirmingDelete =
+              deleteConfirmationId === guest.id;
+
+            const isDeletingThisGuest =
+              deletingGuestId === guest.id;
+
+            return (
+              <Card key={guest.id}>
+                <article className="guest-card">
+                  <div className="guest-card__header">
+                    <div className="guest-card__avatar">
+                      {getGuestInitials(guest.guest_name)}
+                    </div>
+
+                    <div>
+                      <h2 className="guest-card__name">
+                        {guest.guest_name}
+                      </h2>
+
+                      <p className="guest-card__phone">
+                        {guest.guest_phone_number}
+                      </p>
+                    </div>
                   </div>
 
-                  <div>
-                    <h2 className="guest-card__name">{guest.guest_name}</h2>
-                    <p className="guest-card__phone">
-                      {guest.guest_phone_number}
-                    </p>
-                  </div>
-                </div>
+                  <div className="guest-card__details">
+                    <div>
+                      <span className="guest-card__label">
+                        ID Proof Type
+                      </span>
 
-                <div className="guest-card__details">
-                  <div>
-                    <span className="guest-card__label">ID Proof Type</span>
-                    <strong>{guest.id_proof_type}</strong>
+                      <strong>{guest.id_proof_type}</strong>
+                    </div>
+
+                    <div>
+                      <span className="guest-card__label">
+                        ID Proof Number
+                      </span>
+
+                      <strong>{guest.id_proof_number}</strong>
+                    </div>
+
+                    <div>
+                      <span className="guest-card__label">
+                        Address
+                      </span>
+
+                      <strong>{guest.guest_address}</strong>
+                    </div>
                   </div>
 
-                  <div>
-                    <span className="guest-card__label">ID Proof Number</span>
-                    <strong>{guest.id_proof_number}</strong>
+                  <div className="guest-card__actions">
+                    <Button
+                      type="button"
+                      onClick={() => handleStartEdit(guest)}
+                      disabled={
+                        isUpdating || deletingGuestId !== null
+                      }
+                    >
+                      Edit
+                    </Button>
+
+                    {!isConfirmingDelete && (
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          handleRequestDelete(guest.id)
+                        }
+                        disabled={
+                          isUpdating || deletingGuestId !== null
+                        }
+                        className="button-danger-outline"
+                      >
+                        Delete
+                      </Button>
+                    )}
                   </div>
 
-                  <div>
-                    <span className="guest-card__label">Address</span>
-                    <strong>{guest.guest_address}</strong>
-                  </div>
-                </div>
-              </article>
-            </Card>
-          ))}
+                  {isConfirmingDelete && (
+                    <div className="inline-delete-confirmation">
+                      <p>
+                        Delete{" "}
+                        <strong>{guest.guest_name}</strong>? This action
+                        cannot be undone.
+                      </p>
+
+                      <div className="inline-delete-confirmation__actions">
+                        <Button
+                          type="button"
+                          onClick={() => handleConfirmDelete(guest)}
+                          disabled={isDeletingThisGuest}
+                          className="button-danger"
+                        >
+                          {isDeletingThisGuest
+                            ? "Deleting..."
+                            : "Confirm Delete"}
+                        </Button>
+
+                        <Button
+                          type="button"
+                          onClick={handleCancelDelete}
+                          disabled={isDeletingThisGuest}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+
+                      {deleteError && (
+                        <ErrorMessage message={deleteError} />
+                      )}
+                    </div>
+                  )}
+                </article>
+              </Card>
+            );
+          })}
         </div>
       )}
     </section>

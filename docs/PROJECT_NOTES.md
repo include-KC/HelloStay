@@ -3368,6 +3368,151 @@ Using a modal form was rejected because it would add extra UI state, accessibili
 
 Guest creation now follows the established HelloStay frontend architecture: React manages the UI, the service layer manages API calls, and FastAPI remains the source of truth for guest data.
 
+---
+
+### Frontend AD 15: Guest Updates and Deletions Use Service-Layer Mutations with Server Refetching
+
+**Status:** Accepted
+**Date Recorded:** 2026-07-15
+**Milestone:** Frontend Milestone 15 — Guests Module Edit and Delete Foundation
+
+The HelloStay Guests module supports editing and deleting guest records through the existing frontend service layer while keeping FastAPI as the source of truth.
+
+**Decision:**
+
+Guest update and delete operations must be performed through `guestService.js` using the existing shared `apiClient.js`.
+
+The Guests page must not call backend endpoints directly. It should express user actions through service functions such as:
+
+* `updateGuest(guestId, guestData)`
+* `deleteGuest(guestId)`
+
+Guest updates use:
+
+* `PUT /guests/{guest_id}`
+
+Guest deletions use:
+
+* `DELETE /guests/{guest_id}`
+
+After a successful update or deletion, the frontend refetches the guest list from the backend instead of relying on optimistic updates or treating local React state as the permanent source of truth.
+
+Editing uses a separate editable copy of the selected guest. The original selected guest record and the controlled edit-form state remain separate so the frontend can pre-fill fields, detect changed values, cancel editing safely, and avoid directly mutating list data.
+
+Guest deletion requires an explicit inline confirmation before the destructive request is sent.
+
+**Why this decision was made:**
+
+FastAPI remains responsible for validation, database operations, uniqueness constraints, and guest persistence. Keeping all guest requests inside `guestService.js` preserves the established frontend architecture and prevents endpoint details from spreading across React components.
+
+Refetching after update and delete ensures that the UI reflects the backend’s confirmed state. It is simpler and safer than optimistic updates during the current stage of the project because it avoids rollback logic and local-state synchronization problems.
+
+Separate edit state makes the editing workflow easier to understand and maintain. It prevents the displayed guest list from being mutated while the user is typing and allows edit mode to be cancelled without affecting backend or list data.
+
+Inline delete confirmation was chosen instead of a modal because it is beginner-friendly, visually connected to the selected guest, and does not require premature modal infrastructure, focus management, keyboard handling, or overlay behavior.
+
+**Architecture boundaries:**
+
+* React renderer process manages guest forms, selected guest state, loading states, validation messages, confirmation UI, and user interaction.
+* `guestService.js` owns guest-related API operations and endpoint paths.
+* `apiClient.js` owns shared request configuration, response parsing, authentication headers, and normalized request errors.
+* FastAPI remains responsible for guest validation, updates, deletions, database persistence, and duplicate-field enforcement.
+* Electron main process and preload scripts do not contain guest CRUD logic.
+* Local storage is not used as the source of truth for guest records.
+
+**Update strategy:**
+
+The edit form is pre-filled from the selected guest record.
+
+Before submission:
+
+* Form values are trimmed.
+* Required-field validation is performed.
+* Edited values are compared with the original guest.
+* Only changed fields are included in the update payload.
+* A request is not sent when no values have changed.
+
+Frontend validation improves usability, but backend validation remains authoritative.
+
+**Delete strategy:**
+
+The first Delete action opens an inline confirmation state for the selected guest.
+
+The actual DELETE request is sent only after the user confirms the destructive action.
+
+During deletion:
+
+* The selected guest’s delete action shows a loading state.
+* Repeated delete submissions are disabled.
+* The confirmation remains visible if deletion fails.
+* Backend error messages are displayed when available.
+* The guest list is refetched after successful deletion.
+
+**Loading and error-state decision:**
+
+Create, update, and delete operations use separate loading and error states.
+
+This prevents one operation from incorrectly controlling unrelated UI and makes it clear which action is currently running or has failed.
+
+Examples include:
+
+* `isCreating`
+* `isUpdating`
+* `deletingGuestId`
+* `createError`
+* `updateError`
+* `deleteError`
+
+A guest ID is stored for delete loading instead of using only a general Boolean so the UI can identify the exact guest being deleted.
+
+**Affected files:**
+
+* `frontend/src/services/guestService.js`
+* `frontend/src/pages/GuestsPage.jsx`
+* Guest-related styles in the existing frontend stylesheet
+
+**Consequences:**
+
+**Positive consequences:**
+
+* Guest API logic remains centralized.
+* The backend continues to be the source of truth.
+* Editing is predictable and cancelable.
+* Destructive deletion requires confirmation.
+* Loading and error states are operation-specific.
+* The implementation remains small and understandable.
+* The approach follows the established Rooms module architecture without blindly copying its code.
+* The design can later support reusable guest components.
+
+**Trade-offs:**
+
+* Refetching performs an additional GET request after each mutation.
+* The edit form currently adds more state and handlers to `GuestsPage.jsx`.
+* Inline confirmation is simpler than a modal but may require later visual refinement.
+* Duplicate database errors depend on the quality of backend error responses.
+* Optimistic UI updates are intentionally postponed.
+
+**Rejected alternatives:**
+
+* Calling FastAPI directly from `GuestsPage.jsx`.
+* Moving guest update or delete logic into Electron.
+* Treating React state or local storage as permanent guest storage.
+* Deleting a guest immediately after the first click.
+* Introducing a modal system only for this milestone.
+* Optimistically updating the list before the backend confirms success.
+* Building guest stays, bookings, history, document upload, or OCR during this milestone.
+
+**Future implications:**
+
+A future Guests UX refinement milestone may extract reusable components such as:
+
+* `GuestForm.jsx`
+* `GuestCard.jsx`
+* `GuestList.jsx`
+
+A later backend-hardening milestone may provide consistent conflict responses for duplicate phone numbers and ID proof numbers.
+
+Guest stay history, booking integration, activity timelines, document handling, filtering, sorting, and pagination should remain separate future milestones.
 
 ---
 
@@ -7847,3 +7992,244 @@ This milestone intentionally did not add guest edit, guest delete, guest stay hi
 **Outcome:**
 
 The Guests module can now create new guest records through the backend, clear the form after successful creation, and refresh the guest list so the newly created guest appears in the UI.
+
+---
+
+### Frontend Milestone 15: Guests Module Edit and Delete Foundation
+
+**Status:** Completed
+**Date Completed:** 2026-07-15
+
+Milestone 15 extended the HelloStay Guests module with the foundational ability to update and delete existing guest records through the FastAPI backend.
+
+The implementation continued from the completed Guests module created in Milestones 13 and 14. The existing guest loading and creation behavior was preserved instead of rebuilding `GuestsPage.jsx` from scratch.
+
+**Completed work:**
+
+* Reviewed and extended the existing Milestone 14 Guests page.
+* Added `updateGuest(guestId, guestData)` to `guestService.js`.
+* Added `deleteGuest(guestId)` to `guestService.js`.
+* Integrated `PUT /guests/{guest_id}` through the shared API client.
+* Integrated `DELETE /guests/{guest_id}` through the shared API client.
+* Kept all guest-related HTTP operations inside `guestService.js`.
+* Added an Edit action to each displayed guest.
+* Added selected guest state for identifying the guest being edited.
+* Added separate controlled edit-form state.
+* Pre-filled the edit form using the selected guest’s current values.
+* Added edit-form change handling.
+* Added edit cancellation behavior.
+* Added frontend validation for all required guest fields.
+* Added normalization and trimming of edited guest data.
+* Added comparison between original and edited values.
+* Added partial update payload construction containing only changed fields.
+* Prevented unnecessary update requests when no values changed.
+* Added update loading state.
+* Added update error state.
+* Displayed backend update errors when available.
+* Refetched the guest list after a successful update.
+* Added a Delete action to each displayed guest.
+* Added beginner-friendly inline delete confirmation.
+* Added delete cancellation behavior.
+* Added per-guest deletion loading state.
+* Added delete error handling.
+* Refetched the guest list after successful deletion.
+* Closed edit mode when the currently edited guest was deleted.
+* Preserved the existing create-guest workflow.
+* Kept the UI aligned with the desktop-first HelloStay dashboard design.
+
+**Guest update flow:**
+
+The completed update workflow is:
+
+```text
+User selects Edit
+        ↓
+Selected guest is stored in editingGuest
+        ↓
+Current guest values are copied into editFormData
+        ↓
+User edits controlled inputs
+        ↓
+Frontend normalizes and validates the values
+        ↓
+Changed values are compared with the original guest
+        ↓
+PUT /guests/{guest_id} is sent
+        ↓
+FastAPI updates the database record
+        ↓
+Guests are refetched
+        ↓
+Edit mode closes
+```
+
+The original guest object and editable form state remain separate. This prevents direct mutation of the guest list and allows the user to cancel editing safely.
+
+**Guest delete flow:**
+
+The completed delete workflow is:
+
+```text
+User selects Delete
+        ↓
+Inline confirmation appears
+        ↓
+User confirms or cancels
+        ↓
+DELETE /guests/{guest_id} is sent after confirmation
+        ↓
+FastAPI deletes the database record
+        ↓
+Guests are refetched
+        ↓
+Confirmation state closes
+```
+
+Deletion is not performed from the first click because it is a destructive action.
+
+**Validation completed:**
+
+The edit form validates the following required fields:
+
+* `guest_name`
+* `guest_phone_number`
+* `guest_address`
+* `id_proof_type`
+* `id_proof_number`
+
+Whitespace is removed before validation and submission.
+
+Frontend validation provides immediate feedback, while FastAPI remains responsible for authoritative validation, uniqueness rules, and database operations.
+
+**State introduced or extended:**
+
+The Guests page now manages separate state for:
+
+* Loaded guest records
+* Initial loading
+* Guest-loading errors
+* Create form data
+* Create loading and errors
+* Selected editing guest
+* Edit form data
+* Edit validation errors
+* Update loading and errors
+* Active delete confirmation
+* Guest currently being deleted
+* Delete errors
+
+Separating these states prevents one operation from incorrectly controlling another operation’s UI.
+
+**Service-layer changes:**
+
+`guestService.js` now provides the complete guest CRUD foundation required so far:
+
+* `getGuests()`
+* `createGuest(guestData)`
+* `updateGuest(guestId, guestData)`
+* `deleteGuest(guestId)`
+
+The page does not contain hardcoded backend URLs or direct `fetch()` calls.
+
+**Frontend behavior verified:**
+
+The completed module supports:
+
+* Loading existing guests.
+* Creating new guests.
+* Opening edit mode.
+* Pre-filling current guest data.
+* Cancelling edit mode.
+* Validating edited data.
+* Updating one or more fields.
+* Detecting submissions with no changes.
+* Showing update progress.
+* Showing update failures.
+* Persisting updates after refresh.
+* Opening inline delete confirmation.
+* Cancelling deletion.
+* Confirming deletion.
+* Showing delete progress.
+* Showing delete failures.
+* Persisting deletion after refresh.
+
+**Architecture responsibilities preserved:**
+
+**React renderer process:**
+
+* Displays guest records.
+* Manages forms and controlled inputs.
+* Manages edit selection.
+* Manages loading and error UI.
+* Manages inline delete confirmation.
+* Calls guest service functions.
+
+**Service layer:**
+
+* Defines guest update and delete requests.
+* Hides endpoint and HTTP-method details from the page.
+* Uses the shared API client.
+
+**FastAPI backend:**
+
+* Finds guest records.
+* Validates update data.
+* Applies partial updates.
+* Enforces database constraints.
+* Commits updates and deletions.
+* Returns success or error responses.
+
+**Electron:**
+
+* No guest business logic was added to the Electron main process.
+* No guest API calls were added to preload scripts.
+* Electron continues to act only as the desktop shell.
+
+**Files changed:**
+
+* `frontend/src/services/guestService.js`
+* `frontend/src/pages/GuestsPage.jsx`
+* Existing stylesheet containing guest-related styles
+
+**Not included in this milestone:**
+
+* Guest stay history
+* Booking or stay integration
+* Guest activity timelines
+* ID document uploads
+* OCR
+* Pagination
+* Sorting
+* Advanced filtering
+* Optimistic updates
+* Modal infrastructure
+* Finance logic
+* History module logic
+* Electron backend startup
+* Desktop packaging
+
+**Result:**
+
+The Guests module now has a complete basic CRUD foundation:
+
+```text
+Create + Read + Update + Delete
+```
+
+Guest mutations pass through the established frontend service layer, are confirmed by the FastAPI backend, and are followed by a guest-list refetch. The implementation remains readable, beginner-friendly, and consistent with the architecture established in earlier HelloStay frontend milestones.
+
+**Suggested next milestone:**
+
+Milestone 16 should focus on Guests Module UX Refinement and Code Cleanup.
+
+Recommended areas include:
+
+* Reviewing the size and readability of `GuestsPage.jsx`.
+* Extracting guest-specific components only where they simplify the page.
+* Reusing a shared `GuestForm` for create and edit if the resulting prop design remains clear.
+* Improving action-button variants and destructive-action styling.
+* Improving field-level validation presentation.
+* Improving loading, empty, and mutation feedback.
+* Preserving the existing API behavior without adding guest stays or booking integration.
+
+---

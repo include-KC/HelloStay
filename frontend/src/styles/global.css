@@ -1121,3 +1121,53 @@ a {
   margin: 0;
   color: #667085;
 }
+
+.guest-edit-panel {
+  display: grid;
+  gap: 20px;
+}
+
+.guest-edit-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.guest-card__actions,
+.guest-form__actions,
+.inline-delete-confirmation__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.guest-card__actions {
+  margin-top: 18px;
+}
+
+.inline-delete-confirmation {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--danger-border, #f1aeb5);
+  border-radius: 10px;
+  background: var(--danger-surface, #fff5f5);
+}
+
+.inline-delete-confirmation p {
+  margin: 0;
+}
+
+.button-danger {
+  border-color: var(--danger-color, #b42318);
+  background: var(--danger-color, #b42318);
+  color: #ffffff;
+}
+
+.button-danger-outline {
+  border-color: var(--danger-color, #b42318);
+  background: transparent;
+  color: var(--danger-color, #b42318);
+}
