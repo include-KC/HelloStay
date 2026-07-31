@@ -3516,6 +3516,136 @@ Guest stay history, booking integration, activity timelines, document handling, 
 
 ---
 
+### Frontend AD 16 — Separate Blocking Load Errors from Non-Blocking Refresh Errors
+
+**Status:** Accepted
+
+**Context**
+
+The Guests module loads its initial guest collection using `GET /guests` and refreshes that collection after successful create, update, and delete operations.
+
+Previously, the Guests page used one general error state for both:
+
+* failure of the initial guest request
+* failure of a later guest-list refresh
+
+The guest list was rendered only when that general error state was empty. As a result, a failed refresh after a successful guest mutation could hide guest data that had already been loaded successfully.
+
+This created an inaccurate and unnecessarily disruptive user experience. A failed refresh does not mean that the previously loaded guest data has become unusable. It only means that the frontend could not retrieve the newest collection from the backend.
+
+**Decision**
+
+The Guests module will maintain separate collection-level error states:
+
+* `loadError` represents failure of the initial guest-list request.
+* `refreshError` represents failure of a later refresh after a successful mutation.
+
+`loadError` is treated as a blocking error because the frontend has not received a reliable guest collection.
+
+`refreshError` is treated as a non-blocking warning because the frontend may still display the previously loaded guest collection.
+
+The guest list and empty state will depend on the absence of `loadError`. They will not depend on the absence of `refreshError`.
+
+Create, update, and delete errors will continue to use their own operation-specific error states.
+
+**Resulting Behavior**
+
+When the initial `GET /guests` request fails:
+
+* the loading state ends
+* the backend connection error is displayed
+* the empty state is not displayed
+* the guest collection is not displayed because no reliable collection was loaded
+
+When a refresh after a successful mutation fails:
+
+* the successful mutation is not incorrectly reported as failed
+* a refresh warning is displayed
+* the existing guest collection remains visible
+* the interface communicates that the visible data may not contain the newest backend changes
+
+When a later refresh succeeds:
+
+* the guest collection is replaced with the latest backend response
+* `loadError` is cleared
+* `refreshError` is cleared
+
+**Rationale**
+
+This approach improves resilience and makes the interface accurately represent the operation that failed.
+
+It follows the principle that previously loaded, usable data should remain visible during a recoverable network failure.
+
+It also improves code readability because each error state now has one clear responsibility.
+
+**Alternatives Considered**
+
+**One shared error state**
+
+This approach was rejected because it combined unrelated failures and caused non-blocking refresh failures to hide existing data.
+
+**Clear the guest collection when a refresh fails**
+
+This approach was rejected because the previous collection may still be useful. Clearing it would unnecessarily reduce usability.
+
+**Store every error inside one configuration object**
+
+This approach was not selected because separate state variables are currently more explicit and beginner-friendly at the Guests module’s present complexity.
+
+**Consequences**
+
+Positive consequences:
+
+* Existing guest data remains visible during refresh failures.
+* Error messages accurately distinguish failed mutations from failed refreshes.
+* Collection rendering conditions are easier to understand.
+* Future retry behavior can be added without redesigning the error model.
+* Create, update, delete, load, and refresh failures remain isolated.
+
+Trade-offs:
+
+* The component contains one additional state variable.
+* The interface may temporarily display stale guest data after a failed refresh.
+* The warning must clearly communicate that the newest collection could not be retrieved.
+
+**Responsibility Boundaries**
+
+React renderer:
+
+* owns `loadError` and `refreshError`
+* decides which feedback state is rendered
+* preserves the previously loaded guest collection
+
+Guest service and API client:
+
+* perform guest HTTP requests
+* throw meaningful request and network errors
+
+FastAPI:
+
+* remains the source of truth for guest data
+* performs validation and database operations
+
+Electron main process:
+
+* contains no guest API or guest UI logic
+
+**Verification**
+
+The decision was verified by:
+
+* loading guests successfully with FastAPI running
+* stopping FastAPI and confirming that the initial connection failure appears as a blocking load error
+* confirming that the empty state is not shown when the backend is unavailable
+* temporarily simulating a failure inside the post-mutation refresh function
+* successfully updating a guest before the simulated refresh failure
+* confirming that the refresh warning appears
+* confirming that existing guest cards remain visible
+* removing the temporary failure simulation after testing
+
+
+---
+
 ## Backend Milestone History
 
 ### Frontend Rebuild Note
@@ -8231,5 +8361,198 @@ Recommended areas include:
 * Improving field-level validation presentation.
 * Improving loading, empty, and mutation feedback.
 * Preserving the existing API behavior without adding guest stays or booking integration.
+
+---
+
+### Frontend Milestone 16 — Guests Module UX Refinement and Code Cleanup Progress
+
+**Status:** In Progress
+
+**Milestone Objective**
+
+Improve the completed Guests module while preserving all existing guest CRUD behavior.
+
+The milestone focuses on code clarity, operation-specific state management, UI consistency, validation feedback, accessibility, and safe refactoring.
+
+It does not introduce GuestStay integration, bookings, stay history, pagination, file uploads, OCR, or new backend endpoints.
+
+**Work Completed**
+
+The current Guests module and related frontend files were reviewed, including:
+
+* `GuestsPage.jsx`
+* `guestService.js`
+* `apiClient.js`
+* shared `Input`, `Button`, `Card`, and `ErrorMessage` components
+* guest-related styles in `global.css`
+
+The review confirmed that:
+
+* guest API operations remain centralized in `guestService.js`
+* the service uses the correct guest endpoints
+* creation sends all required guest fields
+* updates send only changed fields
+* guest cards use stable database IDs as React keys
+* edit cancellation safely clears edit state
+* deletion requires explicit confirmation
+* create, update, and delete operations use separate loading and error states
+
+**Collection Error-State Refinement**
+
+The previous general guest-list error state was divided into:
+
+* `loadError`
+* `refreshError`
+
+`loadError` now represents failure of the initial `GET /guests` request.
+
+`refreshError` now represents failure of a later guest-list refresh after a successful create, update, or delete operation.
+
+The guest-list rendering condition now depends on `!loadError` and does not depend on `!refreshError`.
+
+This ensures that a failed refresh does not hide previously loaded guest records.
+
+**Create Behavior**
+
+Before creating a guest:
+
+* the create loading state begins
+* the previous create error is cleared
+* an old refresh warning is cleared
+
+After successful creation:
+
+* the create form is cleared
+* the guest collection is refreshed
+
+When creation succeeds but refreshing fails:
+
+* creation is still treated as successful
+* a non-blocking refresh warning is displayed
+* the existing guest collection remains visible
+
+**Update Behavior**
+
+Before updating a guest:
+
+* the update loading state begins
+* update errors are cleared
+* edit validation errors are cleared
+* an old refresh warning is cleared
+
+After successful update:
+
+* edit mode closes
+* edit-form state is cleared
+* the guest collection is refreshed
+
+When updating succeeds but refreshing fails:
+
+* the update is not incorrectly reported as failed
+* a non-blocking refresh warning is displayed
+* the existing guest collection remains visible
+
+**Delete Behavior**
+
+Before deleting a guest:
+
+* the active guest ID is stored
+* delete errors are cleared
+* an old refresh warning is cleared
+
+After successful deletion:
+
+* delete confirmation closes
+* matching edit state is cleared when necessary
+* the guest collection is refreshed
+
+When deletion succeeds but refreshing fails:
+
+* deletion remains successful
+* a non-blocking refresh warning is displayed
+* the previously loaded collection remains visible until a later successful refresh
+
+**Initial-Load Behavior**
+
+When FastAPI is not running:
+
+* the API client produces a readable backend connection message
+* the loading state ends
+* the message is stored in `loadError`
+* the blocking load error is displayed
+* the empty state is not displayed
+
+When FastAPI is running:
+
+* `GET /guests` succeeds
+* guests are displayed normally
+* collection-level errors are cleared
+
+**Verification Completed**
+
+The following cases have been tested successfully:
+
+* backend unavailable during initial loading
+* backend available during initial loading
+* correct rendering of the blocking load error
+* correct prevention of an inaccurate empty state during backend failure
+* successful guest update before a simulated refresh failure
+* correct display of a non-blocking refresh warning
+* preservation of existing guest cards during the refresh warning
+* removal of temporary refresh-failure simulation code
+
+**Architecture Boundaries Preserved**
+
+React continues to own:
+
+* guest page rendering
+* controlled form state
+* loading states
+* validation feedback
+* edit selection
+* deletion confirmation
+* collection error presentation
+
+`guestService.js` continues to own:
+
+* `GET /guests`
+* `POST /guests`
+* `PUT /guests/{guest_id}`
+* `DELETE /guests/{guest_id}`
+
+FastAPI remains responsible for:
+
+* guest validation
+* guest business rules
+* database operations
+* API contracts
+* persistent guest data
+
+Electron main and preload processes contain no guest CRUD logic.
+
+**Remaining Milestone 16 Work**
+
+Before Milestone 16 can be marked fully complete, the following planned work remains:
+
+* add field-specific validation to the create form
+* make create and edit validation presentation consistent
+* consider extracting the duplicated guest form into `GuestForm.jsx`
+* consider extracting substantial guest-card markup into `GuestCard.jsx`
+* improve create, edit, cancel, and delete button hierarchy
+* add or correct missing guest-specific CSS selectors
+* clean directly related duplicate CSS without rewriting unrelated styles
+* improve operation-specific control disabling
+* improve shared input and error accessibility
+* verify duplicate phone-number feedback
+* verify duplicate ID-proof-number feedback
+* complete the full create, edit, delete, browser, Electron, route-regression, and ESLint verification matrix
+
+**Current Outcome**
+
+The Guests module now handles collection failures more accurately and resiliently.
+
+Initial loading failures remain blocking, while later refresh failures preserve existing guest data and provide clear non-blocking feedback.
+
+This completes the collection error-state refinement portion of Frontend Milestone 16.
 
 ---

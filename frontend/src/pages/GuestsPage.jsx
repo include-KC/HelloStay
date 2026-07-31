@@ -108,7 +108,8 @@ async function fetchGuestsFromBackend() {
 function GuestsPage() {
   const [guests, setGuests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [refreshError, setRefreshError] = useState("");
 
   const [guestForm, setGuestForm] = useState(EMPTY_GUEST_FORM);
   const [createError, setCreateError] = useState("");
@@ -136,13 +137,14 @@ function GuestsPage() {
         }
 
         setGuests(guestsData);
+        setLoadError("");
       } catch (requestError) {
         if (shouldIgnoreResult) {
           return;
         }
 
         setGuests([]);
-        setError(
+        setLoadError(
           requestError.message ||
             "Unable to load guests. Please try again.",
         );
@@ -164,7 +166,8 @@ function GuestsPage() {
     const guestsData = await fetchGuestsFromBackend();
 
     setGuests(guestsData);
-    setError("");
+    setLoadError("");
+    setRefreshError("");
   }
 
   function handleCreateInputChange(event) {
@@ -192,6 +195,7 @@ function GuestsPage() {
     try {
       setIsCreating(true);
       setCreateError("");
+      setRefreshError("");
 
       await createGuest(normalizedGuestData);
 
@@ -199,10 +203,11 @@ function GuestsPage() {
 
       try {
         await refreshGuests();
-      } catch (refreshError) {
-        setError(
-          refreshError.message ||
-            "The guest was created, but the guest list could not be refreshed.",
+      } catch (refreshRequestError) {
+        setRefreshError(
+          `The guest was created successfully, but the guest list could not be refreshed. ${
+            refreshRequestError.message || "Please try again."
+          }`,
         );
       }
     } catch (requestError) {
@@ -290,6 +295,7 @@ function GuestsPage() {
       setIsUpdating(true);
       setUpdateError("");
       setEditValidationErrors({});
+      setRefreshError("");
 
       await updateGuest(editingGuest.id, changedGuestData);
 
@@ -298,10 +304,11 @@ function GuestsPage() {
 
       try {
         await refreshGuests();
-      } catch (refreshError) {
-        setError(
-          refreshError.message ||
-            "The guest was updated, but the guest list could not be refreshed.",
+      } catch (refreshRequestError) {
+        setRefreshError(
+          `The guest was updated successfully, but the guest list could not be refreshed. ${
+            refreshRequestError.message || "Please try again."
+          }`,
         );
       }
     } catch (requestError) {
@@ -332,6 +339,7 @@ function GuestsPage() {
     try {
       setDeletingGuestId(guest.id);
       setDeleteError("");
+      setRefreshError("");
 
       await deleteGuest(guest.id);
 
@@ -346,10 +354,11 @@ function GuestsPage() {
 
       try {
         await refreshGuests();
-      } catch (refreshError) {
-        setError(
-          refreshError.message ||
-            "The guest was deleted, but the guest list could not be refreshed.",
+      } catch (refreshRequestError) {
+        setRefreshError(
+          `The guest was deleted successfully, but the guest list could not be refreshed. ${
+            refreshRequestError.message || "Please try again."
+          }`,
         );
       }
     } catch (requestError) {
@@ -583,9 +592,15 @@ function GuestsPage() {
 
       {isLoading && <Loading message="Loading guests..." />}
 
-      {!isLoading && error && <ErrorMessage message={error} />}
+      {!isLoading && loadError && (
+        <ErrorMessage message = {loadError} />
+      )}
 
-      {!isLoading && !error && guests.length === 0 && (
+      {!isLoading && refreshError && (
+        <ErrorMessage message={refreshError} />
+      )}
+
+      {!isLoading && !loadError && guests.length === 0 && (
         <Card>
           <div className="empty-state">
             <h2>No guests found</h2>
@@ -598,7 +613,7 @@ function GuestsPage() {
         </Card>
       )}
 
-      {!isLoading && !error && guests.length > 0 && (
+      {!isLoading && !loadError && guests.length > 0 && (
         <div className="guest-grid">
           {guests.map((guest) => {
             const isConfirmingDelete =
