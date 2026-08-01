@@ -3643,6 +3643,324 @@ The decision was verified by:
 * confirming that existing guest cards remain visible
 * removing the temporary failure simulation after testing
 
+---
+
+### Frontend AD 17 — Keep Stay Retrieval Behind a Dedicated Service and Model the Stays Page as a Read-Only Transactional View
+
+#### Status
+
+Accepted
+
+#### Context
+
+HelloStay required its first frontend view of operational Stay records.
+
+The backend already exposed Stay data through:
+
+`GET /stay`
+
+Each Stay response contains:
+
+* `stay_id`
+* `room_id`
+* `price_per_night`
+* `check_in_datetime`
+* `check_out_datetime`
+* `stay_status`
+
+Stay records differ from Room and Guest records.
+
+Rooms and Guests primarily represent master or identity data. A Stay represents an operational transaction that records room occupancy over time.
+
+The backend also stores guest relationships separately through the GuestStay junction model and `/guest-stays` API. Guest relationships are therefore not part of the basic Stay response.
+
+The frontend needed a focused, reliable read-only foundation before introducing creation, lifecycle transitions, guest assignment, billing, or other transactional complexity.
+
+#### Decision
+
+HelloStay will use a dedicated `stayService.js` file as the frontend HTTP boundary for Stay-related API operations.
+
+For the read-only foundation:
+
+* `StaysPage.jsx` owns page-level orchestration.
+* `stayService.js` owns the Stay HTTP request function.
+* `apiClient.js` continues to own shared URL construction, request configuration, JSON parsing, network failures, and backend-error handling.
+* `getStays()` calls `GET /stay`.
+* `StaysPage.jsx` must not call `fetch()` directly.
+* Electron main and preload processes are not involved in normal Stay API communication.
+* Stay records remain backend-driven.
+* The page stores raw Stay records rather than formatted copies.
+* Display formatting is derived during rendering through small pure helper functions.
+* Backend response values are treated as untrusted input and validated before rendering.
+* The page explicitly models loading, error, empty, and success states.
+* The backend-owned `stay_status` value remains the displayed source of truth.
+* `check_out_datetime: null` is treated as a valid active-Stay condition.
+* `price_per_night` is treated as a historical snapshot and displayed from the Stay record itself.
+* The initial implementation displays `room_id` safely rather than introducing a second Room request before the core Stay list works.
+* Guest relationships remain deferred to a dedicated GuestStay integration milestone.
+
+#### Selected Architecture
+
+```text
+React renderer
+    │
+    │ Calls getStays()
+    ▼
+stayService.js
+    │
+    │ Calls apiRequest("/stay")
+    ▼
+apiClient.js
+    │
+    │ Sends HTTP GET
+    ▼
+FastAPI
+    │
+    ▼
+Stay records from backend persistence
+```
+
+#### Responsibility Boundaries
+
+##### FastAPI
+
+FastAPI remains responsible for:
+
+* Stay validation
+* Stay persistence
+* Stay business rules
+* Stay status values
+* Check-in and checkout timestamps
+* Historical nightly-price snapshots
+* Room references
+* API response contracts
+
+##### `apiClient.js`
+
+The shared API client remains responsible for:
+
+* API base URL handling
+* URL construction
+* Request headers
+* JSON request serialization
+* Response parsing
+* HTTP error conversion
+* Network error conversion
+* Shared API behavior
+
+##### `stayService.js`
+
+The Stay service is responsible for:
+
+* Exposing frontend functions related to the Stay API
+* Calling the correct singular backend endpoint
+* Preserving a clear domain-specific service boundary
+
+For this milestone, it contains only:
+
+```js
+getStays()
+```
+
+##### `StaysPage.jsx`
+
+The Stays page is responsible for:
+
+* Starting the initial request
+* Managing page-level loading state
+* Managing the initial error message
+* Storing raw Stay records
+* Validating that the response is an array
+* Preventing obsolete asynchronous results from updating state
+* Selecting loading, error, empty, or success UI
+* Rendering the read-only Stay table
+* Deriving human-readable display values
+* Applying presentation classes to known status values
+
+##### Electron
+
+Electron remains responsible for:
+
+* Desktop application lifecycle
+* Native window management
+* Desktop startup behavior
+* Future operating-system integrations
+
+Electron will not fetch Stay records.
+
+##### Preload and IPC
+
+Preload and IPC are not required for standard renderer-to-FastAPI HTTP communication.
+
+They will only be introduced where secure desktop capabilities require communication between the renderer and Electron main process.
+
+#### Reasons
+
+##### Preserve the service boundary
+
+Keeping Stay requests in `stayService.js` prevents page components from becoming tightly coupled to HTTP implementation details.
+
+It also keeps the frontend consistent with the existing Room and Guest service patterns.
+
+##### Keep FastAPI as the source of truth
+
+React displays Stay records but does not own Stay business rules, status transitions, billing logic, or persistence.
+
+##### Establish read-only behavior first
+
+Stay workflows are more transactional than Room and Guest CRUD.
+
+Read-only integration allows the team to verify:
+
+* API shape
+* Date handling
+* Null checkout behavior
+* Status values
+* Historical rate display
+* Table usability
+* Error handling
+
+before introducing mutations or lifecycle actions.
+
+##### Preserve raw backend data
+
+Formatted dates and prices are presentation values.
+
+They should not be stored as duplicate state because they can be derived from the raw response whenever React renders.
+
+##### Treat nullable checkout as meaningful
+
+An active Stay may not yet have a checkout timestamp.
+
+The frontend therefore renders a clear fallback instead of treating the value as invalid.
+
+##### Avoid incorrect Guest assumptions
+
+A Stay does not directly provide Guest data.
+
+The frontend must not guess guest relationships from Room IDs or other unrelated values.
+
+##### Avoid premature Room lookup complexity
+
+The core contract already provides `room_id`.
+
+Displaying a safe room reference allows the primary Stay integration to be verified before adding an optional secondary Room request.
+
+##### Avoid unnecessary global state
+
+The read-only Stay request is local to one page.
+
+Context, Redux, Zustand, `useReducer`, or a custom fetching abstraction would add complexity without solving a current problem.
+
+#### Consequences
+
+##### Positive Consequences
+
+* Stay API communication has a clear location.
+* `StaysPage.jsx` remains independent of low-level `fetch()` details.
+* Shared network and backend errors remain consistent.
+* The initial implementation is easy to inspect and debug.
+* Loading, error, empty, and success behavior is explicit.
+* API response validation prevents `.map()` failures on invalid data.
+* Raw backend values remain unchanged.
+* Status meaning remains backend-owned.
+* Null checkout timestamps are handled safely.
+* Historical price values are preserved.
+* The implementation remains compatible with the Electron security model.
+* Future Stay mutations can be added to the same service boundary.
+* GuestStay integration can be introduced separately without rewriting the basic Stay list.
+
+##### Trade-offs
+
+* The first table displays Room IDs rather than room numbers.
+* Guest names are not visible.
+* The page does not yet support lifecycle actions.
+* Some table and formatting logic remains inside `StaysPage.jsx`.
+* The effect cleanup guard ignores obsolete results but does not cancel the underlying HTTP request.
+* React Strict Mode may still cause duplicate development requests.
+
+These trade-offs are acceptable for a focused read-only foundation.
+
+#### Alternatives Considered
+
+##### Call `fetch()` directly in `StaysPage.jsx`
+
+Rejected because it would bypass the shared API client and duplicate URL, parsing, and error-handling logic.
+
+##### Fetch Stays through Electron IPC
+
+Rejected because normal FastAPI HTTP communication belongs in the React renderer. Electron IPC is for approved desktop capabilities, not ordinary backend requests.
+
+##### Introduce a Stays Context
+
+Rejected because the Stay list is currently used by one page and does not require application-wide shared state.
+
+##### Add Redux, Zustand, or another state library
+
+Rejected because three local state values are sufficient for the current request.
+
+##### Create a generic CRUD hook
+
+Rejected because this milestone is read-only and a generic CRUD abstraction would hide important data-flow concepts while introducing unnecessary complexity.
+
+##### Load Rooms and Guests immediately
+
+Rejected because it would add multiple APIs, more error states, relationship mapping, and unnecessary dependencies before the basic Stay contract was verified.
+
+##### Mutate Stay objects with formatted fields
+
+Rejected because raw API records and display formatting should remain separate.
+
+##### Reuse Room-status CSS semantics
+
+Rejected because Room status and Stay status represent different domain concepts, even when they are operationally related.
+
+##### Build a future Bookings module
+
+Rejected because the current backend implements Stay records rather than a complete future-reservation system.
+
+#### Implementation Rules Established
+
+* Use the frontend term **Stays**.
+* Use `/dashboard/stays` for protected navigation.
+* Use `/stay` for backend API communication.
+* Keep Stay HTTP functions in `stayService.js`.
+* Use `apiClient.js` for shared request handling.
+* Keep request orchestration in `StaysPage.jsx`.
+* Verify that the response is an array.
+* Keep `stays` state as an array.
+* Use `stay_id` as the React key.
+* Treat `check_out_datetime` as nullable.
+* Display backend `stay_status` values without inventing new statuses.
+* Keep formatted dates and prices out of React state.
+* Do not hardcode a currency symbol until currency configuration exists.
+* Do not infer Guest relationships.
+* Do not infer Room status from Stay status.
+* Do not calculate duration, billing, or total charges in the read-only foundation.
+* Do not add Stay mutations until a later milestone.
+* Do not involve Electron main or preload in ordinary Stay HTTP requests.
+
+#### Future Reconsideration Triggers
+
+This decision may be revisited when:
+
+* Stay creation is implemented.
+* Check-in and checkout lifecycle actions are introduced.
+* GuestStay relationships are integrated.
+* Room numbers are displayed through a Room lookup.
+* Multiple Stay screens require shared state.
+* Search, filtering, sorting, or pagination is added.
+* Stay table markup becomes large enough to justify extraction.
+* Request cancellation becomes necessary.
+* Currency configuration is introduced.
+* Billing and payment modules consume Stay data.
+
+#### Final Decision
+
+HelloStay will treat the Stays module as a backend-driven transactional feature.
+
+The initial frontend implementation will remain read-only, use a dedicated Stay service, preserve raw backend data, derive display formatting during rendering, and keep Guest, Room-lookup, lifecycle, and billing concerns outside the first Stay milestone.
+
 
 ---
 
@@ -8554,5 +8872,227 @@ The Guests module now handles collection failures more accurately and resilientl
 Initial loading failures remain blocking, while later refresh failures preserve existing guest data and provide clear non-blocking feedback.
 
 This completes the collection error-state refinement portion of Frontend Milestone 16.
+
+---
+
+### Frontend Milestone 17 — Stays Module Read-Only Foundation
+
+**Status:** Completed
+
+#### Objective
+
+Introduce the first functional read-only frontend view for hotel Stay records and connect the protected Stays page to the existing FastAPI backend.
+
+#### Completed Work
+
+* Confirmed that the project already used consistent Stay terminology.
+
+* Confirmed that no duplicate `BookingsPage.jsx` or `/bookings` route existed.
+
+* Confirmed that the sidebar already linked to:
+
+  `/dashboard/stays`
+
+* Confirmed that `StaysPage.jsx` was registered as a protected nested dashboard route.
+
+* Created `src/services/stayService.js`.
+
+* Added `getStays()` to the Stay service.
+
+* Connected `getStays()` to the backend endpoint:
+
+  `GET /stay`
+
+* Kept all Stay-related HTTP communication inside `stayService.js`.
+
+* Reused the existing centralized `apiClient.js`.
+
+* Did not call `fetch()` directly from `StaysPage.jsx`.
+
+* Replaced the static Stays placeholder with a functional read-only page.
+
+* Added page-level state for:
+
+  * Stay records
+  * Initial loading state
+  * Initial loading error
+
+* Used `useEffect` to request Stay records when the page mounts.
+
+* Kept the `useEffect` callback synchronous and declared the asynchronous loading function inside it.
+
+* Added a cleanup guard to prevent obsolete asynchronous results from updating state after the component unmounts.
+
+* Verified that the backend response is an array before storing or rendering it.
+
+* Added explicit rendering for:
+
+  * Loading state
+  * Backend or network error state
+  * Empty Stay list
+  * Successful Stay list
+
+* Displayed Stay records in a desktop-oriented table.
+
+* Used `stay_id` as the React list key.
+
+* Displayed:
+
+  * Stay ID
+  * Room reference
+  * Stay status
+  * Check-in date and time
+  * Check-out date and time
+  * Historical price per night
+
+* Displayed `Room ID: <id>` as the safe room-reference fallback.
+
+* Displayed `Not checked out` when `check_out_datetime` is null.
+
+* Added safe handling for missing or invalid date values.
+
+* Formatted dates and times for human-readable display without changing the raw backend data.
+
+* Formatted price values without introducing a hardcoded currency symbol.
+
+* Displayed the backend-owned `stay_status` value directly.
+
+* Added restrained visual badges for:
+
+  * Checked In
+  * Checked Out
+
+* Kept unknown backend status values readable with the default badge appearance.
+
+* Added horizontal overflow protection for the Stay table.
+
+* Added a minimum table width to preserve readable operational columns.
+
+* Reused the existing Card, Loading, ErrorMessage, empty-state, and status-badge UI foundations.
+
+* Added only the Stay-specific CSS required for the read-only table.
+
+* Verified the page in the browser and Electron desktop shell.
+
+* Confirmed that existing Rooms, Guests, authentication, logout, and protected routing behavior remained unaffected.
+
+#### Data Flow
+
+```text
+StaysPage
+    ↓
+getStays()
+    ↓
+stayService.js
+    ↓
+apiRequest("/stay")
+    ↓
+FastAPI GET /stay
+    ↓
+Stay records
+    ↓
+Loading / Error / Empty / Success UI
+```
+
+#### Files Created
+
+```text
+frontend/src/services/stayService.js
+```
+
+#### Files Updated
+
+```text
+frontend/src/pages/StaysPage.jsx
+frontend/src/styles/global.css
+```
+
+The existing route and layout files were inspected but did not require changes:
+
+```text
+frontend/src/routes/AppRoutes.jsx
+frontend/src/layouts/DashboardLayout.jsx
+```
+
+#### Important Technical Concepts Practised
+
+* Master data versus transactional data
+* Stay records as operational hotel transactions
+* Historical nightly-price snapshots
+* Foreign-key references through `room_id`
+* Nullable checkout timestamps for active Stays
+* Service-layer boundaries
+* React `useState`
+* React `useEffect`
+* Asynchronous request handling
+* Effect cleanup and obsolete-result protection
+* Loading, error, empty, and success states
+* Conditional rendering
+* List rendering with stable keys
+* API-response validation
+* Null-safe rendering
+* JavaScript Date parsing
+* `Intl.DateTimeFormat`
+* `Intl.NumberFormat`
+* Raw values versus formatted display values
+* Derived values instead of unnecessary state
+* Status-to-CSS-class mapping
+* Accessible semantic tables
+* Responsive table overflow inside Electron
+
+#### Verification Completed
+
+* Confirmed the Stays route is protected.
+* Confirmed sidebar navigation opens `/dashboard/stays`.
+* Confirmed the Stays page renders inside `DashboardLayout`.
+* Verified `GET /stay` through the backend.
+* Verified the loading state.
+* Verified the backend-unavailable error state.
+* Verified an empty Stay response.
+* Verified an active Stay with a null checkout timestamp.
+* Verified a checked-out Stay.
+* Verified multiple Stay records.
+* Verified status badge rendering.
+* Verified human-readable date and time formatting.
+* Verified price formatting.
+* Verified non-array response protection.
+* Verified table horizontal scrolling.
+* Verified the page in the browser.
+* Verified the page inside Electron.
+* Confirmed Rooms still works.
+* Confirmed Guests still works.
+* Confirmed login, logout, and protected routing still work.
+* Confirmed ESLint and regression checks were completed successfully.
+
+#### Deliberately Deferred
+
+The following features were intentionally excluded from Milestone 17:
+
+* Creating Stay records
+* Updating Stay records
+* Deleting Stay records
+* Check-in actions
+* Checkout actions
+* Stay lifecycle transitions
+* GuestStay API integration
+* Guest assignment
+* Primary-guest selection
+* Guest-name lookup
+* Room-number lookup enhancement
+* Stay duration calculation
+* Billing or total-charge calculation
+* Payment tracking
+* Room-availability calculation
+* Booking conflict validation
+* Automatic Room-status changes
+* Search, sorting, filtering, and pagination
+* A future reservation or Bookings module
+* Electron IPC for normal backend requests
+* Electron-controlled FastAPI startup
+* Desktop packaging
+
+#### Milestone Result
+
+HelloStay now has its first backend-driven read-only view of operational Stay records. The Stays page follows the same service-boundary and request-state principles established by the Rooms and Guests modules while preserving the distinction between master data and transactional hotel data.
 
 ---
