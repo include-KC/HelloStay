@@ -4191,6 +4191,295 @@ The Stays module follows this principle:
 
 This decision keeps the Create Stay workflow aligned with the overall HelloStay frontend architecture.
 
+---
+
+### Frontend AD 19 — Stays Module Mutation State and CRUD Interaction
+
+#### Decision
+
+The Stays module will implement create, update, and delete operations through dedicated UI state, event handlers, validation, and service-layer functions while keeping the FastAPI backend as the source of truth for business rules and data persistence.
+
+Each mutation workflow will have its own loading, error, and interaction state where necessary.
+
+#### Context
+
+The Stays module initially provided read-only functionality and was subsequently extended with stay creation.
+
+Milestone 19 introduced edit and delete functionality.
+
+As mutation functionality increases, the page needs to distinguish between different operations rather than treating all requests as one generic loading state.
+
+For example:
+
+* Creating a stay should not be confused with updating a stay.
+* Updating a stay should not use the delete operation's loading state.
+* A delete confirmation should not immediately perform the API request.
+* An API failure should be displayed in the appropriate part of the UI.
+
+#### Decision Details
+
+The Stays page will use operation-specific state.
+
+Examples include:
+
+```text
+isSubmitting
+isUpdating
+isDeleting
+```
+
+These states represent different asynchronous operations.
+
+The selected records are also maintained independently:
+
+```text
+editingStay
+deletingStay
+```
+
+This allows the UI to know which stay is currently being edited or deleted.
+
+#### Edit State Design
+
+Editing a stay requires separate state from the original stay collection.
+
+The selected stay is stored separately from the edit form:
+
+```text
+editingStay
+editStayForm
+editFormErrors
+editFormError
+isUpdating
+```
+
+This separation allows the user to modify form values without immediately changing the stay displayed in the main collection.
+
+The original stay object therefore remains unchanged until the backend confirms the update.
+
+#### Delete State Design
+
+Deletion follows a confirmation-first approach.
+
+The frontend first records the selected stay:
+
+```text
+deletingStay
+```
+
+The user is then shown a confirmation interface.
+
+Only after explicit confirmation should the frontend perform the delete request.
+
+The deletion operation also maintains:
+
+```text
+isDeleting
+deleteError
+```
+
+This prevents accidental deletion and provides appropriate feedback while the request is running.
+
+#### Service Layer Responsibility
+
+The Stays page does not perform HTTP requests directly.
+
+API communication is delegated to `stayService.js`.
+
+The service layer exposes:
+
+```text
+getStays()
+createStay(stayData)
+updateStay(stayId, stayData)
+deleteStay(stayId)
+```
+
+These functions use the shared `apiClient.js`.
+
+The resulting responsibility chain is:
+
+```text
+StaysPage
+    ↓
+stayService
+    ↓
+apiClient
+    ↓
+FastAPI
+```
+
+#### Backend as Source of Truth
+
+The frontend performs basic validation for user experience, but backend validation remains authoritative.
+
+The frontend must not duplicate hotel business rules unnecessarily.
+
+For example, the frontend may verify that a required field has been entered, while the backend remains responsible for determining whether the requested stay modification is actually valid according to hotel business rules.
+
+#### Update Contract
+
+The frontend follows the existing backend `StayUpdate` contract.
+
+The backend defines the update fields as optional:
+
+```text
+room_id
+price_per_night
+check_in_datetime
+check_out_datetime
+stay_status
+```
+
+The current frontend edit workflow uses the fields exposed by the milestone's edit UI:
+
+```text
+room_id
+price_per_night
+check_in_datetime
+```
+
+The frontend should not introduce unsupported assumptions about backend update behavior.
+
+#### Refresh After Mutation
+
+After a successful create, update, or delete operation, the Stays page refreshes the stay collection from the backend.
+
+The preferred flow is:
+
+```text
+Mutation
+   ↓
+Backend confirms success
+   ↓
+GET /stay
+   ↓
+Update React state
+   ↓
+Render current data
+```
+
+This avoids treating the frontend's local representation as the authoritative version of the database.
+
+#### Error Handling Decision
+
+Mutation errors should remain visible to the user.
+
+The frontend should:
+
+1. Start the appropriate loading state.
+2. Perform the service request.
+3. Handle successful completion.
+4. Refresh the relevant data.
+5. Display success feedback when appropriate.
+6. Catch request failures.
+7. Display a useful error message.
+8. Reset the operation's loading state.
+
+This creates predictable asynchronous behavior.
+
+#### Duplicate Submission Prevention
+
+Mutation controls should be disabled while their corresponding request is running.
+
+For example:
+
+```text
+isSubmitting → Create button
+isUpdating   → Edit controls
+isDeleting   → Delete confirmation controls
+```
+
+This reduces accidental duplicate API requests caused by repeated clicks.
+
+#### UI Responsibility
+
+The React page is responsible for:
+
+* Rendering forms.
+* Rendering confirmation UI.
+* Managing component state.
+* Handling user events.
+* Performing client-side validation.
+* Showing loading feedback.
+* Showing success feedback.
+* Showing request errors.
+
+It is not responsible for:
+
+* Database operations.
+* Hotel business rules.
+* Authentication decisions.
+* Authorization decisions.
+* Backend data validation.
+* Persistence.
+
+#### Consequences
+
+##### Benefits
+
+* Clear separation of responsibilities.
+* Easier debugging.
+* Easier testing of individual workflows.
+* Better user feedback.
+* Reduced accidental duplicate requests.
+* Cleaner integration with the existing service layer.
+* Backend remains the single source of truth.
+* Future mutation workflows can follow the same pattern.
+
+##### Trade-offs
+
+The Stays page now contains more state and event handlers.
+
+This is acceptable at the current module size, but continued growth could eventually justify extracting smaller components or dedicated hooks.
+
+Such refactoring should be performed when complexity actually requires it rather than introducing unnecessary abstraction prematurely.
+
+#### Alternatives Considered
+
+##### Single Generic Loading State
+
+A single `isLoading` state could represent every operation.
+
+**Rejected** because loading the page, creating a stay, updating a stay, and deleting a stay are different operations and should provide independent UI feedback.
+
+##### Updating Local State Directly After Mutation
+
+The frontend could manually modify the existing `stays` array after a successful mutation.
+
+**Not selected as the primary approach** because refreshing from the backend keeps the frontend synchronized with the backend's authoritative representation.
+
+##### Direct API Calls From the Component
+
+The component could call `fetch()` directly.
+
+**Rejected** because HelloStay already has a service layer and shared API client. Keeping API communication in `stayService.js` maintains consistency across modules.
+
+##### Moving Business Logic Into React
+
+Hotel-specific update or deletion rules could be implemented in the frontend.
+
+**Rejected** because FastAPI is the project's source of truth for business logic, validation, authorization, and persistence.
+
+#### Industry Practice
+
+This decision follows several production-oriented principles:
+
+* Keep UI concerns separate from API communication.
+* Keep backend business rules authoritative.
+* Represent asynchronous operations explicitly.
+* Prevent duplicate mutation requests.
+* Confirm destructive actions.
+* Provide useful user feedback.
+* Refresh authoritative data after mutations.
+* Avoid premature abstraction.
+* Keep responsibilities clear between layers.
+
+#### Status
+
+**Frontend AD 19 — Accepted and implemented.**
+
+This decision establishes the mutation-handling pattern used by the Stays module and provides a consistent foundation for future frontend modules that require CRUD operations.
 
 ---
 
@@ -9519,3 +9808,237 @@ Milestone 18 is considered complete when:
 Milestone 18 establishes the **Create foundation for the Stays module**.
 
 The Stays module now supports reading existing stay records and creating new stay records while maintaining the existing React, service-layer, API-client, and FastAPI architectural boundaries.
+
+---
+
+### Frontend Milestone 19 — Stays Module Edit and Delete Foundation
+
+#### Objective
+
+Extend the Stays module beyond read and create operations by implementing the frontend foundation for editing and deleting stay records.
+
+The milestone focuses on connecting the existing Stays UI to the backend `PUT` and `DELETE` operations while maintaining clear separation between UI state, API communication, validation, and backend business logic.
+
+#### Completed Work
+
+* Added stay editing functionality to `StaysPage.jsx`.
+* Added an edit form for modifying editable stay fields.
+* Added edit-specific form state and validation state.
+* Added `isUpdating` state to prevent duplicate update submissions.
+* Added update loading feedback through the edit form button.
+* Added support for the backend `StayUpdate` contract.
+* Added stay deletion functionality to the Stays table.
+* Added a delete confirmation UI before performing deletion.
+* Added delete-specific state for the selected stay and deletion operation.
+* Added deletion loading and error handling.
+* Added refresh of the stay list after successful update or deletion.
+* Added success and error feedback for stay operations.
+* Added button states to prevent repeated submissions while requests are in progress.
+* Added CSS required for the newly introduced stay action buttons and related UI.
+* Preserved the existing read and create workflows.
+
+#### Edit Workflow
+
+The edit workflow follows this sequence:
+
+1. User selects **Edit** for a stay.
+2. The selected stay is stored in component state.
+3. Existing editable values are copied into the edit form.
+4. The user modifies the editable fields.
+5. Client-side validation is performed.
+6. A request payload is constructed.
+7. `updateStay()` is called from `stayService.js`.
+8. The backend processes the `PUT` request.
+9. The stay list is refreshed after a successful update.
+10. The edit form is closed.
+11. A success message is displayed.
+
+#### Editable Stay Fields
+
+The frontend edit form supports the fields defined by the backend `StayUpdate` schema:
+
+* `room_id`
+* `price_per_night`
+* `check_in_datetime`
+
+The frontend intentionally does not modify `stay_status` or `check_out_datetime` through the edit workflow because those fields are not part of the existing `StayUpdate` contract used for this milestone.
+
+#### Delete Workflow
+
+The delete workflow follows this sequence:
+
+1. User selects **Delete** for a stay.
+2. The selected stay is stored in `deletingStay`.
+3. A confirmation UI is displayed.
+4. The user can cancel the operation.
+5. If deletion is confirmed, the frontend calls the stay deletion service.
+6. The deletion operation enters a loading state.
+7. After successful deletion, the stay list is refreshed.
+8. The confirmation UI is closed.
+9. A success message is displayed.
+10. If deletion fails, an appropriate error is displayed.
+
+#### State Management
+
+The Stays page now maintains separate state for different responsibilities:
+
+* Stay collection state.
+* Create form state.
+* Create validation state.
+* Create submission state.
+* Edit form state.
+* Edit validation state.
+* Edit submission state.
+* Selected stay for editing.
+* Selected stay for deletion.
+* Delete submission state.
+* Create/update/delete error states.
+* Success message state.
+* Room loading and error state.
+* Initial stay loading and error state.
+
+This separation keeps unrelated operations from unnecessarily sharing the same state.
+
+#### Validation
+
+The edit form validates:
+
+* Room selection.
+* Price per night.
+* Check-in date and time.
+
+The existing create validation remains unchanged.
+
+Validation occurs before the API request is made so that obviously invalid input does not unnecessarily reach the backend.
+
+#### API Integration
+
+The Stays module uses the existing service layer:
+
+```text
+StaysPage.jsx
+      ↓
+stayService.js
+      ↓
+apiClient.js
+      ↓
+FastAPI backend
+```
+
+The service layer remains responsible for communicating with the backend, while `StaysPage.jsx` remains responsible for user interaction and UI state.
+
+#### Backend Contract
+
+The frontend follows the existing backend update contract:
+
+```text
+StayUpdate
+├── room_id: Optional[int]
+├── price_per_night: Optional[Decimal]
+├── check_in_datetime: Optional[datetime]
+├── check_out_datetime: Optional[datetime]
+└── stay_status: Optional[str]
+```
+
+For this milestone, the frontend edit workflow sends the editable fields implemented by the current UI:
+
+```text
+room_id
+price_per_night
+check_in_datetime
+```
+
+#### Error Handling
+
+The milestone maintains separate error handling for:
+
+* Initial stay loading.
+* Room loading.
+* Stay creation.
+* Stay editing.
+* Stay deletion.
+
+Request failures are surfaced to the user instead of silently failing.
+
+#### Loading States
+
+Operation-specific loading states were maintained so that one operation does not incorrectly block unrelated parts of the interface.
+
+Examples include:
+
+* `isLoading`
+* `isLoadingRooms`
+* `isSubmitting`
+* `isUpdating`
+* `isDeleting`
+
+Buttons are disabled while their corresponding operation is running to reduce the possibility of duplicate requests.
+
+#### UI and CSS
+
+The Stays module was updated with styling for the newly introduced action controls and operation states.
+
+The styling remains within the existing frontend design system rather than introducing a separate visual system specifically for Stays.
+
+#### Architecture Responsibilities
+
+The milestone preserves the established responsibility boundaries:
+
+```text
+React Renderer
+├── StaysPage
+├── Forms
+├── Validation
+├── UI State
+└── User Interaction
+        │
+        ▼
+Service Layer
+├── getStays()
+├── createStay()
+├── updateStay()
+└── deleteStay()
+        │
+        ▼
+API Client
+        │
+        ▼
+FastAPI Backend
+├── Validation
+├── Business Rules
+├── Authorization
+└── Database Operations
+```
+
+React does not contain hotel business logic, and the backend remains the source of truth.
+
+#### Verification
+
+Milestone 19 was manually verified after implementation.
+
+The following workflows were confirmed to be working:
+
+* Stay loading.
+* Stay creation.
+* Stay editing.
+* Stay deletion.
+* Edit cancellation.
+* Delete cancellation.
+* Loading states.
+* Error states.
+* Success feedback.
+* Stay list refresh after mutations.
+* Action button behavior.
+
+#### Completion Status
+
+**Frontend Milestone 19 — Completed.**
+
+The Stays module now has a functional frontend foundation for:
+
+* Read
+* Create
+* Edit
+* Delete
+
+Further Stays-specific refinement or additional workflows should be introduced through a future milestone rather than expanding Milestone 19 retrospectively.
