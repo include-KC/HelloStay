@@ -3961,6 +3961,236 @@ HelloStay will treat the Stays module as a backend-driven transactional feature.
 
 The initial frontend implementation will remain read-only, use a dedicated Stay service, preserve raw backend data, derive display formatting during rendering, and keep Guest, Room-lookup, lifecycle, and billing concerns outside the first Stay milestone.
 
+---
+
+### Frontend AD 18 — Stays Module Create Workflow
+
+#### Decision
+
+The Stays module will implement stay creation using a controlled React form and the existing service-layer architecture.
+
+React will manage form state, user interaction, client-side validation, submission state, and UI feedback.
+
+The service layer will manage API communication.
+
+FastAPI will remain responsible for authoritative validation, business rules, and persistence.
+
+#### Context
+
+The Stays module previously provided a read-only list of stay records.
+
+Milestone 18 introduces the first create workflow for the module.
+
+The implementation therefore needs to establish a clear boundary between:
+
+* Form state.
+* UI interaction.
+* Client-side validation.
+* API communication.
+* Backend validation.
+* Persistence.
+* Success and error feedback.
+
+The existing HelloStay architecture should be extended rather than replaced.
+
+#### Architectural Boundary
+
+The selected responsibility flow is:
+
+```text
+React Renderer
+     ↓
+StaysPage.jsx
+     ↓
+stayService.js
+     ↓
+apiClient.js
+     ↓
+FastAPI
+     ↓
+Database
+```
+
+`StaysPage.jsx` is responsible for the user-facing workflow.
+
+`stayService.js` is responsible for the stay API operation.
+
+`apiClient.js` remains responsible for the shared HTTP request mechanism.
+
+FastAPI remains responsible for business logic and persistence.
+
+#### Controlled Form Decision
+
+The Create Stay form uses controlled React inputs.
+
+The current form values are stored in React state:
+
+```text
+room_id
+price_per_night
+check_in_datetime
+stay_status
+```
+
+Each input receives its value from React state and updates that state through the form change handler.
+
+This provides a predictable flow between user input, validation, payload creation, and submission.
+
+#### Client-Side Validation Decision
+
+Basic validation is performed in the React frontend before submitting the request.
+
+The frontend validates required fields and basic input constraints to provide immediate feedback to the user.
+
+Client-side validation is not considered authoritative.
+
+The backend remains responsible for final validation because frontend validation can be bypassed and backend rules may be more comprehensive.
+
+#### Service Layer Decision
+
+The Stays page does not directly implement HTTP communication.
+
+Stay creation is performed through:
+
+```text
+createStay(stayData)
+```
+
+in `stayService.js`.
+
+The service delegates the request to `apiClient.js`.
+
+This keeps API communication separate from the presentation and interaction logic of the React page.
+
+#### Payload Decision
+
+Browser form values are initially represented as strings.
+
+Before sending the request, fields that require numeric values are converted to numbers.
+
+The frontend constructs the API payload before calling the service function.
+
+The payload follows the existing backend contract:
+
+```text
+{
+  room_id,
+  price_per_night,
+  check_in_datetime,
+  stay_status
+}
+```
+
+#### Submission State Decision
+
+The create workflow maintains a dedicated `isSubmitting` state.
+
+While the request is active:
+
+* The submit button is disabled.
+* The user receives feedback that creation is in progress.
+* Accidental duplicate submissions are prevented.
+
+The submission state is independent from the initial stay-list loading state.
+
+#### Post-Creation Synchronization Decision
+
+After a successful create request, the frontend refreshes the stay list by calling `getStays()` again.
+
+The chosen flow is:
+
+```text
+POST /stay
+    ↓
+Successful creation
+    ↓
+GET /stay
+    ↓
+Update stays state
+```
+
+The frontend therefore treats the backend as the source of truth instead of manually modifying the existing stay list.
+
+#### Form Reset Decision
+
+After successful creation, the form is reset to its initial state.
+
+Resetting also clears the field-level validation errors.
+
+This provides a clean form for the next stay creation.
+
+#### Error Handling Decision
+
+Different error types remain separate:
+
+* Initial stay loading errors are handled by the stay-list loading state.
+* Room loading errors are handled by the room-selection workflow.
+* Validation errors are associated with individual fields.
+* Stay creation errors are displayed at the form level.
+
+This separation improves both maintainability and user understanding.
+
+#### UX Decision
+
+The Create Stay workflow must follow the existing HelloStay interface.
+
+The implementation should reuse existing UI patterns and styling rather than introducing a separate design system.
+
+The form therefore follows the application's existing:
+
+* Card structure.
+* Form-field layout.
+* Error presentation.
+* Button behavior.
+* Typography.
+* Spacing.
+* Feedback patterns.
+
+#### Scope Boundary
+
+This Architecture Decision does not introduce:
+
+* Stay edit functionality.
+* Stay delete functionality.
+* Check-out functionality.
+* Stay detail workflows.
+* Global state management.
+* A form-management library.
+* Additional abstraction layers without a demonstrated need.
+
+These concerns will be considered only in the milestones where they are explicitly required.
+
+#### Consequences
+
+##### Positive Consequences
+
+* Maintains the existing HelloStay architecture.
+* Keeps React responsibilities clear.
+* Keeps API communication inside the service layer.
+* Keeps backend business rules inside FastAPI.
+* Provides immediate client-side validation feedback.
+* Prevents duplicate submissions.
+* Keeps the stay list synchronized with backend data.
+* Keeps the implementation understandable for continued frontend learning.
+
+##### Trade-offs
+
+* `StaysPage.jsx` contains several pieces of form-related state and logic.
+* A second API request is made after successful creation to refresh the stay list.
+* Client-side validation exists alongside backend validation.
+
+These trade-offs are acceptable for the current size and complexity of the Stays module.
+
+Further abstraction should only be introduced when the module's complexity provides a clear reason for it.
+
+#### Engineering Principle
+
+The Stays module follows this principle:
+
+> React manages user interaction and presentation, the service layer manages API communication, and FastAPI remains the source of truth for business logic, validation, and persistence.
+
+This decision keeps the Create Stay workflow aligned with the overall HelloStay frontend architecture.
+
 
 ---
 
@@ -9096,3 +9326,196 @@ The following features were intentionally excluded from Milestone 17:
 HelloStay now has its first backend-driven read-only view of operational Stay records. The Stays page follows the same service-boundary and request-state principles established by the Rooms and Guests modules while preserving the distinction between master data and transactional hotel data.
 
 ---
+
+### Frontend Milestone 18 — Stays Module Create Foundation
+
+#### Objective
+
+Implement the Create Stay foundation for the Stays module.
+
+This milestone extends the existing read-only Stays module by introducing a controlled form that allows users to enter stay information and create a new stay through the existing FastAPI backend.
+
+The milestone focuses only on the creation workflow. Edit and delete functionality are intentionally excluded.
+
+#### Completed Work
+
+* Added Create Stay form to `StaysPage.jsx`.
+* Added room selection using rooms retrieved from the backend.
+* Added price-per-night input.
+* Added check-in date and time input.
+* Added stay status selection.
+* Added controlled form state using React `useState`.
+* Added field-level client-side validation.
+* Added stay payload construction before API submission.
+* Added `createStay()` integration through `stayService.js`.
+* Added submission/loading state using `isSubmitting`.
+* Added backend creation error handling.
+* Added successful creation feedback.
+* Added automatic stay-list refresh after successful creation.
+* Added form reset after successful creation.
+* Added UX refinements to keep the form consistent with the existing HelloStay interface.
+
+#### Backend Integration
+
+The frontend uses the existing:
+
+`POST /stay`
+
+endpoint.
+
+The request contains:
+
+```text
+room_id
+price_per_night
+check_in_datetime
+stay_status
+```
+
+The frontend communicates with the backend through the existing service and API-client layers.
+
+```text
+StaysPage.jsx
+      ↓
+stayService.js
+      ↓
+apiClient.js
+      ↓
+FastAPI
+      ↓
+Database
+```
+
+FastAPI remains the source of truth for backend validation, business rules, and persistence.
+
+#### Form Validation
+
+The Create Stay form validates:
+
+* Room is required.
+* Price per night is required.
+* Price must be greater than zero.
+* Check-in date and time is required.
+* Stay status is required.
+
+Validation errors are stored separately from the form values and displayed next to the corresponding fields.
+
+Client-side validation is intended to improve user experience and does not replace backend validation.
+
+#### Submission Workflow
+
+The completed workflow is:
+
+```text
+Enter stay details
+        ↓
+Submit form
+        ↓
+Validate form
+        ↓
+Validation errors?
+   ┌────┴────┐
+  Yes        No
+   ↓          ↓
+Show errors  Build payload
+               ↓
+        Create stay request
+               ↓
+       Successful response
+               ↓
+         Refresh stay list
+               ↓
+           Reset form
+               ↓
+       Show success message
+```
+
+#### Room Integration
+
+The room selector uses the existing `getRooms()` service.
+
+The UI handles:
+
+* Loading rooms.
+* Successfully loaded rooms.
+* No available rooms.
+* Room-loading errors.
+
+The frontend does not maintain a hard-coded list of rooms.
+
+#### Error Handling
+
+The milestone separates different error categories:
+
+* Stay-list loading errors.
+* Room-loading errors.
+* Field-level validation errors.
+* Stay-creation request errors.
+
+This keeps errors associated with the operation that caused them.
+
+#### Success Handling
+
+After successful creation:
+
+1. The stay is created through the backend.
+2. The latest stay records are fetched again.
+3. The stay table reflects the updated backend state.
+4. The form is reset.
+5. A success message is displayed.
+
+The frontend does not manually insert the created stay into the existing list.
+
+#### UX Improvements
+
+The Create Stay form follows the existing HelloStay UX.
+
+It uses the application's existing:
+
+* Card layout.
+* Form styling.
+* Error presentation.
+* Button styling.
+* Spacing.
+* Typography.
+* Loading and feedback patterns.
+
+The submit button is disabled while the creation request is in progress and displays an appropriate loading label.
+
+#### Scope Boundary
+
+The following features were intentionally not implemented:
+
+* Stay editing.
+* Stay deletion.
+* Check-out workflow.
+* Stay detail view.
+* Advanced stay-management workflows.
+* Global state management.
+
+These features remain outside the scope of Milestone 18.
+
+#### Completion Criteria
+
+Milestone 18 is considered complete when:
+
+* The Create Stay form renders correctly.
+* Rooms can be selected from backend data.
+* Form state works correctly.
+* Validation works correctly.
+* Invalid submissions are prevented.
+* Valid data is submitted to `POST /stay`.
+* Submission state works correctly.
+* Backend errors are displayed.
+* Successful creation is communicated to the user.
+* The stay list refreshes after successful creation.
+* The form resets after successful creation.
+* Existing read-only stay functionality continues to work.
+* The form follows the existing HelloStay UX.
+* Edit and delete functionality remain excluded.
+
+#### Result
+
+Milestone 18 establishes the **Create foundation for the Stays module**.
+
+The Stays module now supports reading existing stay records and creating new stay records while maintaining the existing React, service-layer, API-client, and FastAPI architectural boundaries.
