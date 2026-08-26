@@ -4483,6 +4483,185 @@ This decision establishes the mutation-handling pattern used by the Stays module
 
 ---
 
+### Frontend AD 20 — Row-Level CRUD Operation Isolation
+
+#### Decision
+
+HelloStay's Stays module will manage asynchronous CRUD operation state at the **individual stay level** rather than globally locking the entire Stays interface.
+
+#### Context
+
+The initial CRUD implementation used global operation states such as:
+
+```text
+isUpdating
+isDeleting
+```
+
+These states indicate whether an update or delete request is currently running, but they do not identify which stay is being operated on.
+
+A global lock could unnecessarily prevent interaction with unrelated stays.
+
+For example:
+
+```text
+Stay A → Updating
+
+Stay B → Edit
+Stay B → Delete
+```
+
+There is no reason to prevent operations on Stay B simply because Stay A is being updated.
+
+#### Decision Details
+
+The Stays module therefore tracks the identity of the affected stay:
+
+```text
+updatingStayId
+deletingStayId
+```
+
+The UI derives row-specific operation state from these values.
+
+Conceptually:
+
+```text
+updatingStayId === stay.stay_id
+        ↓
+This particular stay is being updated.
+```
+
+and:
+
+```text
+deletingStayId === stay.stay_id
+        ↓
+This particular stay is being deleted.
+```
+
+#### Same-Stay Conflict Rule
+
+The same stay must not be edited and deleted simultaneously.
+
+Therefore:
+
+```text
+Editing Stay A
+      ↓
+Delete Stay A → Blocked
+```
+
+and:
+
+```text
+Deleting Stay A
+      ↓
+Edit Stay A → Blocked
+```
+
+This protects the UI from contradictory operations against the same backend record.
+
+#### Different-Stay Independence Rule
+
+Operations involving different stays remain independent.
+
+For example:
+
+```text
+Stay A → Updating
+Stay B → Deleting
+```
+
+is allowed because the operations target different records.
+
+This provides better flexibility for the user without sacrificing protection against conflicting operations on the same record.
+
+#### Stale State Protection
+
+The UI must not continue displaying an edit form for a stay that no longer exists.
+
+After successful deletion, the application checks whether the deleted stay is the stay currently represented by the edit state.
+
+If so, the edit state is cleared.
+
+```text
+Delete Stay A
+      ↓
+Refresh stays
+      ↓
+Stay A no longer exists
+      ↓
+Clear editingStay
+      ↓
+Edit form disappears
+```
+
+#### Error and Cleanup Rule
+
+Asynchronous operation state must always be cleaned up after the request finishes.
+
+The implementation uses `finally` so that operation identifiers are cleared after both successful and failed requests.
+
+```text
+Request starts
+      ↓
+Set operation ID
+      ↓
+API request
+      ↓
+Success / Error
+      ↓
+finally
+      ↓
+Clear operation ID
+```
+
+This prevents a failed request from leaving a stay permanently disabled.
+
+#### Architectural Boundaries
+
+The decision maintains the existing HelloStay responsibility boundaries:
+
+```text
+React
+    ↓
+UI state and user interaction
+
+stayService.js
+    ↓
+API communication
+
+FastAPI
+    ↓
+Business logic, validation and persistence
+```
+
+The frontend does not move stay business rules into React or Electron.
+
+#### Consequences
+
+**Benefits:**
+
+- Better user flexibility.
+- Unrelated stays remain interactive.
+- Same-stay conflicts are prevented.
+- UI state accurately represents the affected record.
+- Failed asynchronous operations can recover cleanly.
+- The approach scales better than a global CRUD lock.
+
+**Trade-off:**
+
+The page requires additional state and row-level conditions compared with a simple global `isUpdating` / `isDeleting` approach.
+
+This additional complexity is justified because it accurately represents the desired user interaction model.
+
+#### Result
+
+The Stays module follows a **row-level CRUD operation isolation strategy**, allowing independent operations on different stays while preventing conflicting operations on the same stay.
+
+---
+
 ## Backend Milestone History
 
 ### Frontend Rebuild Note
@@ -10042,3 +10221,107 @@ The Stays module now has a functional frontend foundation for:
 * Delete
 
 Further Stays-specific refinement or additional workflows should be introduced through a future milestone rather than expanding Milestone 19 retrospectively.
+
+---
+
+### Frontend Milestone 20 — Stays Module CRUD Interaction Refinement
+
+#### Objective
+
+Complete the Stays module CRUD interaction behavior by improving how concurrent edit and delete operations are handled at the individual stay level.
+
+#### Completed Work
+
+- Verified the complete Stays CRUD workflow:
+  - Create stay
+  - Read/list stays
+  - Update stay
+  - Delete stay
+- Continued using the reusable `StayForm` component for create and edit workflows.
+- Maintained client-side validation for create and edit forms.
+- Maintained loading, submitting, success, and error states.
+- Added row-level update tracking using the stay ID.
+- Added row-level delete tracking using the stay ID.
+- Prevented editing and deleting the same stay simultaneously.
+- Allowed operations on different stays to remain independent.
+- Prevented the Edit action for a stay that is currently being deleted.
+- Prevented the Delete action for a stay that is currently being edited.
+- Added cleanup for stale edit state when the edited stay is deleted.
+- Ensured operation state is cleared after successful or failed asynchronous requests.
+- Verified that the UI does not unnecessarily lock unrelated stay records.
+- Resolved all ESLint errors introduced during the implementation.
+
+#### Final Interaction Behavior
+
+The Stays module now follows row-level operation rules.
+
+A user can perform operations on different stays independently:
+
+```text
+Stay A → Updating
+Stay B → Deleting
+Stay C → Available
+```
+
+However, conflicting operations on the same stay are prevented:
+
+```text
+Stay A → Updating
+Stay A → Delete
+        ↓
+      Blocked
+```
+
+Similarly:
+
+```text
+Stay A → Deleting
+Stay A → Edit
+        ↓
+      Blocked
+```
+
+#### State Management Improvement
+
+The milestone introduced operation-specific stay IDs so the application can identify exactly which record is being modified.
+
+```text
+updatingStayId
+      ↓
+Identifies the stay currently being updated
+
+deletingStayId
+      ↓
+Identifies the stay currently being deleted
+```
+
+This replaced the earlier behavior where a CRUD operation could unnecessarily affect unrelated stays.
+
+#### Edit State Cleanup
+
+When a stay is successfully deleted, the application checks whether that stay is currently represented by the edit state.
+
+If it is, the edit state is cleared and the edit form disappears.
+
+This prevents stale information from a deleted stay from remaining visible in the UI.
+
+#### Verification
+
+The milestone was manually verified after implementation.
+
+Verified:
+
+- Create operation works.
+- Read operation works.
+- Update operation works.
+- Delete operation works.
+- Different stays can be operated on independently.
+- The same stay cannot be edited and deleted simultaneously.
+- Deleted stays are removed from the displayed list.
+- Stale edit state is cleared appropriately.
+- Operation states recover correctly.
+- No ESLint errors remain.
+
+#### Result
+
+The Stays module now has a complete and more robust CRUD interaction foundation with **row-level asynchronous operation handling** and **same-record conflict protection**.

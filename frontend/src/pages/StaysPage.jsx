@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+// IMPORTS
+import { useEffect, useMemo, useState } from "react";
 
 import Card from "../components/ui/Card.jsx";
 import ErrorMessage from "../components/ui/ErrorMessage.jsx";
 import Loading from "../components/ui/Loading.jsx";
+  
+import StayForm from "../components/stays/StayForm.jsx";
 
 import {
   createStay,
@@ -12,6 +15,7 @@ import {
 } from "../services/stayService.js";
 import { getRooms } from "../services/roomService.js";
 
+// CONSTANTS
 const STAY_STATUS_CLASS_NAMES = {
   "Checked In": "stay-status-checked-in",
   "Checked Out": "stay-status-checked-out",
@@ -30,6 +34,7 @@ const emptyEditStayForm = {
   check_in_datetime: "",
 };
 
+// HELPER FUNCTIONS
 function formatDateTime(
   dateTimeValue,
   emptyFallback = "Not available",
@@ -70,6 +75,16 @@ function formatDateTimeLocalValue(dateTimeValue) {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
+function getRoomDisplayName(roomId, roomNumberById) {
+  const roomNumber = roomNumberById[roomId];
+
+  if (roomNumber === undefined) {
+    return `Room ID: ${roomId}`;
+  }
+
+  return `Room ${roomNumber}`;
+}
+
 function formatPrice(priceValue) {
   if (
     priceValue === null ||
@@ -95,35 +110,65 @@ function getStayStatusClassName(stayStatus) {
   return STAY_STATUS_CLASS_NAMES[stayStatus] || "";
 }
 
+// MAIN COMPONENT
 function StaysPage() {
+  // STATE
+
+  // Stays data
   const [stays, setStays] = useState([]);
 
+  // Form Submission States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Row-level operation states
+  const [updatingStayId, setUpdatingStayId] =
+    useState(null);
+  const [deletingStayId, setDeletingStayId] =
+    useState(null);
+
+  // Form Data and Errors
   const [stayForm, setStayForm] = useState(emptyStayForm);
   const [formErrors, setFormErrors] = useState({});
 
+  // Edit Form Data and Errors
   const [editingStay, setEditingStay] = useState(null);
   const [editStayForm, setEditStayForm] =
     useState(emptyEditStayForm);
   const [editFormErrors, setEditFormErrors] = useState({});
 
+  // Delete Form State
   const [deletingStay, setDeletingStay] = useState(null);
 
+  // Error and Success Messages
   const [formError, setFormError] = useState("");
   const [editFormError, setEditFormError] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Rooms state
   const [rooms, setRooms] = useState([]);
+
+  // Derived values for room number mapping
+  const roomNumberById = useMemo(() => {
+    return Object.fromEntries(
+      rooms.map((room) => [
+        room.id,
+        room.room_number,
+      ]),
+    );
+  }, [rooms]);
+
+  // Loading and Error States
   const [isLoadingRooms, setIsLoadingRooms] = useState(true);
   const [roomError, setRoomError] = useState("");
 
+  // Loading and Error States for Stays
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // EFFECTS
   useEffect(() => {
     let shouldIgnoreResult = false;
 
@@ -210,6 +255,7 @@ function StaysPage() {
     };
   }, []);
 
+  // CREATE STAY FUNCTIONS
   function handleFormChange(event) {
     const { name, value } = event.target;
 
@@ -338,6 +384,7 @@ function StaysPage() {
     }
   }
 
+  // SHARED DATA OPERATIONS(only refreshStays)
   async function refreshStays() {
     const staysData = await getStays();
 
@@ -355,6 +402,7 @@ function StaysPage() {
     setFormErrors({});
   }
 
+  // EDIT STAY FUNCTIONS
   function handleEditClick(stay) {
     setEditingStay(stay);
 
@@ -408,6 +456,7 @@ function StaysPage() {
     const payload = buildEditStayPayload();
 
     setIsUpdating(true);
+    setUpdatingStayId(editingStay.stay_id);
     setEditFormError("");
     setSuccessMessage("");
 
@@ -431,6 +480,7 @@ function StaysPage() {
       );
     } finally {
       setIsUpdating(false);
+      setUpdatingStayId(null);
     }
   }
 
@@ -441,7 +491,15 @@ function StaysPage() {
     setEditFormError("");
   }
 
+  // DELETE STAY FUNCTIONS
   function handleDeleteClick(stay) {
+    if (
+      editingStay &&
+      editingStay.stay_id === stay.stay_id
+    ) {
+      return;
+    }
+
     setDeletingStay(stay);
     setDeleteError("");
     setEditFormError("");
@@ -464,13 +522,22 @@ function StaysPage() {
     }
 
     setIsDeleting(true);
+    setDeletingStayId(deletingStay.stay_id);
     setDeleteError("");
     setSuccessMessage("");
 
     try {
+      const deletedStayId = deletingStay.stay_id;
       await deleteStay(deletingStay.stay_id);
 
       await refreshStays();
+
+      if (
+        editingStay &&
+        editingStay.stay_id === deletedStayId
+      ) {
+        handleCancelEdit();
+      }
 
       setDeletingStay(null);
 
@@ -484,9 +551,11 @@ function StaysPage() {
       );
     } finally {
       setIsDeleting(false);
+      setDeletingStayId(null);
     }
   }
 
+  // RENDER
   return (
     <section className="dashboard-page">
       <div className="dashboard-page-header">
@@ -524,153 +593,17 @@ function StaysPage() {
           </div>
         )}
 
-        <form
-          className="stay-form"
+        <StayForm
+          mode="create"
+          formData={stayForm}
+          formErrors={formErrors}
+          rooms={rooms}
+          isLoadingRooms={isLoadingRooms}
+          isSubmitting={isSubmitting}
+          roomError={roomError}
+          onChange={handleFormChange}
           onSubmit={handleSubmit}
-        >
-          <div className="stay-form-grid">
-            <div className="form-field">
-              <label htmlFor="stay-room">
-                Room
-              </label>
-
-              <select
-                id="stay-room"
-                name="room_id"
-                value={stayForm.room_id}
-                onChange={handleFormChange}
-                disabled={
-                  isLoadingRooms ||
-                  rooms.length === 0 ||
-                  isSubmitting
-                }
-              >
-                <option value="">
-                  {isLoadingRooms
-                    ? "Loading rooms..."
-                    : rooms.length === 0
-                      ? "No rooms available"
-                      : "Select a room"}
-                </option>
-
-                {rooms.map((room) => (
-                  <option
-                    key={room.id}
-                    value={room.id}
-                  >
-                    Room {room.room_number}
-                  </option>
-                ))}
-              </select>
-
-              {formErrors.room_id && (
-                <p className="form-error">
-                  {formErrors.room_id}
-                </p>
-              )}
-
-              {roomError && (
-                <p className="form-error">
-                  {roomError}
-                </p>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="stay-price">
-                Price per night
-              </label>
-
-              <input
-                id="stay-price"
-                name="price_per_night"
-                type="number"
-                value={
-                  stayForm.price_per_night
-                }
-                onChange={handleFormChange}
-                min="0"
-                step="0.01"
-                placeholder="Enter price per night"
-                disabled={isSubmitting}
-              />
-
-              {formErrors.price_per_night && (
-                <p className="form-error">
-                  {formErrors.price_per_night}
-                </p>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="stay-check-in">
-                Check-in date and time
-              </label>
-
-              <input
-                id="stay-check-in"
-                name="check_in_datetime"
-                type="datetime-local"
-                value={
-                  stayForm.check_in_datetime
-                }
-                onChange={handleFormChange}
-                disabled={isSubmitting}
-              />
-
-              {formErrors.check_in_datetime && (
-                <p className="form-error">
-                  {
-                    formErrors.check_in_datetime
-                  }
-                </p>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="stay-status">
-                Stay status
-              </label>
-
-              <select
-                id="stay-status"
-                name="stay_status"
-                value={stayForm.stay_status}
-                onChange={handleFormChange}
-                disabled={isSubmitting}
-              >
-                <option value="">
-                  Select stay status
-                </option>
-
-                <option value="Checked In">
-                  Checked In
-                </option>
-
-                <option value="Checked Out">
-                  Checked Out
-                </option>
-              </select>
-
-              {formErrors.stay_status && (
-                <p className="form-error">
-                  {formErrors.stay_status}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="stay-form-actions">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting
-                ? "Creating stay..."
-                : "Create Stay"}
-            </button>
-          </div>
-        </form>
+        />
       </Card>
 
       {editingStay && (
@@ -692,132 +625,18 @@ function StaysPage() {
             />
           )}
 
-          <form
-            className="stay-form"
+          <StayForm
+            mode="edit"
+            formData={editStayForm}
+            formErrors={editFormErrors}
+            rooms={rooms}
+            isLoadingRooms={isLoadingRooms}
+            isSubmitting={isUpdating}
+            roomError={roomError}
+            onChange={handleEditFormChange}
             onSubmit={handleEditSubmit}
-          >
-            <div className="stay-form-grid">
-              <div className="form-field">
-                <label htmlFor="edit-stay-room">
-                  Room
-                </label>
-
-                <select
-                  id="edit-stay-room"
-                  name="room_id"
-                  value={editStayForm.room_id}
-                  onChange={handleEditFormChange}
-                  disabled={
-                    isLoadingRooms ||
-                    rooms.length === 0 ||
-                    isUpdating
-                  }
-                >
-                  <option value="">
-                    {isLoadingRooms
-                      ? "Loading rooms..."
-                      : rooms.length === 0
-                        ? "No rooms available"
-                        : "Select a room"}
-                  </option>
-
-                  {rooms.map((room) => (
-                    <option
-                      key={room.id}
-                      value={room.id}
-                    >
-                      Room {room.room_number}
-                    </option>
-                  ))}
-                </select>
-
-                {editFormErrors.room_id && (
-                  <p className="form-error">
-                    {editFormErrors.room_id}
-                  </p>
-                )}
-
-                {roomError && (
-                  <p className="form-error">
-                    {roomError}
-                  </p>
-                )}
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="edit-stay-price">
-                  Price per night
-                </label>
-
-                <input
-                  id="edit-stay-price"
-                  name="price_per_night"
-                  type="number"
-                  value={
-                    editStayForm.price_per_night
-                  }
-                  onChange={handleEditFormChange}
-                  min="0"
-                  step="0.01"
-                  disabled={isUpdating}
-                />
-
-                {editFormErrors.price_per_night && (
-                  <p className="form-error">
-                    {
-                      editFormErrors
-                        .price_per_night
-                    }
-                  </p>
-                )}
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="edit-stay-check-in">
-                  Check-in date and time
-                </label>
-
-                <input
-                  id="edit-stay-check-in"
-                  name="check_in_datetime"
-                  type="datetime-local"
-                  value={
-                    editStayForm.check_in_datetime
-                  }
-                  onChange={handleEditFormChange}
-                  disabled={isUpdating}
-                />
-
-                {editFormErrors.check_in_datetime && (
-                  <p className="form-error">
-                    {
-                      editFormErrors
-                        .check_in_datetime
-                    }
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="stay-form-actions">
-              <button
-                type="button"
-                onClick={handleCancelEdit}
-                disabled={isUpdating}
-              >
-                Cancel
-              </button>
-
-              <button
-                type="submit"
-                disabled={isUpdating}
-              >
-                {isUpdating
-                  ? "Updating..."
-                  : "Save Changes"}
-              </button>
-            </div>
-          </form>
+            onCancel={handleCancelEdit}
+          />
         </Card>
       )}
 
@@ -917,6 +736,12 @@ function StaysPage() {
                         displayedStatus,
                       );
 
+                    const isStayUpdating =
+                      updatingStayId === stay.stay_id;
+
+                    const isStayDeleting =
+                      deletingStayId === stay.stay_id;
+                      
                     return (
                       <tr
                         key={stay.stay_id}
@@ -928,10 +753,12 @@ function StaysPage() {
 
                         <td>
                           {stay.room_id === null ||
-                          stay.room_id ===
-                            undefined
+                          stay.room_id === undefined
                             ? "Not available"
-                            : `Room ID: ${stay.room_id}`}
+                            : getRoomDisplayName(
+                                stay.room_id,
+                                roomNumberById,
+                              )}
                         </td>
 
                         <td>
@@ -970,8 +797,9 @@ function StaysPage() {
                               )
                             }
                             disabled={
-                              isDeleting ||
-                              isUpdating
+                              isStayUpdating ||
+                              isStayDeleting ||
+                              deletingStay?.stay_id === stay.stay_id
                             }
                           >
                             Edit
@@ -985,8 +813,9 @@ function StaysPage() {
                               )
                             }
                             disabled={
-                              isDeleting ||
-                              isUpdating
+                              isStayUpdating ||
+                              isStayDeleting ||
+                              editingStay?.stay_id === stay.stay_id
                             }
                           >
                             Delete
