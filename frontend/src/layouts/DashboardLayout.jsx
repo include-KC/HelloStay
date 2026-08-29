@@ -21,6 +21,10 @@ const navigationItems = [
     to: "/dashboard/stays",
   },
   {
+  label: "Guest Stays",
+  to: "/dashboard/guest-stays",
+  },
+  {
     label: "Finance",
     to: "/dashboard/finance",
   },

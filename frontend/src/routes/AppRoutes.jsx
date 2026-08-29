@@ -11,6 +11,7 @@ import RegisterPage from "../pages/RegisterPage.jsx";
 import RoomsPage from "../pages/RoomsPage.jsx";
 import StartPage from "../pages/StartPage.jsx";
 import StaysPage from "../pages/StaysPage.jsx";
+import GuestStayPage from "../pages/guestStaysPage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 function AppRoutes() {
@@ -32,6 +33,7 @@ function AppRoutes() {
         <Route path="rooms" element={<RoomsPage />} />
         <Route path="guests" element={<GuestsPage />} />
         <Route path="stays" element={<StaysPage />} />
+        <Route path="guest-stays" element={<GuestStayPage />} />
         <Route path="finance" element={<FinancePage />} />
         <Route path="history" element={<HistoryPage />} />
       </Route>
