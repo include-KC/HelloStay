@@ -1,9 +1,11 @@
 # HelloStay Project Notes
 
 ## Product Vision
+
 HelloStay is designed as a general-purpose hotel management system rather than a custom solution for a single hotel.
 
 ### Target Market
+
 - Small hotels
 - Medium hotels
 - Guest houses
@@ -11,6 +13,7 @@ HelloStay is designed as a general-purpose hotel management system rather than a
 - Resorts
 
 ### Long-Term Goal
+
 Allow hotel owners from different countries to use the same application with minimal configuration.
 
 ---
@@ -18,28 +21,35 @@ Allow hotel owners from different countries to use the same application with min
 ## Future Requirements
 
 ### Hotel Registration
+
 During initial setup, the application should allow the hotel owner to register: Hotel Name, Country, Address, Contact Information, Hotel Facilities (WiFi, Restaurant, Parking, Laundry, Swimming Pool, etc.).
 
 ### Multi-Currency Support
+
 The application should support multiple currencies based on the hotel's country (INR, USD, EUR, GBP, etc.). Planned for future implementation.
 
 ### Room Image Management
+
 During room creation, the hotel owner should be able to: Add, Update, and Remove room images.
 
 ### Customer Identity Storage
+
 Customer records should support storing scanned identification documents (Passport, National ID, Driving License).
 
 ### OCR-Based Customer Registration
+
 Future versions may support automatic extraction of customer information from scanned identity documents.
 
 ### Billing System
+
 During checkout, the application should: Generate bill automatically, Calculate charges, Produce printable invoice. Printing support should be available from within the application.
 
-
 ### Frontend & Desktop Requirements Converted From Previous Architecture Decisions
+
 These requirements are no longer treated as completed frontend architecture decisions because the frontend is being rebuilt from scratch. They are preserved here as future requirements to revisit during the new React/Electron implementation.
 
 #### Future Requirement FE-59: UI/UX Design System
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 59 (Accepted)
 
@@ -47,62 +57,61 @@ These requirements are no longer treated as completed frontend architecture deci
 **Design Language:** Inspired by Linear, Notion, Stripe Dashboard. Corner radius 10-14px. Soft shadows. Premium typography. Light/dark mode. Smooth animations.
 **Layout:** Desktop-first, collapsible sidebar, breadcrumb navigation, toast notifications, keyboard shortcuts, search everywhere, empty states.
 
-
 #### Future Requirement FE-60: Module Specifications & Features
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 60 (Accepted)
 
 Complete feature requirements and role-based permissions for all 18 modules documented. Owner gets full access. Roles: Receptionist, Room Manager, Housekeeping, Accountant, Security, Custom. Employees never see management modules.
 
-
 #### Future Requirement FE-61: Dynamic UI Configuration & Setup Flow
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 61 (Accepted)
 
 Sidebar dynamically adapts to hotel's registered facilities (e.g., no Restaurant tab if not configured). Strict setup flow: Installer → RegisterOwner → RegisterHotel → Dashboard. localStorage heavily used for multi-step setup.
 
-
 #### Future Requirement FE-62: Multi-Currency Support & Flexible Room Types
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 62 (Accepted)
 
 Country/Currency selection during setup. Dynamic currency display from localStorage. Searchable room type selector with 20 presets + custom input. Inline status change in Rooms table.
 
-
 #### Future Requirement FE-63: Role-Based Access Control (RBAC) & Module Visibility
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 63 (Accepted)
 
 Three login roles: Owner (full), Manager (Dashboard, Rooms, Inventory, Expenses), Employee (Dashboard, Rooms, Inventory). Role stored in localStorage. Sidebar filters nav items by role.
 
-
 #### Future Requirement FE-64: Full Module Implementation Strategy
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 64 (Accepted)
 
 All 10 remaining modules implemented with consistent architecture: useState + lazy initialization from localStorage, Filter/Sort → Display → Mutate → Write-back pattern, data table/card grid with sort/search/filter/pagination, Add/Edit/View modals, inline actions, stats cards.
 
-
 #### Future Requirement FE-65: Bookings Module Data Model
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 65 (Accepted)
 
 Booking stores guest info, room assignment, dates, status (Reserved/Checked In/Checked Out/Cancelled), auto-calculated total, payment tracking. Room availability validated against date conflicts.
 
-
 #### Future Requirement FE-66: Guest Profile Architecture
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 66 (Accepted)
 
 Guests as independent profiles matched to bookings at runtime by name. Card-based layout with avatar initials, stay history from bookings.
 
-
 #### Future Requirement FE-67: HR & Payroll System Design
+
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 67 (Accepted)
 
 Tab-based interface: Attendance (daily marking), Payroll (monthly calculation), Payslips. Salary = perDay × presentDays + halfDays × perDay × 0.5.
-
 
 #### Future Requirement FE-68: Expense Tracking Architecture
 
@@ -111,14 +120,12 @@ Tab-based interface: Attendance (daily marking), Payroll (monthly calculation), 
 
 Flat expense records with 12 predefined categories, color-coded dots, category breakdown bar chart, date range filtering, payment method tracking.
 
-
 #### Future Requirement FE-69: Inventory Management Design
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 69 (Accepted)
 
 Quantity-based tracking with stock alerts (In Stock/Low Stock/Out of Stock). Quick +/- stock adjustment, per-unit cost, total value, storage location.
-
 
 #### Future Requirement FE-70: Restaurant Module Design
 
@@ -127,14 +134,12 @@ Quantity-based tracking with stock alerts (In Stock/Low Stock/Out of Stock). Qui
 
 Three tabs: Orders (status workflow), Menu (items with categories), Tables (visual status grid). Order status progression: Preparing → Ready → Served → Paid.
 
-
 #### Future Requirement FE-71: Reports Module with recharts
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 71 (Accepted)
 
 Four report types: Overview (bar + pie + KPIs), Occupancy (distribution), Revenue (line + pie), Expenses (horizontal bar). All responsive with Tooltips.
-
 
 #### Future Requirement FE-72: Data Export/Import System
 
@@ -143,14 +148,12 @@ Four report types: Overview (bar + pie + KPIs), Occupancy (distribution), Revenu
 
 Settings module provides JSON export/import of all localStorage data with timestamp. Blob download and FileReader upload patterns.
 
-
 #### Future Requirement FE-73: Module localStorage Key Registry
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 73 (Accepted)
 
 Every module has a dedicated localStorage key: `helloStay_hotelData`, `helloStay_rooms`, `helloStay_bookings`, `helloStay_guests`, `helloStay_employees`, `helloStay_attendance`, `helloStay_payslips`, `helloStay_expenses`, `helloStay_inventory`, `helloStay_facilityBookings`, `helloStay_facilityCharges`, `helloStay_restaurantMenu`, `helloStay_restaurantOrders`.
-
 
 #### Future Requirement FE-74: Booking ↔ Room Status Synchronization
 
@@ -159,14 +162,12 @@ Every module has a dedicated localStorage key: `helloStay_hotelData`, `helloStay
 
 Room status is derived from booking status. New Booking → Reserved, Checked In → Occupied, Checked Out → Cleaning, Cancelled/Deleted → Available (if no other active bookings). `syncRoomStatus()` helper atomically updates room state and localStorage.
 
-
 #### Future Requirement FE-75: Role-Based Manual Room Status Overrides
 
 **Status:** Future Requirement / To be implemented during frontend rebuild | **Original Date:** 2026-06-24
 **Source:** Former AD 75 (Accepted)
 
 Only Owner/Manager can manually change room status to: Available, Maintenance, Cleaning. Occupied/Reserved are booking-driven only. Employee sees read-only badge.
-
 
 #### Future Requirement FE-76: App Default Route — Login-First Behavior
 
@@ -175,14 +176,12 @@ Only Owner/Manager can manually change room status to: Available, Maintenance, C
 
 Root (`/`) and fallback (`*`) redirect to `/login`. Login is the mandatory entry point with explicit role selection.
 
-
 #### Future Requirement FE-77: Room Edit Modal Reuse Pattern
 
 **Status:** Future Requirement / To be implemented during frontend rebuild | **Original Date:** 2026-06-24
 **Source:** Former AD 77 (Accepted)
 
 `AddRoomModal` accepts optional `editingRoom` prop. When provided → Edit mode with pre-filled form. `key` prop forces clean remount between add/edit modes.
-
 
 #### Future Requirement FE-78: Dashboard Room Occupancy Chart Redesign — Cross-Highlight Interaction
 
@@ -191,14 +190,12 @@ Root (`/`) and fallback (`*`) redirect to `/login`. Login is the mandatory entry
 
 Donut chart + status breakdown panel with cross-highlight. Single `hoveredStatus` state links chart segments to panel rows via `fillOpacity`/CSS opacity. No floating tooltips. Empty state fallback. CSS transitions replace Framer Motion for hover effects. Reduced from ~280 to 198 lines.
 
-
 #### Future Requirement FE-79: Inline Delete Confirmation Pattern
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 79 (Accepted)
 
 Delete actions use inline Yes/No confirmation buttons replacing separate modals. Single `deletingId` state tracks which row is in confirm mode. Reducing modal fatigue for rapid operations.
-
 
 #### Future Requirement FE-80: Smart Pagination Algorithm
 
@@ -207,14 +204,12 @@ Delete actions use inline Yes/No confirmation buttons replacing separate modals.
 
 Pagination shows max 5 page buttons with sliding window. When total pages > 5, window shifts based on current page position (start, middle, end). Previous/Next buttons with disabled states at boundaries.
 
-
 #### Future Requirement FE-81: useCallback + Functional State Updates Pattern
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 81 (Accepted)
 
 Save functions use `useCallback` for referential stability. State updates use functional form (`prev => ...`) for correctness when multiple state updates are batched. This prevents stale closures in async operations.
-
 
 #### Future Requirement FE-82: Currency Symbol Lookup Table
 
@@ -223,14 +218,12 @@ Save functions use `useCallback` for referential stability. State updates use fu
 
 Currency symbols stored in a static lookup object (`CURRENCY_SYMBOLS`) in `utils/currencies.js` for O(1) access. Supports 26+ currencies. Fallback to `₹` when currency not found or localStorage empty.
 
-
 #### Future Requirement FE-83: Static Data Constants Outside Components
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 83 (Accepted)
 
 Static data (status options, color maps, payment types, chart colors) defined as module-level constants outside components. Avoids redefinition on every render, keeps JSX clean, and centralizes configuration.
-
 
 #### Future Requirement FE-84: Try/Catch JSON Parsing Safety Pattern
 
@@ -239,7 +232,6 @@ Static data (status options, color maps, payment types, chart colors) defined as
 
 All `localStorage.getItem()` + `JSON.parse()` calls are wrapped in try/catch with fallback to default values. Prevents app crashes from corrupt localStorage data.
 
-
 #### Future Requirement FE-85: Gradient Header Pattern in Modals
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
@@ -247,18 +239,17 @@ All `localStorage.getItem()` + `JSON.parse()` calls are wrapped in try/catch wit
 
 All modals use a gradient header section (`bg-gradient-to-r from-blue-600 to-indigo-700`) for visual hierarchy. Consistent across BookingModal, BillingModal, GuestView, and EmployeeDetail modals.
 
-
 #### Future Requirement FE-86: Authentication Flow, Profile Selection & Startup Sequence
 
 **Status:** Future Requirement / To be implemented during frontend rebuild
 **Source:** Former AD 86 (Accepted)
 
 The application needs a seamless and professional entry point that gracefully handles different authentication states while supporting multiple users (e.g., Owner, Manager, Employee) for a single hotel instance. The standard username/password flow was too tedious for locally saved roles.
+
 - **Animated Splash Entry**: A new `<Splash />` component acts as the global entry point (`/`). It displays a premium animation. After 2 seconds, it provides a "Get Started" gateway button that unconditionally routes all users to the Profile Selection screen.
 - **Local Profile Selection**: Instead of a traditional login form, we implemented an "Account Selection" screen similar to modern streaming services (Netflix/Hulu). Local accounts are stored in `localStorage` under `helloStay_accounts`.
 - **Profile Authentication & Remember Me**: Clicking a profile does not log the user in instantly. Instead, it transitions to a Password Entry view dedicated to that specific profile. The "Remember Me" toggle (which sets `helloStay_keepLoggedIn`) is located on this specific authentication screen.
 - **Session Persistence**: Session state is managed via `helloStay_session` and `helloStay_keepLoggedIn`. If successful, the user is routed to the Dashboard (or Hotel Setup if incomplete).
-
 
 #### Future Requirement FE-87: V2 Features / Deferred Modules
 
@@ -267,6 +258,7 @@ The application needs a seamless and professional entry point that gracefully ha
 
 To streamline the initial Minimum Viable Product (MVP) and focus on the core booking experience, several advanced operational modules have been temporarily removed from the project and deferred to Version 2.0.
 When planning Version 2.0, the following modules should be restored:
+
 1. **Employees**: Staff records, roles, statuses.
 2. **HR and Payroll**: Management of employee shifts, salaries, deductions, and performance reviews.
 3. **Expenses**: A ledger for tracking hotel operational costs (electricity, maintenance) against revenue.
@@ -275,18 +267,17 @@ When planning Version 2.0, the following modules should be restored:
 6. **Restaurant**: POS integration specifically for in-house dining, table management, and room service.
 7. **Reports**: Advanced analytics dashboards for revenue visualization and occupancy forecasting.
 
-
 #### Future Requirement FE-88: Profiles, Permissions & Hotel Information Restructure
 
 **Status:** Future Requirement / To be implemented during frontend rebuild | **Original Date:** 2026-06-25
 **Source:** Former AD 88 (Accepted)
 
 Significant architectural improvements were made to identity, permissions, and initial routing:
+
 - **Enhanced Profile Management:** Added inline "Edit Role" and "Delete Role" capabilities to both the `Login` screen and the dashboard `Profile` screen. Extended profile data to support updating credentials and assigned permissions. Prevented deletion of the final Owner profile.
 - **Permission Management System:** Replaced hardcoded string roles with a flexible, array-based module permission system (e.g., `Bookings`, `Rooms`, `Settings`). The Owner manages these from the profile edit modal. `Sidebar.jsx` and `AppRoutes.jsx` (via `ProtectedRoute`) now dynamically render and protect routes based on the active session's permission array. Owners implicitly inherit `Full Access`.
 - **Hotel Information Hub:** Replaced `RegisterHotel.jsx` with a dual-purpose `HotelInfo.jsx`. It sits immediately after the `Splash` screen. If unconfigured, it acts as the setup form. If configured, it acts as a read-only display hub with "Edit", "Delete", and "Proceed" actions.
-- **Security & Owner Authentication:** Introduced `OwnerAuthModal`. Privileged actions—such as Editing/Deleting the Hotel, or Editing/Deleting *another* Owner profile—now prompt for the target Owner's password. Editing/Deleting an Employee profile does not require the password prompt when initiated by an Owner, smoothing UX while maintaining strict security for administrative accounts.
-
+- **Security & Owner Authentication:** Introduced `OwnerAuthModal`. Privileged actions—such as Editing/Deleting the Hotel, or Editing/Deleting _another_ Owner profile—now prompt for the target Owner's password. Editing/Deleting an Employee profile does not require the password prompt when initiated by an Owner, smoothing UX while maintaining strict security for administrative accounts.
 
 #### Future Requirement FE-89: Simplified Checkout Configuration
 
@@ -294,9 +285,9 @@ Significant architectural improvements were made to identity, permissions, and i
 **Source:** Former AD 89 (Accepted)
 
 Based on user feedback, the fixed checkout time settings (e.g., global 11:00 AM checkout) and the associated late checkout fee automatic calculations have been removed from the application modules (`Settings`, `HotelInfo`).
+
 - **Deferred Feature:** Fixed global checkout times are documented here for potential future addition in a V2 billing update.
 - **Current Approach:** The application retains the 12hr / 24hr "Checkout Duration" setting, which dictates stay length logic. Check-in and check-out logic during Bookings continues to rely on explicitly user-selected dates and times rather than a globally enforced hour.
-
 
 #### Future Requirement FE-90: Centralized Data Store as Single Source of Truth
 
@@ -305,14 +296,12 @@ Based on user feedback, the fixed checkout time settings (e.g., global 11:00 AM 
 
 All cross-module data mutations now route through `frontend/src/utils/dataStore.js`. Modules no longer write directly to `localStorage` for shared entities. Exports include `SYNC_EVENT`, `triggerSync()`, `getRooms/saveRooms`, `getGuests/saveGuests`, `getBookings/saveBookings`, `createBookingWithGuest`, `updateBookingStatus`, `deleteBooking`, `deleteRoom`. Components use `get*()` for lazy state initialization and listen to `SYNC_EVENT` to re-fetch data when another module mutates it.
 
-
 #### Future Requirement FE-91: Strict GuestId Referential Integrity
 
 **Status:** Future Requirement / To be implemented during frontend rebuild | **Original Date:** 2026-06-25
 **Source:** Former AD 91 (Accepted)
 
 Bookings store `guestId` for primary guest and `guests[].guestId` for additional guests. The Guests module matches bookings via `booking.guestId === guest.id`. A legacy fallback matches by exact `guestName + guestPhone` for pre-migration bookings. This replaces unreliable name-based matching that broke on name changes or duplicates.
-
 
 #### Future Requirement FE-92: Type-Driven Occupancy Automation
 
@@ -321,14 +310,12 @@ Bookings store `guestId` for primary guest and `guests[].guestId` for additional
 
 Room maxOccupancy is auto-populated from room type when creating a new room: Single→1, Double/Twin→2, Suite/Family/Deluxe→4, Triple→3, Quad→4. Implemented via `autoSetOccupancyFromRoomType()` in dataStore, triggered only on create (not edit). Guest count in BookingModal is capped to the room's `maxOccupancy`.
 
-
 #### Future Requirement FE-93: Guarded Room State Transitions
 
 **Status:** Future Requirement / To be implemented during frontend rebuild | **Original Date:** 2026-06-25
 **Source:** Former AD 93 (Accepted)
 
 Room status is primarily derived from booking lifecycle. Manual overrides are blocked when an active Reserved or Checked In booking exists for that room. The status state machine: `Reserved → Occupied → Cleaning → Available` (with `Cancelled` as terminal state). Only the Owner can Force a room to Available via a confirmation dialog (for emergency cases like guest left without checkout).
-
 
 #### Future Requirement FE-94: Unified Activity Feed
 
@@ -337,7 +324,6 @@ Room status is primarily derived from booking lifecycle. Manual overrides are bl
 
 `getGuestActivity(guestId)` in dataStore returns a sorted, combined array of booking lifecycle events and guest profile changes. Activity types: `booking_created`, `check_in`, `check_out`, `booking_cancelled`, `guest_updated`, `guest_created`. Each entry has `{ id, type, description, timestamp }`. Rendered as a timeline in the Guest View Modal's "All Activity" tab with type-specific icons and colors.
 
-
 #### Future Requirement FE-95: One-Time Legacy Migration
 
 **Status:** Future Requirement / To be implemented during frontend rebuild | **Original Date:** 2026-06-25
@@ -345,12 +331,12 @@ Room status is primarily derived from booking lifecycle. Manual overrides are bl
 
 A startup migration (`migrateLegacyBookings()`) runs once on app load, guarded by the `helloStay_migration_v1_complete` localStorage flag. It matches each booking without a `guestId` to a guest profile by exact `guestName + guestPhone` match, then writes the matched `guestId` back to the booking. The migration runs silently and is transparent to the user.
 
-
 ---
 
 ## Technology Stack
 
 ### Frontend
+
 - **React 19** (via Vite 8) - Component-based architecture with reusability
 - **Tailwind CSS 3** - Utility-first CSS framework for rapid UI development
 - **Framer Motion 12** - Production-ready animation library
@@ -361,9 +347,11 @@ A startup migration (`migrateLegacyBookings()`) runs once on app load, guarded b
 - **clsx** + **tailwind-merge** - Conditional CSS class management
 
 ### Desktop Layer
+
 - **Electron 42** - Cross-platform desktop wrapper
 
 ### Backend
+
 - **FastAPI** (Python) - High-performance REST API framework
 - **Uvicorn** - ASGI server
 - **SQLAlchemy 2** (modern Mapped/mapped_column style) - ORM
@@ -373,50 +361,65 @@ A startup migration (`migrateLegacyBookings()`) runs once on app load, guarded b
 - **passlib** + **bcrypt** - Password hashing
 
 ### Database
+
 - **SQLite** - Serverless embedded database (hellostay.db)
 
 ---
 
 ## Application Modules
+
 This section describes every module (page) in HelloStay, its purpose, key features, and target user role.
 
 ### Dashboard
+
 Central overview screen showing real-time hotel performance metrics. KPI cards, Room Occupancy donut chart (recharts), Activity Timeline, Welcome banner with hotel name. Target: Owner, Manager, Employee.
 
 ### Rooms
+
 Manage all hotel rooms. Data table with sort/search/filter/pagination. Inline status change, Add/Edit Room modal with searchable room type selector, dynamic currency display. Target: Owner, Manager, Employee.
 
 ### Bookings
+
 Handle room reservations. Full data table, New Booking modal with room selection, auto-calculate total, room availability validation, status workflow, payment tracking, billing modal with late checkout fee calculation. Target: Owner (planned).
 
 ### Guests
+
 Maintain guest database. Card-based layout with avatar initials, stay history derived from bookings (guestId-based with legacy name+phone fallback), total spent calculation, search/filter/pagination. Tabbed View Modal: Profile (personal info), Stays (full stay history), Facilities (Coming Soon), Expenses (Coming Soon), All Activity (unified timeline of booking lifecycle + profile events). Target: Owner (planned).
 
 ### Employees
+
 Manage hotel staff records. Data table with sort/search/role filter/status filter. Edit/View modals, quick Active/Inactive toggle. Target: Owner.
 
 ### HR & Payroll
+
 Tab-based: Attendance | Payroll | Payslips. Daily attendance marking, monthly salary calculation based on attendance, payslip generation. Target: Owner (planned).
 
 ### Expenses
+
 Track operational expenses. Data table with category filter/date range filter. Category breakdown bar chart, 12 predefined categories, payment method tracking. Target: Owner, Manager.
 
 ### Inventory
+
 Manage supplies and stock. Data table with category/stock status filters. Quick stock adjustment (+/-), stock status alerts (In Stock/Low Stock/Out of Stock). Target: Owner, Manager, Employee.
 
 ### Facilities (Manage Facilities)
+
 Manage hotel facilities (Spa, Pool, Gym, etc.). Facility cards with real-time stats. Booking system with payment status options (Club to Final Bill, Paid Before, Paid After, Complimentary). Charges configuration (All Guests, By Room Type, By Room Number, Free for All). Target: Owner, Manager.
 
 ### Restaurant
+
 Manage in-house restaurant operations. Tabs: Orders (status workflow: Preparing→Ready→Served→Paid), Menu (item management), Tables (visual status grid). Condition: Only visible if "In-house Restaurant" facility selected. Target: Owner, Manager.
 
 ### Reports
+
 Generate analytics with recharts. Tabs: Overview (Revenue bar + Occupancy pie + KPIs), Occupancy (room distribution), Revenue (monthly line + payment pie), Expenses (category horizontal bar). Target: Owner (planned).
 
 ### Settings
+
 Configure application preferences. Tabs: Hotel Profile, System, Backup & Data. Export/Import all localStorage data as JSON. Target: Owner (planned).
 
 ### Profile
+
 View/edit logged-in user's personal profile. Gradient header card, edit name/email/phone, change password form, role badge display. Target: Owner, Manager, Employee (planned).
 
 ---
@@ -424,276 +427,331 @@ View/edit logged-in user's personal profile. Gradient header card, edit name/ema
 ## Backend Architecture Decisions
 
 ### Backend AD 1: Backend Layer Separation
+
 **Status:** Accepted
 
 Backend follows a layered architecture: `api/`, `core/`, `database/`, `models/`, `schemas/`. Each folder has a single responsibility for cleaner code, easier debugging, better scalability, and simpler testing.
 
 ### Backend AD 2: Database Choice
+
 **Status:** Accepted
 
 **Chosen:** SQLite. HelloStay is an offline desktop application requiring no server setup, easy backup, easy deployment, and lightweight footprint.
 
 ### Backend AD 3: Database Layer Separation
+
 **Status:** Accepted
 
 Database-related code (`base.py`, `connection.py`, `session.py`) is stored separately from API code for reusability and maintainability.
 
 ### Backend AD 4: Model-Based Database Design
+
 **Status:** Accepted
 
 Database tables are defined using SQLAlchemy models for object-oriented design, cleaner code, and easier maintenance.
 
 ### Backend AD 5: ORM-Based Table Generation
+
 **Status:** Accepted (Superseded by AD 48 for production)
 
 Tables were initially generated from SQLAlchemy models rather than raw SQL for consistent schema definition.
 
 ### Backend AD 6: Session-Based Database Access
+
 **Status:** Accepted
 
 Database operations performed through SQLAlchemy sessions for centralized access, better transaction control, and industry-standard patterns.
 
 ### Backend AD 7: Separate API Layer
+
 **Status:** Accepted
 
 API endpoints are stored in dedicated router files per module for better organization and scalability.
 
 ### Backend AD 8: Documentation-Driven Development
+
 **Status:** Accepted
 
 Documentation maintained alongside development. Knowledge gained during development is preserved for future reference.
 
 ### Backend AD 9: Hotel-Level Business Settings
+
 **Status:** Accepted (Future)
 
 Business configuration settings (check-in time, checkout time, GST, invoice settings) will be stored in a dedicated `hotel_settings` table rather than the `rooms` or `system_info` table.
 
 ### Backend AD 10: V1 First, V2 Later Strategy
+
 **Status:** Accepted
 
 Prioritize completing a fully functional V1 (core functionality, complete hotel workflow) before implementing advanced architecture improvements. V2 will focus on normalization, relationships, enhanced validation, and performance optimizations.
 
 ### Backend AD 11: Room Facilities Storage
+
 **Status:** Accepted (V1)
 
 Room facilities stored as a comma-separated string in V1 for simplicity. A dedicated facilities table may be introduced in V2.
 
 ### Backend AD 12: Room Status Validation Strategy
+
 **Status:** Accepted (V1)
 
 Room status stored as a String field in V1 with allowed values: Available, Occupied, Reserved, Maintenance. Validation on frontend dropdown and API.
 
 ### Backend AD 13: Optional Maximum Occupancy
+
 **Status:** Accepted
 
 `max_occupancy` field is optional and nullable to accommodate hotel owners who may not define it.
 
 ### Backend AD 14: Room Status vs Reservation Availability
+
 **Status:** Accepted
 
 `room_status` represents current operational state only. Date-based availability is determined through reservation records.
 
 ### Backend AD 15: Upcoming Reservation Visibility
+
 **Status:** Accepted
 
 Future reservations are not stored in `room_status`. They are obtained from reservation records.
 
 ### Backend AD 16: Room Configuration vs Room Operations
+
 **Status:** Accepted (V1)
 
 Single `RoomUpdate` schema used for simplicity in V1. Room operations (status) and configuration (price, type) may be separated in V2.
 
 ### Backend AD 17: Centralized Database Session Management
+
 **Status:** Accepted
 
 Database sessions managed through a shared `get_db()` dependency to avoid repetitive session creation code.
 
 ### Backend AD 18: Database Session Dependency
+
 **Status:** Accepted
 
 Shared `get_db()` dependency uses yield/finally pattern for automatic session cleanup.
 
 ### Backend AD 19: Database Access Pattern
+
 **Status:** Accepted
 
 FastAPI dependency injection (`db: Session = Depends(get_db)`) replaces manual session creation per endpoint.
 
 ### Backend AD 20: Explicit Schema-to-Model Mapping
+
 **Status:** Accepted (V1)
 
 Explicit field mapping (`room_number=room.room_number`) used in V1 instead of `Room(**room.model_dump())` for easier learning and debugging.
 
 ### Backend AD 21: Room API Response Strategy
+
 **Status:** Accepted
 
 Room APIs use FastAPI `response_model` instead of manual response dictionaries for cleaner code and validation.
 
 ### Backend AD 22: Pydantic ORM Serialization
+
 **Status:** Accepted
 
 `model_config = ConfigDict(from_attributes=True)` enables direct ORM-to-Pydantic serialization.
 
 ### Backend AD 23: Room Creation API Pattern
+
 **Status:** Accepted
 
 Standard pattern: Create ORM object → `db.add()` → `db.commit()` → `db.refresh()` → Return ORM object.
 
 ### Backend AD 24: Router Registration Pattern
+
 **Status:** Accepted
 
 Each module exports an `APIRouter` registered in `main.py` via `app.include_router()`.
 
 ### Backend AD 25: Room Number Uniqueness
+
 **Status:** Accepted
 
 `room_number` has a database-level UNIQUE constraint to prevent duplicates.
 
 ### Backend AD 26: Single Room Retrieval Pattern
+
 **Status:** Accepted
 
 `GET /rooms/{room_id}` with 404 HTTPException when room not found.
 
 ### Backend AD 27: Room Partial Update Strategy
+
 **Status:** Accepted
 
 Uses `model_dump(exclude_unset=True)` + `setattr()` for partial updates, preserving existing values.
 
 ### Backend AD 28: Missing Resource Handling
+
 **Status:** Accepted
 
 All endpoints return HTTP 404 when a requested resource does not exist (REST-compliant).
 
 ### Backend AD 29: Delete Response Strategy
+
 **Status:** Accepted
 
 Delete endpoints return a success message object since the resource no longer exists.
 
 ### Backend AD 30: Guest Information Storage
+
 **Status:** Accepted
 
 Guest table stores identity info only. Booking-related fields (room_number, check_in/out) belong to the Booking/Stay table.
 
 ### Backend AD 31: Guest Phone Number Strategy
+
 **Status:** Accepted (V1)
 
 Phone numbers stored as strings to support international numbers and preserve formatting. Future versions will separate country_code.
 
 ### Backend AD 32: Guest Update Strategy
+
 **Status:** Accepted
 
 `GuestUpdate` schemas use all-optional fields for partial updates. `GuestCreate` requires all fields.
 
 ### Backend AD 33: Migration-Based Schema Management
+
 **Status:** Accepted
 
 Alembic migrations manage all database schema changes to prevent data loss and keep schema synchronized with models.
 
 ### Backend AD 34: Router Prefix Pattern
+
 **Status:** Accepted
 
 Each router defines its own `prefix` and `tags` for cleaner routes and Swagger grouping.
 
 ### Backend AD 35: Separate Guest Identity From Room Assignment
+
 **Status:** Accepted
 
 Guest records store only identity information. Room assignment handled through separate occupancy/check-in logic.
 
 ### Backend AD 36: Room Occupancy Model
+
 **Status:** Accepted
 
 A room may contain multiple guests simultaneously (families, couples, group bookings). No one-guest-per-room restriction.
 
 ### Backend AD 37: Separate Guest Identity From Stay Records
+
 **Status:** Accepted
 
 Guest information and hotel stay information in separate tables. The same guest may stay multiple times.
 
 ### Backend AD 38: Stay Status Simplification
+
 **Status:** Accepted (V1)
 
 Stay table supports only two statuses initially: Checked In, Checked Out.
 
 ### Backend AD 39: Avoid Duplicate Room Information
+
 **Status:** Accepted
 
 Stay table stores `room_id` only (not `room_number`). Room data retrieved through relationship.
 
 ### Backend AD 40: Nullable Check-Out Timestamp
+
 **Status:** Accepted
 
 `check_out_datetime` is nullable. Active stays identified by `check_out_datetime IS NULL`.
 
 ### Backend AD 41: Store Price Snapshot In Stay Records
+
 **Status:** Accepted
 
 Stay table contains `price_per_night` as a snapshot at check-in time. Future room price changes do not affect historical records.
 
 ### Backend AD 42: Stay Records Preserve Historical Relationships
+
 **Status:** Accepted
 
 Stay table does not enforce uniqueness on `guest_id`/`room_id`. Same guest or room can appear in multiple stays.
 
 ### Backend AD 43: Introduce Stay Entity for Occupancy Tracking
+
 **Status:** Accepted
 
 Stay entity introduced as a transactional record linking Guest and Room with price snapshot and timestamps.
 
 ### Backend AD 44: Normalize Guest–Stay Relationship Using a Junction Table
+
 **Status:** Accepted
 
 `GuestStay` junction table supports multiple guests per stay and multiple stays per guest, with `is_primary_guest` flag for billing.
 
 ### Backend AD 45: Keep Direct Model Imports During Learning Phase
+
 **Status:** Temporary
 
 Models use direct imports during learning phase. Will refactor to `TYPE_CHECKING` strategy later.
 
 ### Backend AD 46: Resolve Model Circular Imports Using TYPE_CHECKING
+
 **Status:** Accepted
 
 Bidirectional relationships resolved using `from typing import TYPE_CHECKING` with forward references.
 
 ### Backend AD 47: Adopt Alembic as the Sole Database Schema Manager
+
 **Status:** Accepted
 
 `Base.metadata.create_all()` removed. All schema changes through Alembic migrations.
 
 ### Backend AD 48: Rebuild Initial Migration History Before Feature Development
+
 **Status:** Accepted
 
 Existing dev database and incomplete migration files discarded. Clean initial migration generated.
 
 ### Backend AD 49: Store Historical Stay Price Independently from Room Price
+
 **Status:** Accepted
 
 Stay model stores agreed nightly rate at check-in. Room model stores only current price. Small intentional duplication in exchange for accurate historical billing.
 
 ### Backend AD 50: Validate Auto-Generated Migrations Before Applying
+
 **Status:** Accepted
 
 Every autogenerated migration must be manually reviewed before applying to the database.
 
 ### Backend AD 51: Verify ORM Metadata Before Generating Migrations
+
 **Status:** Accepted
 
 Verify all expected tables are present in `Base.metadata.tables` before generating important migrations.
 
 ### Backend AD 52: Review Auto-Generated Migrations Before Database Upgrade
+
 **Status:** Accepted
 
 Review confirms: table creation, column definitions, primary keys, foreign keys, constraints, indexes, cascade behavior.
 
 ### Backend AD 53: Use Alembic as the Sole Database Schema Manager
+
 **Status:** Accepted
 
 Alembic is the single source of truth. `Base.metadata.create_all()` removed from application startup.
 
 ### Backend AD 54: Adopt Version-Controlled Database Evolution
+
 **Status:** Accepted
 
 Workflow: Update ORM models → Generate migration → Review → Apply via `alembic upgrade head`.
 
 ### Backend AD 55: Separate Documentation by Technology Layer
+
 **Status:** Accepted
 
 Monolithic LEARNING_NOTEBOOK.md split into: BACKEND_CONCEPTS.md, FRONTEND_CONCEPTS.md, ELECTRON_CONCEPTS.md, FULLSTACK_FLOW.md.
@@ -703,6 +761,7 @@ Monolithic LEARNING_NOTEBOOK.md split into: BACKEND_CONCEPTS.md, FRONTEND_CONCEP
 ## Frontend Architecture Decisions
 
 ### Frontend AD 0: Backend-Contract-First Frontend Rebuild Orientation
+
 **Status:** Accepted
 **Date Recorded:** 2026-06-29
 **Milestone:** Frontend Milestone 0 — Frontend Orientation, Backend Contract Review, and Architecture Boundary Confirmation
@@ -713,34 +772,36 @@ The HelloStay frontend rebuild begins with a backend-contract-first orientation 
 Use Milestone 0 to confirm the frontend architecture direction before implementation. The frontend must be designed from the actual FastAPI backend contracts, not from assumptions or the deleted frontend implementation.
 
 This single architecture decision includes the following accepted decisions from Milestone 0:
-* The backend API contract must drive frontend development.
-* FastAPI remains the source of truth for business logic, validation, authentication, database operations, hotel workflows, and finance truth.
-* React is responsible only for the renderer UI: screens, forms, components, routing, state, loading states, error states, and API calls.
-* Electron is responsible only for the desktop shell: app lifecycle, BrowserWindow creation, startup flow, native OS integration, packaging, and future backend startup/checking.
-* Preload/IPC should be used only for safe desktop communication between React renderer and Electron main process.
-* React must not directly access SQLite, filesystem APIs, or backend internals.
-* Electron must not contain room, guest, stay, booking, finance, or database business logic.
-* A central API client must be used later instead of scattered `fetch()` calls.
-* The future frontend structure should be feature-based.
-* Authentication must not be implemented as real frontend integration until backend auth routes exist.
-* The current backend term `Stay` should be used internally instead of pretending there is a complete `/bookings` API.
-* The first frontend-backend integration should be the backend health check using `GET /`.
-* Rooms should be built before Guests, and Guests should be built before Stays.
-* Dashboard should not be implemented first because it depends on existing module data or a future backend summary endpoint.
-* Finance should eventually come from backend-calculated APIs, not permanent frontend-only calculations.
+
+- The backend API contract must drive frontend development.
+- FastAPI remains the source of truth for business logic, validation, authentication, database operations, hotel workflows, and finance truth.
+- React is responsible only for the renderer UI: screens, forms, components, routing, state, loading states, error states, and API calls.
+- Electron is responsible only for the desktop shell: app lifecycle, BrowserWindow creation, startup flow, native OS integration, packaging, and future backend startup/checking.
+- Preload/IPC should be used only for safe desktop communication between React renderer and Electron main process.
+- React must not directly access SQLite, filesystem APIs, or backend internals.
+- Electron must not contain room, guest, stay, booking, finance, or database business logic.
+- A central API client must be used later instead of scattered `fetch()` calls.
+- The future frontend structure should be feature-based.
+- Authentication must not be implemented as real frontend integration until backend auth routes exist.
+- The current backend term `Stay` should be used internally instead of pretending there is a complete `/bookings` API.
+- The first frontend-backend integration should be the backend health check using `GET /`.
+- Rooms should be built before Guests, and Guests should be built before Stays.
+- Dashboard should not be implemented first because it depends on existing module data or a future backend summary endpoint.
+- Finance should eventually come from backend-calculated APIs, not permanent frontend-only calculations.
 
 **Why this decision was made:**
 HelloStay is being rebuilt as a production-oriented offline desktop hotel management system. The frontend must be understandable, maintainable, and aligned with the completed backend architecture.
 
 Starting with an orientation milestone prevents these mistakes:
-* Building UI screens that do not match backend schemas.
-* Creating fake API services.
-* Implementing fake authentication before backend auth routes exist.
-* Moving backend business rules into React.
-* Moving hotel workflow logic into Electron.
-* Rebuilding the deleted frontend blindly.
-* Adding routing, dashboard, or modules before the foundation is clear.
-* Confusing `Booking` and `Stay` while the backend currently exposes `/stay`.
+
+- Building UI screens that do not match backend schemas.
+- Creating fake API services.
+- Implementing fake authentication before backend auth routes exist.
+- Moving backend business rules into React.
+- Moving hotel workflow logic into Electron.
+- Rebuilding the deleted frontend blindly.
+- Adding routing, dashboard, or modules before the foundation is clear.
+- Confusing `Booking` and `Stay` while the backend currently exposes `/stay`.
 
 This decision protects the project architecture and supports the learning goal: understanding how professional engineers plan before implementation.
 
@@ -748,25 +809,26 @@ This decision protects the project architecture and supports the learning goal: 
 No frontend source files were created or modified during this milestone.
 
 Backend files reviewed during this milestone included:
-* Backend `main.py`
-* Backend room API file
-* Backend guest API file
-* Backend stay API file
-* Backend guest-stay API file
-* Backend system-info API file
-* Backend security utility file
-* Backend token schema file
-* Backend database connection/session/base files
-* Backend Room model
-* Backend Guest model
-* Backend Stay model
-* Backend GuestStay model
-* Backend SystemInfo model
-* Backend Room schema
-* Backend Guest schema
-* Backend Stay schema
-* Backend GuestStay schema
-* Existing `PROJECT_NOTES.md`
+
+- Backend `main.py`
+- Backend room API file
+- Backend guest API file
+- Backend stay API file
+- Backend guest-stay API file
+- Backend system-info API file
+- Backend security utility file
+- Backend token schema file
+- Backend database connection/session/base files
+- Backend Room model
+- Backend Guest model
+- Backend Stay model
+- Backend GuestStay model
+- Backend SystemInfo model
+- Backend Room schema
+- Backend Guest schema
+- Backend Stay schema
+- Backend GuestStay schema
+- Existing `PROJECT_NOTES.md`
 
 **Frontend structure after cleanup:**
 No frontend structure was changed during Milestone 0.
@@ -787,115 +849,126 @@ hooks/
 utils/
 
 **Accepted implementation details:**
-* No implementation was performed in this milestone.
-* Milestone 0 was treated as a planning, review, and architecture-boundary milestone.
-* The current backend was reviewed as the source of truth.
-* The currently registered backend areas were identified as:
 
-  * Health Check
-  * System Info
-  * Rooms
-  * Guests
-  * Stays
-  * Guest-Stays
-* The first future frontend API integration should use:
+- No implementation was performed in this milestone.
+- Milestone 0 was treated as a planning, review, and architecture-boundary milestone.
+- The current backend was reviewed as the source of truth.
+- The currently registered backend areas were identified as:
+  - Health Check
+  - System Info
+  - Rooms
+  - Guests
+  - Stays
+  - Guest-Stays
 
-  * `GET /`
-* A future shared API client should be introduced before feature API services.
-* Future API service files should be organized by feature:
+- The first future frontend API integration should use:
+  - `GET /`
 
-  * `systemApi.js`
-  * `roomsApi.js`
-  * `guestsApi.js`
-  * `staysApi.js`
-  * `guestStaysApi.js`
-* Real authentication should wait until backend authentication routes are implemented and registered.
-* The frontend should use `Stay` internally because the backend currently exposes `/stay`, not `/bookings`.
+- A future shared API client should be introduced before feature API services.
+- Future API service files should be organized by feature:
+  - `systemApi.js`
+  - `roomsApi.js`
+  - `guestsApi.js`
+  - `staysApi.js`
+  - `guestStaysApi.js`
+
+- Real authentication should wait until backend authentication routes are implemented and registered.
+- The frontend should use `Stay` internally because the backend currently exposes `/stay`, not `/bookings`.
 
 **Backend contract considered:**
 Current backend APIs confirmed:
 
 Health Check:
-* `GET /`
+
+- `GET /`
 
 System Info:
-* `GET /system-info`
+
+- `GET /system-info`
 
 Rooms:
-* `POST /rooms`
-* `GET /rooms`
-* `GET /rooms/{room_id}`
-* `PUT /rooms/{room_id}`
-* `DELETE /rooms/{room_id}`
+
+- `POST /rooms`
+- `GET /rooms`
+- `GET /rooms/{room_id}`
+- `PUT /rooms/{room_id}`
+- `DELETE /rooms/{room_id}`
 
 Guests:
-* `POST /guests`
-* `GET /guests`
-* `GET /guests/{guest_id}`
-* `PUT /guests/{guest_id}`
-* `DELETE /guests/{guest_id}`
+
+- `POST /guests`
+- `GET /guests`
+- `GET /guests/{guest_id}`
+- `PUT /guests/{guest_id}`
+- `DELETE /guests/{guest_id}`
 
 Stays:
-* `POST /stay`
-* `GET /stay`
-* `GET /stay/{stay_id}`
-* `PUT /stay/{stay_id}`
-* `DELETE /stay/{stay_id}`
+
+- `POST /stay`
+- `GET /stay`
+- `GET /stay/{stay_id}`
+- `PUT /stay/{stay_id}`
+- `DELETE /stay/{stay_id}`
 
 Guest-Stays:
-* `POST /guest-stays`
-* `GET /guest-stays`
-* `GET /guest-stays/{guest_stay_id}`
-* `PUT /guest-stays/{guest_stay_id}`
-* `DELETE /guest-stays/{guest_stay_id}`
+
+- `POST /guest-stays`
+- `GET /guest-stays`
+- `GET /guest-stays/{guest_stay_id}`
+- `PUT /guest-stays/{guest_stay_id}`
+- `DELETE /guest-stays/{guest_stay_id}`
 
 Backend/API gaps identified:
-* No registered auth router was visible in the uploaded backend entry file.
-* No confirmed register endpoint.
-* No confirmed login endpoint.
-* No confirmed current-user/session endpoint.
-* No dashboard summary endpoint.
-* No finance summary endpoint.
-* No true `/bookings` API.
-* No available-room search endpoint.
-* No dedicated check-in/check-out workflow endpoints.
+
+- No registered auth router was visible in the uploaded backend entry file.
+- No confirmed register endpoint.
+- No confirmed login endpoint.
+- No confirmed current-user/session endpoint.
+- No dashboard summary endpoint.
+- No finance summary endpoint.
+- No true `/bookings` API.
+- No available-room search endpoint.
+- No dedicated check-in/check-out workflow endpoints.
 
 **What was intentionally not added:**
-* No React code
-* No Electron code
-* No React Router
-* No API client
-* No Axios/fetch services
-* No authentication UI
-* No dashboard
-* No rooms UI
-* No guests UI
-* No stays/bookings UI
-* No finance/history UI
-* No shared components
-* No shared context/state management
-* No custom hooks
-* No utility modules
-* No preload/IPC implementation
-* No backend startup from Electron
-* No desktop packaging
+
+- No React code
+- No Electron code
+- No React Router
+- No API client
+- No Axios/fetch services
+- No authentication UI
+- No dashboard
+- No rooms UI
+- No guests UI
+- No stays/bookings UI
+- No finance/history UI
+- No shared components
+- No shared context/state management
+- No custom hooks
+- No utility modules
+- No preload/IPC implementation
+- No backend startup from Electron
+- No desktop packaging
 
 **Bugs/issues found and resolved:**
-* No source-code bugs were fixed because Milestone 0 did not modify code.
-* A major planning issue was identified: authentication utilities exist, but real auth routes were not confirmed as registered in the uploaded backend entry file.
-* A naming mismatch was identified: V1 product language says “Bookings,” but the current backend exposes “Stays.”
-* A sequencing issue was resolved: Dashboard, authentication, and bookings should not be the first implementation targets.
-* The correct first integration was selected: Start Page plus backend health check.
+
+- No source-code bugs were fixed because Milestone 0 did not modify code.
+- A major planning issue was identified: authentication utilities exist, but real auth routes were not confirmed as registered in the uploaded backend entry file.
+- A naming mismatch was identified: V1 product language says “Bookings,” but the current backend exposes “Stays.”
+- A sequencing issue was resolved: Dashboard, authentication, and bookings should not be the first implementation targets.
+- The correct first integration was selected: Start Page plus backend health check.
 
 **Remaining tasks:**
-* Start Frontend Milestone 1 if not already completed in the active project timeline.
-* Keep frontend implementation aligned with actual backend contracts.
-* Add real authentication only after backend auth endpoints are available.
-* Add dashboard only after enough backend data or a dashboard summary endpoint exists.
-* Add finance only after backend finance support exists, or clearly mark any frontend-derived finance as temporary.
-* Revisit the Booking vs Stay model when the backend supports true reservation workflows.
-* Introduce a central API client before building feature-level API services.
-* Keep Electron limited to desktop shell responsibilities.
+
+- Start Frontend Milestone 1 if not already completed in the active project timeline.
+- Keep frontend implementation aligned with actual backend contracts.
+- Add real authentication only after backend auth endpoints are available.
+- Add dashboard only after enough backend data or a dashboard summary endpoint exists.
+- Add finance only after backend finance support exists, or clearly mark any frontend-derived finance as temporary.
+- Revisit the Booking vs Stay model when the backend supports true reservation workflows.
+- Introduce a central API client before building feature-level API services.
+- Keep Electron limited to desktop shell responsibilities.
 
 **Next recommended step:**
 Proceed to the next milestone in the frontend rebuild sequence.
@@ -908,10 +981,10 @@ Keep Electron limited to desktop shell responsibilities: app lifecycle, BrowserW
 
 Do not add hotel features, routing, backend integration, authentication, dashboard, rooms, guests, stays/bookings, finance, or history during the Electron shell setup milestone.
 
-
 ---
 
 ### Frontend AD 1: Minimal React Foundation Before Features
+
 **Status:** Accepted
 **Date Recorded:** 2026-06-29
 **Milestone:** Frontend Milestone 1 — React Project Setup
@@ -925,54 +998,58 @@ Create a clean React frontend using Vite with JavaScript, not TypeScript. Keep t
 The frontend is being rebuilt from scratch for learning, maintainability, and production clarity. Starting with a small foundation prevents confusion and avoids mixing React setup with unrelated concerns such as routing, authentication, API services, dashboard UI, rooms, guests, bookings, or Electron. This also keeps React clearly separated as the future Electron renderer process.
 
 **Affected files:**
-* `frontend/src/main.jsx`
-* `frontend/src/App.jsx`
-* `frontend/src/styles/global.css`
-* `frontend/vite.config.js`
+
+- `frontend/src/main.jsx`
+- `frontend/src/App.jsx`
+- `frontend/src/styles/global.css`
+- `frontend/vite.config.js`
 
 **Frontend structure after cleanup:**
 frontend/
-  src/
-    main.jsx
-    App.jsx
-    styles/
-      global.css
+src/
+main.jsx
+App.jsx
+styles/
+global.css
 
 **Accepted implementation details:**
-* `main.jsx` imports React, `createRoot`, `App.jsx`, and `./styles/global.css`.
-* `App.jsx` renders a minimal HelloStay setup screen only.
-* `global.css` contains only basic reset styles, typography, body layout, and temporary welcome-card styling.
-* `vite.config.js` fixes the Vite dev server to port `5173` with `strictPort: true`.
-* Unused Vite starter files were removed:
 
-  * `src/App.css`
-  * `src/index.css`
-  * `src/assets/react.svg`
-  * `src/assets/vite.svg`
-  * `src/assets/hero.png`
-  * empty `src/assets/` folder
+- `main.jsx` imports React, `createRoot`, `App.jsx`, and `./styles/global.css`.
+- `App.jsx` renders a minimal HelloStay setup screen only.
+- `global.css` contains only basic reset styles, typography, body layout, and temporary welcome-card styling.
+- `vite.config.js` fixes the Vite dev server to port `5173` with `strictPort: true`.
+- Unused Vite starter files were removed:
+  - `src/App.css`
+  - `src/index.css`
+  - `src/assets/react.svg`
+  - `src/assets/vite.svg`
+  - `src/assets/hero.png`
+  - empty `src/assets/` folder
 
 **Backend contract considered:**
 The backend already allows the React development origin at `http://localhost:5173`, so the frontend dev server must remain on port `5173`.
 
 **What was intentionally not added:**
-* No React Router
-* No API client
-* No Axios/fetch services
-* No authentication UI
-* No dashboard
-* No rooms, guests, stays, bookings, finance, or history pages
-* No Electron main/preload setup
-* No backend startup from Electron
-* No Tailwind or design system setup yet
+
+- No React Router
+- No API client
+- No Axios/fetch services
+- No authentication UI
+- No dashboard
+- No rooms, guests, stays, bookings, finance, or history pages
+- No Electron main/preload setup
+- No backend startup from Electron
+- No Tailwind or design system setup yet
 
 **Bugs/issues found and resolved:**
-* The folder review initially included `node_modules`, creating noisy output.
-* Correct review command should focus on `src/` or exclude `node_modules`.
-* Unused Vite starter files were identified and removed.
-* No React code errors were found in reviewed files.
+
+- The folder review initially included `node_modules`, creating noisy output.
+- Correct review command should focus on `src/` or exclude `node_modules`.
+- Unused Vite starter files were identified and removed.
+- No React code errors were found in reviewed files.
 
 **Sub-decisions included in this AD:**
+
 - Use Vite + React as the frontend foundation.
 - Use JavaScript instead of TypeScript for the rebuild.
 - Keep React as the future Electron renderer process.
@@ -990,10 +1067,11 @@ The backend already allows the React development origin at `http://localhost:517
 - Do not move backend business logic into React.
 
 **Remaining tasks:**
-* Verify `npm run dev` opens the app at `http://localhost:5173`.
-* Confirm browser console has no red errors.
-* Confirm Network tab shows no backend API calls during Milestone 1.
-* Begin Electron setup only in Milestone 2.
+
+- Verify `npm run dev` opens the app at `http://localhost:5173`.
+- Confirm browser console has no red errors.
+- Confirm Network tab shows no backend API calls during Milestone 1.
+- Begin Electron setup only in Milestone 2.
 
 **Next recommended step:**
 Start Frontend Milestone 2: Electron Desktop Shell Setup. Keep Electron limited to desktop shell responsibilities: app lifecycle, BrowserWindow creation, secure preload planning, and renderer loading. Do not add hotel features, routing, backend integration, or authentication yet.
@@ -1001,55 +1079,60 @@ Start Frontend Milestone 2: Electron Desktop Shell Setup. Keep Electron limited 
 ---
 
 ### Frontend AD 2: Electron Desktop Shell Setup
+
 **Status:** Accepted
 **Date Recorded:** 2026-06-29
 **Milestone:** Frontend Milestone 2 — Electron Desktop Shell Setup
 
 #### Context
+
 HelloStay is an offline desktop Hotel Management System. The frontend was already initialized as a minimal Vite + React application in Milestone 1. The next step was to introduce Electron as the desktop shell while keeping the architecture clean and avoiding premature feature development.
 
 Electron is responsible for desktop application behavior. React remains responsible for the user interface. FastAPI remains the source of truth for business logic, validation, database operations, authentication, and API contracts.
 
 #### Decision
+
 Introduce a minimal Electron shell around the existing Vite React frontend.
 
 The Electron setup will include:
 
-* `frontend/electron/main.js` as the Electron main process entry file.
+- `frontend/electron/main.js` as the Electron main process entry file.
 
-* `frontend/electron/preload.js` as the preload script placeholder.
+- `frontend/electron/preload.js` as the preload script placeholder.
 
-* A secure Electron `BrowserWindow`.
+- A secure Electron `BrowserWindow`.
 
-* Development loading from the Vite dev server at:
+- Development loading from the Vite dev server at:
   http://localhost:5173
 
-* A future production loading branch using the React build output.
+- A future production loading branch using the React build output.
 
-* npm scripts for running Vite and Electron together during development.
+- npm scripts for running Vite and Electron together during development.
 
 Electron will not start the FastAPI backend yet. Electron will not contain hotel business logic. Electron will not access SQLite directly. React will not get direct Node.js access.
 
 #### Architectural Boundaries
+
 The application is separated into clear responsibilities:
 Electron main process
-  Owns desktop lifecycle, BrowserWindow creation, app startup, app quit behavior.
+Owns desktop lifecycle, BrowserWindow creation, app startup, app quit behavior.
 
 Electron preload script
-  Reserved for future safe renderer-main communication.
+Reserved for future safe renderer-main communication.
 
 React renderer process
-  Owns screens, components, forms, UI state, user interaction, and visual rendering.
+Owns screens, components, forms, UI state, user interaction, and visual rendering.
 
 FastAPI backend
-  Owns business logic, validation, authentication, database operations, and API contracts.
+Owns business logic, validation, authentication, database operations, and API contracts.
 
 SQLite database
-  Owns persistent local data storage.
+Owns persistent local data storage.
 
 #### BrowserWindow Security Configuration
 
 The Electron `BrowserWindow` must use secure defaults:
+
 ```js
 webPreferences: {
   preload: path.join(__dirname, "preload.js"),
@@ -1078,6 +1161,7 @@ Production packaging is not part of this milestone.
 #### npm Script Decision
 
 The frontend package uses development scripts to run React and Electron together:
+
 ```json
 "dev": "vite",
 "electron": "wait-on http://localhost:5173; electron .",
@@ -1091,6 +1175,7 @@ The frontend package uses development scripts to run React and Electron together
 A PowerShell-compatible command separator is used because the local Windows PowerShell environment did not support `&&`.
 
 #### Main Process Platform Decision
+
 The Electron main process handles platform-specific close behavior.
 
 On Windows and Linux, the app quits when all windows are closed.
@@ -1098,18 +1183,21 @@ On Windows and Linux, the app quits when all windows are closed.
 On macOS, the app remains active until the user explicitly quits, matching normal macOS desktop behavior.
 
 The final implementation may use an explicit Node process import:
+
 ```js
 import process from "node:process";
 ```
 
 and check:
+
 ```js
-process.platform !== "darwin"
+process.platform !== "darwin";
 ```
 
 This avoids editor/tooling confusion where the global `process` object may not be recognized.
 
 #### Preload Decision
+
 Create `frontend/electron/preload.js`, but expose nothing during this milestone.
 
 The preload script exists only to prepare the secure architecture for future IPC and desktop APIs.
@@ -1117,6 +1205,7 @@ The preload script exists only to prepare the secure architecture for future IPC
 No `contextBridge`, `ipcRenderer`, filesystem access, app version access, printing, backup, or native OS integration is added yet.
 
 #### Why This Decision Was Made
+
 This decision keeps the project simple, secure, and understandable.
 
 Starting with a minimal Electron shell helps separate responsibilities clearly before adding more complexity. It prevents the common beginner mistake of mixing React UI code, Electron desktop code, backend logic, and database access in the same layer.
@@ -1124,24 +1213,27 @@ Starting with a minimal Electron shell helps separate responsibilities clearly b
 This also supports HelloStay’s long-term goal as an offline desktop application while preserving FastAPI as the backend source of truth.
 
 #### Benefits
-* Clear separation between desktop shell and React UI.
-* Secure Electron defaults from the beginning.
-* React remains simple and browser-like.
-* FastAPI remains responsible for business rules and data operations.
-* The app can run as a desktop window during development.
-* Future preload/IPC work has a safe place to be added later.
-* Packaging can be introduced later without rushing the architecture.
+
+- Clear separation between desktop shell and React UI.
+- Secure Electron defaults from the beginning.
+- React remains simple and browser-like.
+- FastAPI remains responsible for business rules and data operations.
+- The app can run as a desktop window during development.
+- Future preload/IPC work has a safe place to be added later.
+- Packaging can be introduced later without rushing the architecture.
 
 ##### Trade-Offs
-* Development now requires running both Vite and Electron.
-* The app is not packaged yet.
-* Electron does not yet start or manage the FastAPI backend.
-* The preload file exists but does not provide functionality yet.
-* The startup scripts are still development-focused and may be improved later for stronger cross-platform behavior.
+
+- Development now requires running both Vite and Electron.
+- The app is not packaged yet.
+- Electron does not yet start or manage the FastAPI backend.
+- The preload file exists but does not provide functionality yet.
+- The startup scripts are still development-focused and may be improved later for stronger cross-platform behavior.
 
 These trade-offs are acceptable because Milestone 2 focuses only on the desktop shell foundation.
 
 #### Affected Files
+
 frontend/package.json
 frontend/electron/main.js
 frontend/electron/preload.js
@@ -1149,29 +1241,32 @@ frontend/electron/preload.js
 #### Not Included In This Decision
 
 This decision does not include:
-* React Router
-* Authentication
-* Login flow
-* Dashboard
-* Rooms
-* Guests
-* Stays
-* Bookings
-* Finance
-* History
-* Backend API integration
-* FastAPI process startup from Electron
-* SQLite access from Electron
-* IPC API design
-* File system access
-* Printing
-* App packaging
-* Installer setup
+
+- React Router
+- Authentication
+- Login flow
+- Dashboard
+- Rooms
+- Guests
+- Stays
+- Bookings
+- Finance
+- History
+- Backend API integration
+- FastAPI process startup from Electron
+- SQLite access from Electron
+- IPC API design
+- File system access
+- Printing
+- App packaging
+- Installer setup
 
 #### Final Outcome
+
 HelloStay can now be launched as a desktop application during development.
 
 The command:
+
 ```bash
 npm run desktop
 ```
@@ -1179,6 +1274,7 @@ npm run desktop
 starts Vite, waits for the Vite dev server, starts Electron, creates a secure desktop window, and loads the React frontend inside it.
 
 #### Consequence
+
 Future milestones can now build on a clear desktop architecture:
 
 Electron wraps the app.
@@ -1192,12 +1288,14 @@ This decision establishes the foundation for future Electron capabilities withou
 ---
 
 ### Frontend AD 3: Startup Flow and Routing Belong to the React Renderer
+
 **Status:** Accepted
 **Date Recorded:** 2026-06-30
 **Milestone:** Frontend Milestone 3 — Startup Flow and Routing
 **Project:** HelloStay — Offline Hotel Management System
 
 #### 1. Decision
+
 HelloStay will handle startup flow and application routing inside the React renderer process using React Router.
 
 The Electron main process will not manage React routes. It will only create the desktop window, manage the application lifecycle, and load the React app.
@@ -1212,11 +1310,13 @@ The app will start at:
 /
 
 The first milestone route structure will be:
-/          → StartPage
-/login     → LoginPage
-*          → NotFoundPage
+/ → StartPage
+/login → LoginPage
+
+-          → NotFoundPage
 
 #### 2. Context
+
 HelloStay is an offline desktop application built with Electron, React, and FastAPI.
 
 Electron provides the desktop shell. React provides the user interface inside Electron. FastAPI remains the source of truth for backend business logic, validation, database operations, authentication, and API contracts.
@@ -1226,6 +1326,7 @@ Before adding hotel features, authentication, dashboard layout, or API integrati
 Routing is the mechanism that allows a single React application to show different pages based on the current URL.
 
 #### 3. Why This Decision Was Made
+
 This decision was made to keep the frontend architecture clean and scalable.
 
 A production application should not keep all screens inside `App.jsx`. As the project grows, putting all page logic directly inside `App.jsx` would make the file difficult to understand and maintain.
@@ -1252,19 +1353,22 @@ Electron main process owns desktop lifecycle.
 FastAPI owns backend business logic and API contracts.
 
 This means:
-* React decides which page to show.
-* Electron decides how the desktop window opens.
-* FastAPI decides how business data is created, validated, stored, and returned.
+
+- React decides which page to show.
+- Electron decides how the desktop window opens.
+- FastAPI decides how business data is created, validated, stored, and returned.
 
 #### 5. Chosen Approach
+
 The chosen routing approach for Milestone 3 is `BrowserRouter`.
 
 `BrowserRouter` was selected because:
-* It is beginner-friendly.
-* It works well with the Vite development server.
-* It gives clean URLs.
-* It is commonly used in React applications.
-* It supports normal paths like `/login`.
+
+- It is beginner-friendly.
+- It works well with the Vite development server.
+- It gives clean URLs.
+- It is commonly used in React applications.
+- It supports normal paths like `/login`.
 
 Example:
 /login
@@ -1294,6 +1398,7 @@ However, it was not chosen for this milestone because the app is currently runni
 HashRouter may be reconsidered later during Electron packaging if required.
 
 ##### Alternative 3: Use advanced React Router data routers
+
 This was rejected for now because Milestone 3 has no route loaders, form actions, backend calls, or route-level data fetching.
 
 The milestone only needs simple page navigation.
@@ -1301,15 +1406,17 @@ The milestone only needs simple page navigation.
 #### 7. Consequences
 
 ##### Positive Consequences
-* The app now has a clean routing foundation.
-* `App.jsx` remains small.
-* Route definitions are easy to find.
-* Page components are organized clearly.
-* React renderer responsibilities are clear.
-* Electron remains separated from UI routing.
-* The app is ready for future login, dashboard, and feature routes.
+
+- The app now has a clean routing foundation.
+- `App.jsx` remains small.
+- Route definitions are easy to find.
+- Page components are organized clearly.
+- React renderer responsibilities are clear.
+- Electron remains separated from UI routing.
+- The app is ready for future login, dashboard, and feature routes.
 
 ##### Trade-Offs
+
 Using `BrowserRouter` may require additional care later when the Electron app is packaged and loaded from production build files.
 
 This is acceptable because Milestone 3 is focused on development-time routing and beginner-friendly learning.
@@ -1332,16 +1439,17 @@ frontend/src/styles/global.css
 #### 9. What This Decision Does Not Include
 
 This decision does not include:
-* Real authentication.
-* Login API integration.
-* JWT storage.
-* Auth context.
-* Protected routes.
-* Dashboard routes.
-* Dashboard layout.
-* Hotel feature modules.
-* Backend startup from Electron.
-* Electron packaging.
+
+- Real authentication.
+- Login API integration.
+- JWT storage.
+- Auth context.
+- Protected routes.
+- Dashboard routes.
+- Dashboard layout.
+- Hotel feature modules.
+- Backend startup from Electron.
+- Electron packaging.
 
 These will be handled in later milestones.
 
@@ -1362,19 +1470,20 @@ Later, authentication can introduce protected routes.
 
 Example future structure:
 Public routes:
-  /
-  /login
+/
+/login
 
 Protected routes:
-  /dashboard
-  /rooms
-  /guests
-  /stays
-  /finance
+/dashboard
+/rooms
+/guests
+/stays
+/finance
 
 However, protected routes should only be added after real authentication and auth state are designed.
 
 #### 11. Final Decision Summary
+
 HelloStay will use React Router inside the React renderer process for application navigation.
 
 Electron will not manage application routes.
@@ -1384,7 +1493,6 @@ FastAPI will not be involved in frontend routing.
 The route definitions will live in `src/routes/AppRoutes.jsx`, and screen-level components will live in `src/pages/`.
 
 This keeps the architecture simple, maintainable, beginner-friendly, and production-oriented.
-
 
 ---
 
@@ -1410,19 +1518,19 @@ Create a simple UI foundation using plain CSS and reusable React components.
 
 The frontend will use:
 
-* CSS variables for design tokens.
-* A clean global CSS structure.
-* Small reusable UI components.
-* Simple page-level styling.
-* Beginner-friendly component patterns using props, children, and className.
+- CSS variables for design tokens.
+- A clean global CSS structure.
+- Small reusable UI components.
+- Simple page-level styling.
+- Beginner-friendly component patterns using props, children, and className.
 
 The following reusable UI components are introduced:
 
-* `Button`
-* `Input`
-* `Card`
-* `Loading`
-* `ErrorMessage`
+- `Button`
+- `Input`
+- `Card`
+- `Loading`
+- `ErrorMessage`
 
 These components are placed under:
 
@@ -1501,14 +1609,14 @@ This keeps styling centralized and reduces repeated hard-coded values.
 
 This decision prevents:
 
-* Duplicating button styles across pages.
-* Duplicating input markup across forms.
-* Mixing page-level components with reusable UI components.
-* Adding dashboard layout too early.
-* Adding authentication before the visual foundation exists.
-* Moving UI logic into Electron.
-* Introducing styling libraries before understanding CSS fundamentals.
-* Creating hotel-specific components before generic UI foundations are stable.
+- Duplicating button styles across pages.
+- Duplicating input markup across forms.
+- Mixing page-level components with reusable UI components.
+- Adding dashboard layout too early.
+- Adding authentication before the visual foundation exists.
+- Moving UI logic into Electron.
+- Introducing styling libraries before understanding CSS fundamentals.
+- Creating hotel-specific components before generic UI foundations are stable.
 
 #### Affected Files
 
@@ -1589,17 +1697,17 @@ The design system is intentionally minimal.
 
 It includes:
 
-* Primary color
-* Background color
-* Surface color
-* Text color
-* Muted text color
-* Border color
-* Error color
-* Border radius values
-* Spacing values
-* Box shadows
-* Base font family
+- Primary color
+- Background color
+- Surface color
+- Text color
+- Muted text color
+- Border color
+- Error color
+- Border radius values
+- Spacing values
+- Box shadows
+- Base font family
 
 This is enough for the current milestone.
 
@@ -1623,30 +1731,30 @@ Although the FastAPI backend already contains endpoints for rooms, guests, stays
 
 The backend remains the future source of truth for:
 
-* Business rules
-* Validation
-* Authentication
-* Database access
-* API contracts
+- Business rules
+- Validation
+- Authentication
+- Database access
+- API contracts
 
 #### Consequences
 
 Positive consequences:
 
-* The UI becomes more consistent.
-* Future pages become easier to build.
-* Basic visual tokens are centralized.
-* Components are easier to reuse.
-* The project remains beginner-friendly.
-* The React renderer stays cleanly separated from Electron.
-* The app avoids unnecessary dependencies.
+- The UI becomes more consistent.
+- Future pages become easier to build.
+- Basic visual tokens are centralized.
+- Components are easier to reuse.
+- The project remains beginner-friendly.
+- The React renderer stays cleanly separated from Electron.
+- The app avoids unnecessary dependencies.
 
 Trade-offs:
 
-* Plain CSS requires discipline as the project grows.
-* The design system is basic and not visually complete yet.
-* Some temporary layout spacing may still exist in placeholder pages.
-* More advanced UI patterns are intentionally delayed.
+- Plain CSS requires discipline as the project grows.
+- The design system is basic and not visually complete yet.
+- Some temporary layout spacing may still exist in placeholder pages.
+- More advanced UI patterns are intentionally delayed.
 
 #### Rejected Alternatives
 
@@ -1967,12 +2075,12 @@ Authentication is a security-sensitive workflow. The frontend must not decide wh
 
 Building fake authentication in React would create the wrong architecture and may lead to unsafe habits such as:
 
-* Hardcoding fake users.
-* Redirecting to dashboard without real verification.
-* Treating React state as the source of truth for identity.
-* Storing fake tokens.
-* Adding protected routes before real auth state exists.
-* Inventing backend endpoint paths that may later conflict with the real API.
+- Hardcoding fake users.
+- Redirecting to dashboard without real verification.
+- Treating React state as the source of truth for identity.
+- Storing fake tokens.
+- Adding protected routes before real auth state exists.
+- Inventing backend endpoint paths that may later conflict with the real API.
 
 This milestone keeps the UI work productive while preserving backend authority.
 
@@ -1980,22 +2088,22 @@ This milestone keeps the UI work productive while preserving backend authority.
 
 For Milestone 6:
 
-* Build a real `LoginPage` UI form.
-* Build a real `RegisterPage` UI form.
-* Use controlled React inputs.
-* Use `useState` for form values, field errors, form error, and loading state.
-* Add basic frontend validation for required fields.
-* Add password confirmation validation on the registration page.
-* Use existing reusable UI components.
-* Create `authService.js` as the dedicated authentication service layer.
-* Keep `authService.js` prepared for future login/register calls.
-* Do not invent endpoint paths.
-* Do not hardcode fake users.
-* Do not redirect to dashboard after login.
-* Do not create `ProtectedRoute`.
-* Do not create global auth context yet.
-* Do not persist tokens yet.
-* Do not move authentication logic into Electron.
+- Build a real `LoginPage` UI form.
+- Build a real `RegisterPage` UI form.
+- Use controlled React inputs.
+- Use `useState` for form values, field errors, form error, and loading state.
+- Add basic frontend validation for required fields.
+- Add password confirmation validation on the registration page.
+- Use existing reusable UI components.
+- Create `authService.js` as the dedicated authentication service layer.
+- Keep `authService.js` prepared for future login/register calls.
+- Do not invent endpoint paths.
+- Do not hardcode fake users.
+- Do not redirect to dashboard after login.
+- Do not create `ProtectedRoute`.
+- Do not create global auth context yet.
+- Do not persist tokens yet.
+- Do not move authentication logic into Electron.
 
 #### Affected Files
 
@@ -2015,45 +2123,45 @@ frontend/src/components/ui/Button.jsx
 
 React handles:
 
-* Login form UI.
-* Register form UI.
-* Controlled input state.
-* Frontend validation.
-* Submit handling.
-* Loading and error display.
-* Calling `authService.js`.
+- Login form UI.
+- Register form UI.
+- Controlled input state.
+- Frontend validation.
+- Submit handling.
+- Loading and error display.
+- Calling `authService.js`.
 
 #### Service Layer
 
 `authService.js` handles:
 
-* Authentication-related frontend API boundary.
-* Login function placeholder.
-* Register function placeholder.
-* Clear errors when auth endpoints are not confirmed.
-* Future integration with `apiClient.js`.
+- Authentication-related frontend API boundary.
+- Login function placeholder.
+- Register function placeholder.
+- Clear errors when auth endpoints are not confirmed.
+- Future integration with `apiClient.js`.
 
 #### FastAPI Backend
 
 FastAPI remains responsible for:
 
-* User lookup.
-* Password hashing.
-* Password verification.
-* JWT creation.
-* Request validation.
-* Response contract.
-* Auth route ownership.
+- User lookup.
+- Password hashing.
+- Password verification.
+- JWT creation.
+- Request validation.
+- Response contract.
+- Auth route ownership.
 
 #### Electron Main Process
 
 Electron does not handle:
 
-* Username/password form logic.
-* Authentication validation.
-* JWT creation.
-* Hotel business rules.
-* Dashboard authorization.
+- Username/password form logic.
+- Authentication validation.
+- JWT creation.
+- Hotel business rules.
+- Dashboard authorization.
 
 Electron remains responsible only for desktop shell responsibilities such as app lifecycle, window creation, safe preload exposure, packaging, and future backend startup behavior.
 
@@ -2071,20 +2179,20 @@ The service layer now provides a dedicated place for future auth API integration
 
 ##### Positive Consequences
 
-* Authentication UI is now ready for future backend integration.
-* Login and registration forms are beginner-friendly and production-oriented.
-* Form behavior is predictable because controlled components are used.
-* Page components remain clean because API responsibility is moved to `authService.js`.
-* The project avoids fake authentication.
-* Future Milestone 7 can focus on auth contract, token strategy, auth context, and protected routes.
+- Authentication UI is now ready for future backend integration.
+- Login and registration forms are beginner-friendly and production-oriented.
+- Form behavior is predictable because controlled components are used.
+- Page components remain clean because API responsibility is moved to `authService.js`.
+- The project avoids fake authentication.
+- Future Milestone 7 can focus on auth contract, token strategy, auth context, and protected routes.
 
 ##### Trade-Offs
 
-* Login does not yet succeed.
-* Register does not yet create an account.
-* There is no dashboard redirect yet.
-* The user sees an expected “auth endpoint not confirmed” style error after valid form submission.
-* More backend verification/design is needed before real authentication can be completed.
+- Login does not yet succeed.
+- Register does not yet create an account.
+- There is no dashboard redirect yet.
+- The user sees an expected “auth endpoint not confirmed” style error after valid form submission.
+- More backend verification/design is needed before real authentication can be completed.
 
 These trade-offs are accepted because they preserve architectural correctness.
 
@@ -2092,17 +2200,17 @@ These trade-offs are accepted because they preserve architectural correctness.
 
 The following are intentionally postponed:
 
-* Real login API call.
-* Real register API call.
-* Auth endpoint path selection.
-* Token storage.
-* AuthContext.
-* ProtectedRoute.
-* Dashboard redirect after login.
-* Current user restore flow.
-* Logout behavior.
-* Role-based authorization.
-* Electron-based secure token storage strategy.
+- Real login API call.
+- Real register API call.
+- Auth endpoint path selection.
+- Token storage.
+- AuthContext.
+- ProtectedRoute.
+- Dashboard redirect after login.
+- Current user restore flow.
+- Logout behavior.
+- Role-based authorization.
+- Electron-based secure token storage strategy.
 
 #### Future Milestone Dependency
 
@@ -2110,16 +2218,16 @@ Milestone 7 should build on this decision by verifying or designing the backend 
 
 Milestone 7 should answer:
 
-* What is the register endpoint?
-* What is the login endpoint?
-* What request body does login expect?
-* What response body does login return?
-* Does the backend return `access_token` and `token_type`?
-* Is there a `/me` endpoint?
-* How should the frontend restore the current user?
-* Where should the token be stored?
-* How should logout work?
-* When should protected routes be introduced?
+- What is the register endpoint?
+- What is the login endpoint?
+- What request body does login expect?
+- What response body does login return?
+- Does the backend return `access_token` and `token_type`?
+- Is there a `/me` endpoint?
+- How should the frontend restore the current user?
+- Where should the token be stored?
+- How should logout work?
+- When should protected routes be introduced?
 
 #### Final Rule
 
@@ -2603,9 +2711,9 @@ This reduces complexity and avoids mixing too many concepts in one milestone.
 `RoomsPage.jsx` manages three local states:
 
 ```js
-rooms
-isLoading
-error
+rooms;
+isLoading;
+error;
 ```
 
 This decision keeps the module simple.
@@ -2776,15 +2884,15 @@ Milestone 9 introduced read-only room listing using `GET /rooms`. Creating rooms
 
 Room creation was implemented only after the read-only foundation because write operations require more frontend responsibility:
 
-* controlled form fields
-* form state
-* submit handling
-* frontend validation
-* loading state
-* error state
-* request payload preparation
-* backend persistence verification
-* list refresh after successful creation
+- controlled form fields
+- form state
+- submit handling
+- frontend validation
+- loading state
+- error state
+- request payload preparation
+- backend persistence verification
+- list refresh after successful creation
 
 Keeping this milestone focused only on creation avoids mixing too many concepts at once.
 
@@ -2793,33 +2901,33 @@ Room creation belongs in the React renderer UI and the frontend service layer, n
 
 React is responsible for:
 
-* displaying the room creation form
-* storing temporary form input in component state
-* validating basic user input before submission
-* calling the room service
-* showing loading and error feedback
-* refreshing the UI after creation
+- displaying the room creation form
+- storing temporary form input in component state
+- validating basic user input before submission
+- calling the room service
+- showing loading and error feedback
+- refreshing the UI after creation
 
 `roomService.js` is responsible for:
 
-* exposing a clear `createRoom(roomData)` function
-* keeping room API calls in one place
-* using the existing `apiClient.js`
+- exposing a clear `createRoom(roomData)` function
+- keeping room API calls in one place
+- using the existing `apiClient.js`
 
 FastAPI remains responsible for:
 
-* validating request data
-* enforcing backend rules
-* writing room records to SQLite
-* returning the saved room data
+- validating request data
+- enforcing backend rules
+- writing room records to SQLite
+- returning the saved room data
 
 Electron remains responsible only for desktop shell behavior and does not contain room API logic.
 
 **Affected files:**
 
-* `frontend/src/services/roomService.js`
-* `frontend/src/pages/RoomsPage.jsx`
-* `frontend/src/styles/global.css` if styling additions were needed
+- `frontend/src/services/roomService.js`
+- `frontend/src/pages/RoomsPage.jsx`
+- `frontend/src/styles/global.css` if styling additions were needed
 
 **Implementation summary:**
 `roomService.js` was updated to include:
@@ -2835,24 +2943,24 @@ export function createRoom(roomData) {
 
 `RoomsPage.jsx` was updated with:
 
-* `initialRoomFormData`
-* `formData` state
-* `isCreating` state
-* `createError` state
-* controlled form inputs
-* `handleInputChange`
-* `validateRoomForm`
-* `handleCreateRoom`
-* room list refresh after successful creation
+- `initialRoomFormData`
+- `formData` state
+- `isCreating` state
+- `createError` state
+- controlled form inputs
+- `handleInputChange`
+- `validateRoomForm`
+- `handleCreateRoom`
+- room list refresh after successful creation
 
 **Validation decision:**
 Basic frontend validation was added before submitting the form:
 
-* `room_number` is required
-* `price_per_night` is required
-* `price_per_night` must be a positive number
-* `room_status` is required
-* `max_occupancy` must be a positive whole number if provided
+- `room_number` is required
+- `price_per_night` is required
+- `price_per_night` must be a positive number
+- `room_status` is required
+- `max_occupancy` must be a positive whole number if provided
 
 Frontend validation improves user experience, but it does not replace backend validation. FastAPI and the database remain the real source of truth.
 
@@ -2883,25 +2991,25 @@ Room numbers must be unique. During verification, creating a duplicate room numb
 
 This confirmed that:
 
-* the frontend POST request was reaching the backend
-* the backend was attempting to save the room
-* SQLite was enforcing room-number uniqueness
-* duplicate room handling should be improved in a future backend polish task
+- the frontend POST request was reaching the backend
+- the backend was attempting to save the room
+- SQLite was enforcing room-number uniqueness
+- duplicate room handling should be improved in a future backend polish task
 
 **What was intentionally not added:**
 
-* edit room
-* delete room
-* inline room status update
-* booking-based availability
-* room images
-* pagination
-* sorting
-* advanced filtering
-* modal-based create form
-* optimistic UI updates
-* Electron-based room API logic
-* localStorage room persistence
+- edit room
+- delete room
+- inline room status update
+- booking-based availability
+- room images
+- pagination
+- sorting
+- advanced filtering
+- modal-based create form
+- optimistic UI updates
+- Electron-based room API logic
+- localStorage room persistence
 
 **Consequences:**
 The Rooms module now has its first complete write workflow. The frontend can create real backend records while still preserving clean separation between React, service layer, API client, FastAPI, and SQLite.
@@ -2915,13 +3023,13 @@ Page form → service function → apiClient → FastAPI endpoint → database �
 **Future considerations:**
 Future milestones may add:
 
-* room edit foundation using `PUT /rooms/{room_id}`
-* room delete foundation using `DELETE /rooms/{room_id}`
-* better backend duplicate-room handling with clear HTTP errors
-* room status update rules
-* booking-based room availability
-* room filtering and search
-* component extraction if `RoomsPage.jsx` becomes too larg
+- room edit foundation using `PUT /rooms/{room_id}`
+- room delete foundation using `DELETE /rooms/{room_id}`
+- better backend duplicate-room handling with clear HTTP errors
+- room status update rules
+- booking-based room availability
+- room filtering and search
+- component extraction if `RoomsPage.jsx` becomes too larg
 
 ---
 
@@ -2980,14 +3088,14 @@ DELETE /rooms/{room_id}
 
 The Rooms page will manage UI-specific state such as:
 
-* selected room being edited
-* form values
-* create/edit mode
-* update loading state
-* update error state
-* delete confirmation state
-* delete loading state
-* delete error state
+- selected room being edited
+- form values
+- create/edit mode
+- update loading state
+- update error state
+- delete confirmation state
+- delete loading state
+- delete error state
 
 After successful update or delete, the Rooms page will refetch the rooms list from the backend instead of performing optimistic local updates.
 
@@ -3009,33 +3117,33 @@ Inline delete confirmation was chosen instead of a modal because it is simpler, 
 
 React renderer process is responsible for:
 
-* Displaying room data
-* Managing form state
-* Switching between create and edit mode
-* Showing update/delete loading states
-* Showing update/delete error states
-* Asking for delete confirmation
-* Calling room service functions
+- Displaying room data
+- Managing form state
+- Switching between create and edit mode
+- Showing update/delete loading states
+- Showing update/delete error states
+- Asking for delete confirmation
+- Calling room service functions
 
 Service layer is responsible for:
 
-* Encapsulating room API functions
-* Calling the existing API client
-* Hiding endpoint details from page components
+- Encapsulating room API functions
+- Calling the existing API client
+- Hiding endpoint details from page components
 
 FastAPI backend is responsible for:
 
-* Validating room data
-* Updating room records
-* Deleting room records
-* Returning updated data or errors
-* Protecting database integrity
+- Validating room data
+- Updating room records
+- Deleting room records
+- Returning updated data or errors
+- Protecting database integrity
 
 Electron main process is responsible for:
 
-* Desktop shell behavior
-* App lifecycle
-* Native window management
+- Desktop shell behavior
+- App lifecycle
+- Native window management
 
 Electron main process must not contain room update or delete logic.
 
@@ -3110,16 +3218,16 @@ Future milestones may revisit this decision when the Rooms module becomes more c
 
 Possible future improvements include:
 
-* Extracting a reusable `RoomForm` component
-* Extracting a `RoomList` or `RoomTable` component
-* Adding search and filters
-* Adding pagination
-* Adding room status workflows
-* Adding booking-based availability
-* Adding modal confirmation for destructive actions
-* Adding optimistic updates if the UX requires it
-* Adding stronger validation helpers
-* Adding automated tests for room service functions and Rooms page behavior
+- Extracting a reusable `RoomForm` component
+- Extracting a `RoomList` or `RoomTable` component
+- Adding search and filters
+- Adding pagination
+- Adding room status workflows
+- Adding booking-based availability
+- Adding modal confirmation for destructive actions
+- Adding optimistic updates if the UX requires it
+- Adding stronger validation helpers
+- Adding automated tests for room service functions and Rooms page behavior
 
 #### Summary
 
@@ -3151,11 +3259,11 @@ Keep `RoomsPage.jsx` as the page-level coordinator for the Rooms module, but ext
 
 The accepted structure is:
 
-* `RoomsPage.jsx` for page state, API coordination, loading state, error state, success messages, create/edit mode, and refresh behavior.
-* `RoomForm.jsx` for the create/edit room form UI.
-* `RoomTable.jsx` for displaying the room list and room-level actions.
-* `roomService.js` for all room API calls.
-* `global.css` for visual layout and styling improvements.
+- `RoomsPage.jsx` for page state, API coordination, loading state, error state, success messages, create/edit mode, and refresh behavior.
+- `RoomForm.jsx` for the create/edit room form UI.
+- `RoomTable.jsx` for displaying the room list and room-level actions.
+- `roomService.js` for all room API calls.
+- `global.css` for visual layout and styling improvements.
 
 **Why this decision was made:**
 
@@ -3167,15 +3275,15 @@ This refactor is intentionally small. It improves code clarity without introduci
 
 **Architecture rules confirmed:**
 
-* FastAPI remains the source of truth for room data and validation.
-* React does not store room data as the permanent source of truth.
-* `localStorage` is not used as the source of truth for rooms.
-* All room API calls remain inside `roomService.js`.
-* `RoomsPage.jsx` coordinates API calls through `roomService.js`.
-* `RoomForm.jsx` and `RoomTable.jsx` do not call the backend directly.
-* Electron main process does not contain room UI logic or room API logic.
-* React renderer owns UI, form state, interaction, loading states, and error display.
-* Backend business logic is not moved into React or Electron.
+- FastAPI remains the source of truth for room data and validation.
+- React does not store room data as the permanent source of truth.
+- `localStorage` is not used as the source of truth for rooms.
+- All room API calls remain inside `roomService.js`.
+- `RoomsPage.jsx` coordinates API calls through `roomService.js`.
+- `RoomForm.jsx` and `RoomTable.jsx` do not call the backend directly.
+- Electron main process does not contain room UI logic or room API logic.
+- React renderer owns UI, form state, interaction, loading states, and error display.
+- Backend business logic is not moved into React or Electron.
 
 **Component responsibility decision:**
 
@@ -3197,15 +3305,15 @@ The Rooms page should follow the HelloStay V1 frontend design direction: clean, 
 
 The UI should use:
 
-* clear page headings,
-* card-based surfaces,
-* consistent spacing,
-* readable typography,
-* clean form layout,
-* desktop-friendly room table,
-* visible status badges,
-* clear edit and delete actions,
-* understandable loading, empty, error, and success states.
+- clear page headings,
+- card-based surfaces,
+- consistent spacing,
+- readable typography,
+- clean form layout,
+- desktop-friendly room table,
+- visible status badges,
+- clear edit and delete actions,
+- understandable loading, empty, error, and success states.
 
 The UI should not become flashy or overly complex. Clarity is more important than visual decoration.
 
@@ -3275,21 +3383,21 @@ This pattern also makes the module easier to grow in future milestones. Later gu
 
 **Architecture rules accepted in this decision:**
 
-* Guest data must come from FastAPI, not from hardcoded frontend data.
-* `localStorage` must not be used as the source of truth for guests.
-* `GuestsPage.jsx` should not directly call `fetch`.
-* Guest API logic belongs in `guestService.js`.
-* Common HTTP behavior remains inside `apiClient.js`.
-* FastAPI remains the source of truth for validation, database operations, and API contracts.
-* React is responsible for UI state and rendering.
-* Electron main process must not contain guest API logic.
-* Guest create, edit, delete, stay history, and booking integration must be handled in later milestones.
+- Guest data must come from FastAPI, not from hardcoded frontend data.
+- `localStorage` must not be used as the source of truth for guests.
+- `GuestsPage.jsx` should not directly call `fetch`.
+- Guest API logic belongs in `guestService.js`.
+- Common HTTP behavior remains inside `apiClient.js`.
+- FastAPI remains the source of truth for validation, database operations, and API contracts.
+- React is responsible for UI state and rendering.
+- Electron main process must not contain guest API logic.
+- Guest create, edit, delete, stay history, and booking integration must be handled in later milestones.
 
 **Affected files:**
 
-* `frontend/src/services/guestService.js`
-* `frontend/src/pages/GuestsPage.jsx`
-* `frontend/src/styles/global.css` if guest-specific styling was added globally
+- `frontend/src/services/guestService.js`
+- `frontend/src/pages/GuestsPage.jsx`
+- `frontend/src/styles/global.css` if guest-specific styling was added globally
 
 **Result:**
 
@@ -3325,13 +3433,13 @@ Refetching the guest list after successful creation was chosen instead of optimi
 
 **Architecture rules confirmed:**
 
-* React renderer process handles the guest form, UI state, validation messages, and user interactions.
-* `guestService.js` handles guest API functions.
-* `apiClient.js` handles shared request behavior.
-* FastAPI handles validation, persistence, duplicate constraints, and returned guest records.
-* Electron main process does not contain guest creation logic.
-* Preload/IPC is not used for normal guest CRUD API calls in this milestone.
-* Local storage is not used as the source of truth for guest records.
+- React renderer process handles the guest form, UI state, validation messages, and user interactions.
+- `guestService.js` handles guest API functions.
+- `apiClient.js` handles shared request behavior.
+- FastAPI handles validation, persistence, duplicate constraints, and returned guest records.
+- Electron main process does not contain guest creation logic.
+- Preload/IPC is not used for normal guest CRUD API calls in this milestone.
+- Local storage is not used as the source of truth for guest records.
 
 **Implementation notes:**
 
@@ -3339,11 +3447,11 @@ The guest creation form uses controlled components. Each input value is stored i
 
 Basic frontend validation was added for all required fields:
 
-* Guest name is required
-* Guest phone number is required
-* Guest address is required
-* ID proof type is required
-* ID proof number is required
+- Guest name is required
+- Guest phone number is required
+- Guest address is required
+- ID proof type is required
+- ID proof number is required
 
 Frontend validation improves user experience by catching missing fields before sending the request. Backend validation and database constraints still remain the final authority.
 
@@ -3351,8 +3459,8 @@ The initial guest loading logic was adjusted to avoid the React Hooks `set-state
 
 **Affected files:**
 
-* `frontend/src/services/guestService.js`
-* `frontend/src/pages/GuestsPage.jsx`
+- `frontend/src/services/guestService.js`
+- `frontend/src/pages/GuestsPage.jsx`
 
 **Rejected alternatives:**
 
@@ -3384,16 +3492,16 @@ Guest update and delete operations must be performed through `guestService.js` u
 
 The Guests page must not call backend endpoints directly. It should express user actions through service functions such as:
 
-* `updateGuest(guestId, guestData)`
-* `deleteGuest(guestId)`
+- `updateGuest(guestId, guestData)`
+- `deleteGuest(guestId)`
 
 Guest updates use:
 
-* `PUT /guests/{guest_id}`
+- `PUT /guests/{guest_id}`
 
 Guest deletions use:
 
-* `DELETE /guests/{guest_id}`
+- `DELETE /guests/{guest_id}`
 
 After a successful update or deletion, the frontend refetches the guest list from the backend instead of relying on optimistic updates or treating local React state as the permanent source of truth.
 
@@ -3413,12 +3521,12 @@ Inline delete confirmation was chosen instead of a modal because it is beginner-
 
 **Architecture boundaries:**
 
-* React renderer process manages guest forms, selected guest state, loading states, validation messages, confirmation UI, and user interaction.
-* `guestService.js` owns guest-related API operations and endpoint paths.
-* `apiClient.js` owns shared request configuration, response parsing, authentication headers, and normalized request errors.
-* FastAPI remains responsible for guest validation, updates, deletions, database persistence, and duplicate-field enforcement.
-* Electron main process and preload scripts do not contain guest CRUD logic.
-* Local storage is not used as the source of truth for guest records.
+- React renderer process manages guest forms, selected guest state, loading states, validation messages, confirmation UI, and user interaction.
+- `guestService.js` owns guest-related API operations and endpoint paths.
+- `apiClient.js` owns shared request configuration, response parsing, authentication headers, and normalized request errors.
+- FastAPI remains responsible for guest validation, updates, deletions, database persistence, and duplicate-field enforcement.
+- Electron main process and preload scripts do not contain guest CRUD logic.
+- Local storage is not used as the source of truth for guest records.
 
 **Update strategy:**
 
@@ -3426,11 +3534,11 @@ The edit form is pre-filled from the selected guest record.
 
 Before submission:
 
-* Form values are trimmed.
-* Required-field validation is performed.
-* Edited values are compared with the original guest.
-* Only changed fields are included in the update payload.
-* A request is not sent when no values have changed.
+- Form values are trimmed.
+- Required-field validation is performed.
+- Edited values are compared with the original guest.
+- Only changed fields are included in the update payload.
+- A request is not sent when no values have changed.
 
 Frontend validation improves usability, but backend validation remains authoritative.
 
@@ -3442,11 +3550,11 @@ The actual DELETE request is sent only after the user confirms the destructive a
 
 During deletion:
 
-* The selected guest’s delete action shows a loading state.
-* Repeated delete submissions are disabled.
-* The confirmation remains visible if deletion fails.
-* Backend error messages are displayed when available.
-* The guest list is refetched after successful deletion.
+- The selected guest’s delete action shows a loading state.
+- Repeated delete submissions are disabled.
+- The confirmation remains visible if deletion fails.
+- Backend error messages are displayed when available.
+- The guest list is refetched after successful deletion.
 
 **Loading and error-state decision:**
 
@@ -3456,59 +3564,59 @@ This prevents one operation from incorrectly controlling unrelated UI and makes 
 
 Examples include:
 
-* `isCreating`
-* `isUpdating`
-* `deletingGuestId`
-* `createError`
-* `updateError`
-* `deleteError`
+- `isCreating`
+- `isUpdating`
+- `deletingGuestId`
+- `createError`
+- `updateError`
+- `deleteError`
 
 A guest ID is stored for delete loading instead of using only a general Boolean so the UI can identify the exact guest being deleted.
 
 **Affected files:**
 
-* `frontend/src/services/guestService.js`
-* `frontend/src/pages/GuestsPage.jsx`
-* Guest-related styles in the existing frontend stylesheet
+- `frontend/src/services/guestService.js`
+- `frontend/src/pages/GuestsPage.jsx`
+- Guest-related styles in the existing frontend stylesheet
 
 **Consequences:**
 
 **Positive consequences:**
 
-* Guest API logic remains centralized.
-* The backend continues to be the source of truth.
-* Editing is predictable and cancelable.
-* Destructive deletion requires confirmation.
-* Loading and error states are operation-specific.
-* The implementation remains small and understandable.
-* The approach follows the established Rooms module architecture without blindly copying its code.
-* The design can later support reusable guest components.
+- Guest API logic remains centralized.
+- The backend continues to be the source of truth.
+- Editing is predictable and cancelable.
+- Destructive deletion requires confirmation.
+- Loading and error states are operation-specific.
+- The implementation remains small and understandable.
+- The approach follows the established Rooms module architecture without blindly copying its code.
+- The design can later support reusable guest components.
 
 **Trade-offs:**
 
-* Refetching performs an additional GET request after each mutation.
-* The edit form currently adds more state and handlers to `GuestsPage.jsx`.
-* Inline confirmation is simpler than a modal but may require later visual refinement.
-* Duplicate database errors depend on the quality of backend error responses.
-* Optimistic UI updates are intentionally postponed.
+- Refetching performs an additional GET request after each mutation.
+- The edit form currently adds more state and handlers to `GuestsPage.jsx`.
+- Inline confirmation is simpler than a modal but may require later visual refinement.
+- Duplicate database errors depend on the quality of backend error responses.
+- Optimistic UI updates are intentionally postponed.
 
 **Rejected alternatives:**
 
-* Calling FastAPI directly from `GuestsPage.jsx`.
-* Moving guest update or delete logic into Electron.
-* Treating React state or local storage as permanent guest storage.
-* Deleting a guest immediately after the first click.
-* Introducing a modal system only for this milestone.
-* Optimistically updating the list before the backend confirms success.
-* Building guest stays, bookings, history, document upload, or OCR during this milestone.
+- Calling FastAPI directly from `GuestsPage.jsx`.
+- Moving guest update or delete logic into Electron.
+- Treating React state or local storage as permanent guest storage.
+- Deleting a guest immediately after the first click.
+- Introducing a modal system only for this milestone.
+- Optimistically updating the list before the backend confirms success.
+- Building guest stays, bookings, history, document upload, or OCR during this milestone.
 
 **Future implications:**
 
 A future Guests UX refinement milestone may extract reusable components such as:
 
-* `GuestForm.jsx`
-* `GuestCard.jsx`
-* `GuestList.jsx`
+- `GuestForm.jsx`
+- `GuestCard.jsx`
+- `GuestList.jsx`
 
 A later backend-hardening milestone may provide consistent conflict responses for duplicate phone numbers and ID proof numbers.
 
@@ -3526,8 +3634,8 @@ The Guests module loads its initial guest collection using `GET /guests` and ref
 
 Previously, the Guests page used one general error state for both:
 
-* failure of the initial guest request
-* failure of a later guest-list refresh
+- failure of the initial guest request
+- failure of a later guest-list refresh
 
 The guest list was rendered only when that general error state was empty. As a result, a failed refresh after a successful guest mutation could hide guest data that had already been loaded successfully.
 
@@ -3537,8 +3645,8 @@ This created an inaccurate and unnecessarily disruptive user experience. A faile
 
 The Guests module will maintain separate collection-level error states:
 
-* `loadError` represents failure of the initial guest-list request.
-* `refreshError` represents failure of a later refresh after a successful mutation.
+- `loadError` represents failure of the initial guest-list request.
+- `refreshError` represents failure of a later refresh after a successful mutation.
 
 `loadError` is treated as a blocking error because the frontend has not received a reliable guest collection.
 
@@ -3552,23 +3660,23 @@ Create, update, and delete errors will continue to use their own operation-speci
 
 When the initial `GET /guests` request fails:
 
-* the loading state ends
-* the backend connection error is displayed
-* the empty state is not displayed
-* the guest collection is not displayed because no reliable collection was loaded
+- the loading state ends
+- the backend connection error is displayed
+- the empty state is not displayed
+- the guest collection is not displayed because no reliable collection was loaded
 
 When a refresh after a successful mutation fails:
 
-* the successful mutation is not incorrectly reported as failed
-* a refresh warning is displayed
-* the existing guest collection remains visible
-* the interface communicates that the visible data may not contain the newest backend changes
+- the successful mutation is not incorrectly reported as failed
+- a refresh warning is displayed
+- the existing guest collection remains visible
+- the interface communicates that the visible data may not contain the newest backend changes
 
 When a later refresh succeeds:
 
-* the guest collection is replaced with the latest backend response
-* `loadError` is cleared
-* `refreshError` is cleared
+- the guest collection is replaced with the latest backend response
+- `loadError` is cleared
+- `refreshError` is cleared
 
 **Rationale**
 
@@ -3596,52 +3704,52 @@ This approach was not selected because separate state variables are currently mo
 
 Positive consequences:
 
-* Existing guest data remains visible during refresh failures.
-* Error messages accurately distinguish failed mutations from failed refreshes.
-* Collection rendering conditions are easier to understand.
-* Future retry behavior can be added without redesigning the error model.
-* Create, update, delete, load, and refresh failures remain isolated.
+- Existing guest data remains visible during refresh failures.
+- Error messages accurately distinguish failed mutations from failed refreshes.
+- Collection rendering conditions are easier to understand.
+- Future retry behavior can be added without redesigning the error model.
+- Create, update, delete, load, and refresh failures remain isolated.
 
 Trade-offs:
 
-* The component contains one additional state variable.
-* The interface may temporarily display stale guest data after a failed refresh.
-* The warning must clearly communicate that the newest collection could not be retrieved.
+- The component contains one additional state variable.
+- The interface may temporarily display stale guest data after a failed refresh.
+- The warning must clearly communicate that the newest collection could not be retrieved.
 
 **Responsibility Boundaries**
 
 React renderer:
 
-* owns `loadError` and `refreshError`
-* decides which feedback state is rendered
-* preserves the previously loaded guest collection
+- owns `loadError` and `refreshError`
+- decides which feedback state is rendered
+- preserves the previously loaded guest collection
 
 Guest service and API client:
 
-* perform guest HTTP requests
-* throw meaningful request and network errors
+- perform guest HTTP requests
+- throw meaningful request and network errors
 
 FastAPI:
 
-* remains the source of truth for guest data
-* performs validation and database operations
+- remains the source of truth for guest data
+- performs validation and database operations
 
 Electron main process:
 
-* contains no guest API or guest UI logic
+- contains no guest API or guest UI logic
 
 **Verification**
 
 The decision was verified by:
 
-* loading guests successfully with FastAPI running
-* stopping FastAPI and confirming that the initial connection failure appears as a blocking load error
-* confirming that the empty state is not shown when the backend is unavailable
-* temporarily simulating a failure inside the post-mutation refresh function
-* successfully updating a guest before the simulated refresh failure
-* confirming that the refresh warning appears
-* confirming that existing guest cards remain visible
-* removing the temporary failure simulation after testing
+- loading guests successfully with FastAPI running
+- stopping FastAPI and confirming that the initial connection failure appears as a blocking load error
+- confirming that the empty state is not shown when the backend is unavailable
+- temporarily simulating a failure inside the post-mutation refresh function
+- successfully updating a guest before the simulated refresh failure
+- confirming that the refresh warning appears
+- confirming that existing guest cards remain visible
+- removing the temporary failure simulation after testing
 
 ---
 
@@ -3661,12 +3769,12 @@ The backend already exposed Stay data through:
 
 Each Stay response contains:
 
-* `stay_id`
-* `room_id`
-* `price_per_night`
-* `check_in_datetime`
-* `check_out_datetime`
-* `stay_status`
+- `stay_id`
+- `room_id`
+- `price_per_night`
+- `check_in_datetime`
+- `check_out_datetime`
+- `stay_status`
 
 Stay records differ from Room and Guest records.
 
@@ -3682,22 +3790,22 @@ HelloStay will use a dedicated `stayService.js` file as the frontend HTTP bounda
 
 For the read-only foundation:
 
-* `StaysPage.jsx` owns page-level orchestration.
-* `stayService.js` owns the Stay HTTP request function.
-* `apiClient.js` continues to own shared URL construction, request configuration, JSON parsing, network failures, and backend-error handling.
-* `getStays()` calls `GET /stay`.
-* `StaysPage.jsx` must not call `fetch()` directly.
-* Electron main and preload processes are not involved in normal Stay API communication.
-* Stay records remain backend-driven.
-* The page stores raw Stay records rather than formatted copies.
-* Display formatting is derived during rendering through small pure helper functions.
-* Backend response values are treated as untrusted input and validated before rendering.
-* The page explicitly models loading, error, empty, and success states.
-* The backend-owned `stay_status` value remains the displayed source of truth.
-* `check_out_datetime: null` is treated as a valid active-Stay condition.
-* `price_per_night` is treated as a historical snapshot and displayed from the Stay record itself.
-* The initial implementation displays `room_id` safely rather than introducing a second Room request before the core Stay list works.
-* Guest relationships remain deferred to a dedicated GuestStay integration milestone.
+- `StaysPage.jsx` owns page-level orchestration.
+- `stayService.js` owns the Stay HTTP request function.
+- `apiClient.js` continues to own shared URL construction, request configuration, JSON parsing, network failures, and backend-error handling.
+- `getStays()` calls `GET /stay`.
+- `StaysPage.jsx` must not call `fetch()` directly.
+- Electron main and preload processes are not involved in normal Stay API communication.
+- Stay records remain backend-driven.
+- The page stores raw Stay records rather than formatted copies.
+- Display formatting is derived during rendering through small pure helper functions.
+- Backend response values are treated as untrusted input and validated before rendering.
+- The page explicitly models loading, error, empty, and success states.
+- The backend-owned `stay_status` value remains the displayed source of truth.
+- `check_out_datetime: null` is treated as a valid active-Stay condition.
+- `price_per_night` is treated as a historical snapshot and displayed from the Stay record itself.
+- The initial implementation displays `room_id` safely rather than introducing a second Room request before the core Stay list works.
+- Guest relationships remain deferred to a dedicated GuestStay integration milestone.
 
 #### Selected Architecture
 
@@ -3726,65 +3834,65 @@ Stay records from backend persistence
 
 FastAPI remains responsible for:
 
-* Stay validation
-* Stay persistence
-* Stay business rules
-* Stay status values
-* Check-in and checkout timestamps
-* Historical nightly-price snapshots
-* Room references
-* API response contracts
+- Stay validation
+- Stay persistence
+- Stay business rules
+- Stay status values
+- Check-in and checkout timestamps
+- Historical nightly-price snapshots
+- Room references
+- API response contracts
 
 ##### `apiClient.js`
 
 The shared API client remains responsible for:
 
-* API base URL handling
-* URL construction
-* Request headers
-* JSON request serialization
-* Response parsing
-* HTTP error conversion
-* Network error conversion
-* Shared API behavior
+- API base URL handling
+- URL construction
+- Request headers
+- JSON request serialization
+- Response parsing
+- HTTP error conversion
+- Network error conversion
+- Shared API behavior
 
 ##### `stayService.js`
 
 The Stay service is responsible for:
 
-* Exposing frontend functions related to the Stay API
-* Calling the correct singular backend endpoint
-* Preserving a clear domain-specific service boundary
+- Exposing frontend functions related to the Stay API
+- Calling the correct singular backend endpoint
+- Preserving a clear domain-specific service boundary
 
 For this milestone, it contains only:
 
 ```js
-getStays()
+getStays();
 ```
 
 ##### `StaysPage.jsx`
 
 The Stays page is responsible for:
 
-* Starting the initial request
-* Managing page-level loading state
-* Managing the initial error message
-* Storing raw Stay records
-* Validating that the response is an array
-* Preventing obsolete asynchronous results from updating state
-* Selecting loading, error, empty, or success UI
-* Rendering the read-only Stay table
-* Deriving human-readable display values
-* Applying presentation classes to known status values
+- Starting the initial request
+- Managing page-level loading state
+- Managing the initial error message
+- Storing raw Stay records
+- Validating that the response is an array
+- Preventing obsolete asynchronous results from updating state
+- Selecting loading, error, empty, or success UI
+- Rendering the read-only Stay table
+- Deriving human-readable display values
+- Applying presentation classes to known status values
 
 ##### Electron
 
 Electron remains responsible for:
 
-* Desktop application lifecycle
-* Native window management
-* Desktop startup behavior
-* Future operating-system integrations
+- Desktop application lifecycle
+- Native window management
+- Desktop startup behavior
+- Future operating-system integrations
 
 Electron will not fetch Stay records.
 
@@ -3812,13 +3920,13 @@ Stay workflows are more transactional than Room and Guest CRUD.
 
 Read-only integration allows the team to verify:
 
-* API shape
-* Date handling
-* Null checkout behavior
-* Status values
-* Historical rate display
-* Table usability
-* Error handling
+- API shape
+- Date handling
+- Null checkout behavior
+- Status values
+- Historical rate display
+- Table usability
+- Error handling
 
 before introducing mutations or lifecycle actions.
 
@@ -3856,28 +3964,28 @@ Context, Redux, Zustand, `useReducer`, or a custom fetching abstraction would ad
 
 ##### Positive Consequences
 
-* Stay API communication has a clear location.
-* `StaysPage.jsx` remains independent of low-level `fetch()` details.
-* Shared network and backend errors remain consistent.
-* The initial implementation is easy to inspect and debug.
-* Loading, error, empty, and success behavior is explicit.
-* API response validation prevents `.map()` failures on invalid data.
-* Raw backend values remain unchanged.
-* Status meaning remains backend-owned.
-* Null checkout timestamps are handled safely.
-* Historical price values are preserved.
-* The implementation remains compatible with the Electron security model.
-* Future Stay mutations can be added to the same service boundary.
-* GuestStay integration can be introduced separately without rewriting the basic Stay list.
+- Stay API communication has a clear location.
+- `StaysPage.jsx` remains independent of low-level `fetch()` details.
+- Shared network and backend errors remain consistent.
+- The initial implementation is easy to inspect and debug.
+- Loading, error, empty, and success behavior is explicit.
+- API response validation prevents `.map()` failures on invalid data.
+- Raw backend values remain unchanged.
+- Status meaning remains backend-owned.
+- Null checkout timestamps are handled safely.
+- Historical price values are preserved.
+- The implementation remains compatible with the Electron security model.
+- Future Stay mutations can be added to the same service boundary.
+- GuestStay integration can be introduced separately without rewriting the basic Stay list.
 
 ##### Trade-offs
 
-* The first table displays Room IDs rather than room numbers.
-* Guest names are not visible.
-* The page does not yet support lifecycle actions.
-* Some table and formatting logic remains inside `StaysPage.jsx`.
-* The effect cleanup guard ignores obsolete results but does not cancel the underlying HTTP request.
-* React Strict Mode may still cause duplicate development requests.
+- The first table displays Room IDs rather than room numbers.
+- Guest names are not visible.
+- The page does not yet support lifecycle actions.
+- Some table and formatting logic remains inside `StaysPage.jsx`.
+- The effect cleanup guard ignores obsolete results but does not cancel the underlying HTTP request.
+- React Strict Mode may still cause duplicate development requests.
 
 These trade-offs are acceptable for a focused read-only foundation.
 
@@ -3921,39 +4029,39 @@ Rejected because the current backend implements Stay records rather than a compl
 
 #### Implementation Rules Established
 
-* Use the frontend term **Stays**.
-* Use `/dashboard/stays` for protected navigation.
-* Use `/stay` for backend API communication.
-* Keep Stay HTTP functions in `stayService.js`.
-* Use `apiClient.js` for shared request handling.
-* Keep request orchestration in `StaysPage.jsx`.
-* Verify that the response is an array.
-* Keep `stays` state as an array.
-* Use `stay_id` as the React key.
-* Treat `check_out_datetime` as nullable.
-* Display backend `stay_status` values without inventing new statuses.
-* Keep formatted dates and prices out of React state.
-* Do not hardcode a currency symbol until currency configuration exists.
-* Do not infer Guest relationships.
-* Do not infer Room status from Stay status.
-* Do not calculate duration, billing, or total charges in the read-only foundation.
-* Do not add Stay mutations until a later milestone.
-* Do not involve Electron main or preload in ordinary Stay HTTP requests.
+- Use the frontend term **Stays**.
+- Use `/dashboard/stays` for protected navigation.
+- Use `/stay` for backend API communication.
+- Keep Stay HTTP functions in `stayService.js`.
+- Use `apiClient.js` for shared request handling.
+- Keep request orchestration in `StaysPage.jsx`.
+- Verify that the response is an array.
+- Keep `stays` state as an array.
+- Use `stay_id` as the React key.
+- Treat `check_out_datetime` as nullable.
+- Display backend `stay_status` values without inventing new statuses.
+- Keep formatted dates and prices out of React state.
+- Do not hardcode a currency symbol until currency configuration exists.
+- Do not infer Guest relationships.
+- Do not infer Room status from Stay status.
+- Do not calculate duration, billing, or total charges in the read-only foundation.
+- Do not add Stay mutations until a later milestone.
+- Do not involve Electron main or preload in ordinary Stay HTTP requests.
 
 #### Future Reconsideration Triggers
 
 This decision may be revisited when:
 
-* Stay creation is implemented.
-* Check-in and checkout lifecycle actions are introduced.
-* GuestStay relationships are integrated.
-* Room numbers are displayed through a Room lookup.
-* Multiple Stay screens require shared state.
-* Search, filtering, sorting, or pagination is added.
-* Stay table markup becomes large enough to justify extraction.
-* Request cancellation becomes necessary.
-* Currency configuration is introduced.
-* Billing and payment modules consume Stay data.
+- Stay creation is implemented.
+- Check-in and checkout lifecycle actions are introduced.
+- GuestStay relationships are integrated.
+- Room numbers are displayed through a Room lookup.
+- Multiple Stay screens require shared state.
+- Search, filtering, sorting, or pagination is added.
+- Stay table markup becomes large enough to justify extraction.
+- Request cancellation becomes necessary.
+- Currency configuration is introduced.
+- Billing and payment modules consume Stay data.
 
 #### Final Decision
 
@@ -3983,13 +4091,13 @@ Milestone 18 introduces the first create workflow for the module.
 
 The implementation therefore needs to establish a clear boundary between:
 
-* Form state.
-* UI interaction.
-* Client-side validation.
-* API communication.
-* Backend validation.
-* Persistence.
-* Success and error feedback.
+- Form state.
+- UI interaction.
+- Client-side validation.
+- API communication.
+- Backend validation.
+- Persistence.
+- Success and error feedback.
 
 The existing HelloStay architecture should be extended rather than replaced.
 
@@ -4087,9 +4195,9 @@ The create workflow maintains a dedicated `isSubmitting` state.
 
 While the request is active:
 
-* The submit button is disabled.
-* The user receives feedback that creation is in progress.
-* Accidental duplicate submissions are prevented.
+- The submit button is disabled.
+- The user receives feedback that creation is in progress.
+- Accidental duplicate submissions are prevented.
 
 The submission state is independent from the initial stay-list loading state.
 
@@ -4123,10 +4231,10 @@ This provides a clean form for the next stay creation.
 
 Different error types remain separate:
 
-* Initial stay loading errors are handled by the stay-list loading state.
-* Room loading errors are handled by the room-selection workflow.
-* Validation errors are associated with individual fields.
-* Stay creation errors are displayed at the form level.
+- Initial stay loading errors are handled by the stay-list loading state.
+- Room loading errors are handled by the room-selection workflow.
+- Validation errors are associated with individual fields.
+- Stay creation errors are displayed at the form level.
 
 This separation improves both maintainability and user understanding.
 
@@ -4138,25 +4246,25 @@ The implementation should reuse existing UI patterns and styling rather than int
 
 The form therefore follows the application's existing:
 
-* Card structure.
-* Form-field layout.
-* Error presentation.
-* Button behavior.
-* Typography.
-* Spacing.
-* Feedback patterns.
+- Card structure.
+- Form-field layout.
+- Error presentation.
+- Button behavior.
+- Typography.
+- Spacing.
+- Feedback patterns.
 
 #### Scope Boundary
 
 This Architecture Decision does not introduce:
 
-* Stay edit functionality.
-* Stay delete functionality.
-* Check-out functionality.
-* Stay detail workflows.
-* Global state management.
-* A form-management library.
-* Additional abstraction layers without a demonstrated need.
+- Stay edit functionality.
+- Stay delete functionality.
+- Check-out functionality.
+- Stay detail workflows.
+- Global state management.
+- A form-management library.
+- Additional abstraction layers without a demonstrated need.
 
 These concerns will be considered only in the milestones where they are explicitly required.
 
@@ -4164,20 +4272,20 @@ These concerns will be considered only in the milestones where they are explicit
 
 ##### Positive Consequences
 
-* Maintains the existing HelloStay architecture.
-* Keeps React responsibilities clear.
-* Keeps API communication inside the service layer.
-* Keeps backend business rules inside FastAPI.
-* Provides immediate client-side validation feedback.
-* Prevents duplicate submissions.
-* Keeps the stay list synchronized with backend data.
-* Keeps the implementation understandable for continued frontend learning.
+- Maintains the existing HelloStay architecture.
+- Keeps React responsibilities clear.
+- Keeps API communication inside the service layer.
+- Keeps backend business rules inside FastAPI.
+- Provides immediate client-side validation feedback.
+- Prevents duplicate submissions.
+- Keeps the stay list synchronized with backend data.
+- Keeps the implementation understandable for continued frontend learning.
 
 ##### Trade-offs
 
-* `StaysPage.jsx` contains several pieces of form-related state and logic.
-* A second API request is made after successful creation to refresh the stay list.
-* Client-side validation exists alongside backend validation.
+- `StaysPage.jsx` contains several pieces of form-related state and logic.
+- A second API request is made after successful creation to refresh the stay list.
+- Client-side validation exists alongside backend validation.
 
 These trade-offs are acceptable for the current size and complexity of the Stays module.
 
@@ -4211,10 +4319,10 @@ As mutation functionality increases, the page needs to distinguish between diffe
 
 For example:
 
-* Creating a stay should not be confused with updating a stay.
-* Updating a stay should not use the delete operation's loading state.
-* A delete confirmation should not immediately perform the API request.
-* An API failure should be displayed in the appropriate part of the UI.
+- Creating a stay should not be confused with updating a stay.
+- Updating a stay should not use the delete operation's loading state.
+- A delete confirmation should not immediately perform the API request.
+- An API failure should be displayed in the appropriate part of the UI.
 
 #### Decision Details
 
@@ -4396,36 +4504,36 @@ This reduces accidental duplicate API requests caused by repeated clicks.
 
 The React page is responsible for:
 
-* Rendering forms.
-* Rendering confirmation UI.
-* Managing component state.
-* Handling user events.
-* Performing client-side validation.
-* Showing loading feedback.
-* Showing success feedback.
-* Showing request errors.
+- Rendering forms.
+- Rendering confirmation UI.
+- Managing component state.
+- Handling user events.
+- Performing client-side validation.
+- Showing loading feedback.
+- Showing success feedback.
+- Showing request errors.
 
 It is not responsible for:
 
-* Database operations.
-* Hotel business rules.
-* Authentication decisions.
-* Authorization decisions.
-* Backend data validation.
-* Persistence.
+- Database operations.
+- Hotel business rules.
+- Authentication decisions.
+- Authorization decisions.
+- Backend data validation.
+- Persistence.
 
 #### Consequences
 
 ##### Benefits
 
-* Clear separation of responsibilities.
-* Easier debugging.
-* Easier testing of individual workflows.
-* Better user feedback.
-* Reduced accidental duplicate requests.
-* Cleaner integration with the existing service layer.
-* Backend remains the single source of truth.
-* Future mutation workflows can follow the same pattern.
+- Clear separation of responsibilities.
+- Easier debugging.
+- Easier testing of individual workflows.
+- Better user feedback.
+- Reduced accidental duplicate requests.
+- Cleaner integration with the existing service layer.
+- Backend remains the single source of truth.
+- Future mutation workflows can follow the same pattern.
 
 ##### Trade-offs
 
@@ -4465,15 +4573,15 @@ Hotel-specific update or deletion rules could be implemented in the frontend.
 
 This decision follows several production-oriented principles:
 
-* Keep UI concerns separate from API communication.
-* Keep backend business rules authoritative.
-* Represent asynchronous operations explicitly.
-* Prevent duplicate mutation requests.
-* Confirm destructive actions.
-* Provide useful user feedback.
-* Refresh authoritative data after mutations.
-* Avoid premature abstraction.
-* Keep responsibilities clear between layers.
+- Keep UI concerns separate from API communication.
+- Keep backend business rules authoritative.
+- Represent asynchronous operations explicitly.
+- Prevent duplicate mutation requests.
+- Confirm destructive actions.
+- Provide useful user feedback.
+- Refresh authoritative data after mutations.
+- Avoid premature abstraction.
+- Keep responsibilities clear between layers.
 
 #### Status
 
@@ -4662,76 +4770,518 @@ The Stays module follows a **row-level CRUD operation isolation strategy**, allo
 
 ---
 
+### Frontend AD 21 — GuestStay Read-Only Architecture
+
+#### 1. Architecture Decision
+
+**AD:** Frontend Architecture Decision 21
+**Title:** GuestStay Read-Only Architecture
+**Status:** Accepted
+**Related Milestone:** M21 — GuestStay Read-Only Foundation
+
+HelloStay will implement the initial GuestStay frontend as a **read-only React module backed by a dedicated GuestStay service**, while preserving the existing application routing, dashboard navigation, shared UI components, and FastAPI backend architecture.
+
+#### 2. Context
+
+GuestStay is a relationship between a Guest and a Stay.
+
+The frontend therefore needs a dedicated representation of this relationship rather than treating GuestStay as a duplicate of either the Guests module or the Stays module.
+
+M21 is the first GuestStay frontend milestone, so the architecture must establish a clean foundation without prematurely implementing functionality planned for later milestones.
+
+#### 3. Decision
+
+The GuestStay frontend will follow this structure:
+
+```text
+GuestStaysPage.jsx
+       │
+       ▼
+guestStayService.js
+       │
+       ▼
+FastAPI GuestStay API
+```
+
+The page is responsible for presentation and UI state.
+
+The service is responsible for backend communication.
+
+FastAPI remains responsible for business logic, validation, persistence, and API behavior.
+
+#### 4. Separation of Responsibilities
+
+##### React Renderer
+
+React is responsible for:
+
+* GuestStay screen rendering.
+* UI state.
+* Loading state.
+* Error state.
+* Empty state.
+* Rendering returned GuestStay records.
+* User interaction related to the current read-only screen.
+
+##### GuestStay Service
+
+The GuestStay service is responsible for:
+
+* Sending requests to the GuestStay backend endpoint.
+* Returning backend data to the React layer.
+* Keeping API communication separate from UI components.
+
+##### FastAPI Backend
+
+FastAPI remains responsible for:
+
+* Business rules.
+* Validation.
+* Database operations.
+* GuestStay relationships.
+* API response contracts.
+* Backend errors.
+
+##### Electron
+
+Electron does not participate directly in GuestStay business logic.
+
+No GuestStay business rules should be implemented in:
+
+* Electron main process.
+* Preload scripts.
+* IPC handlers.
+
+#### 5. Data Flow
+
+The expected data flow is:
+
+```text
+User opens Guest Stays
+          │
+          ▼
+GuestStaysPage mounts
+          │
+          ▼
+useEffect starts initial request
+          │
+          ▼
+guestStayService.js
+          │
+          ▼
+FastAPI GuestStay endpoint
+          │
+          ▼
+GuestStay response
+          │
+          ▼
+GuestStaysPage state
+          │
+          ▼
+Read-only table
+```
+
+#### 6. State Model
+
+The page maintains three primary pieces of state:
+
+```javascript
+guestStays
+isLoading
+error
+```
+
+These states allow the UI to represent four meaningful situations:
+
+```text
+Loading
+   │
+   ├── Request fails ──► Error
+   │
+   └── Request succeeds
+             │
+             ├── Empty array ──► Empty
+             │
+             └── Records ──────► Success
+```
+
+This state model is intentionally simple because M21 only requires initial read-only functionality.
+
+#### 7. Backend Contract Principle
+
+The frontend will consume the fields provided by the FastAPI GuestStay response.
+
+The M21 table uses:
+
+```text
+id
+guest_id
+stay_id
+is_primary_guest
+```
+
+The frontend must not assume that additional information exists in the response.
+
+For example, M21 does not invent:
+
+* guest names,
+* room numbers,
+* stay dates,
+* room types,
+* other relationship information.
+
+If such information is required in a future feature, the backend contract must support it appropriately.
+
+#### 8. Read-Only First Principle
+
+The first GuestStay milestone deliberately establishes a read-only foundation.
+
+This prevents premature complexity.
+
+M21 does not contain:
+
+```text
+Create
+Edit
+Delete
+Assign
+Search
+Filter
+Pagination
+Sorting
+```
+
+These responsibilities are reserved for the appropriate future milestones.
+
+#### 9. Shared UI Principle
+
+GuestStay should reuse existing shared UI infrastructure wherever appropriate.
+
+The module uses shared components such as:
+
+```text
+Card
+Loading
+ErrorMessage
+```
+
+For table presentation, generic classes were introduced:
+
+```text
+.table-wrapper
+.data-table
+```
+
+This avoids unnecessarily duplicating identical table styles across modules.
+
+#### 10. Avoid Module-Specific Duplication
+
+GuestStay should not copy Stays-specific styling simply because Stays already contains a table.
+
+Instead:
+
+```text
+Generic table behavior
+        │
+        ▼
+Shared CSS
+```
+
+while:
+
+```text
+Module-specific behavior
+        │
+        ▼
+Module-specific CSS
+```
+
+This distinction prevents the global stylesheet from becoming filled with duplicated styles.
+
+#### 11. React Effect Cleanup
+
+The initial API request uses `useEffect()` with a cleanup mechanism.
+
+The purpose is to prevent an asynchronous response from attempting to update state after the component has been unmounted.
+
+This establishes a safer pattern for future asynchronous React operations.
+
+#### 12. Response Validation
+
+The frontend validates that the service returns an array before storing the result.
+
+This creates a small defensive boundary between:
+
+```text
+External/API data
+        │
+        ▼
+Frontend state
+```
+
+Unexpected response structures should not silently propagate into rendering logic.
+
+#### 13. React Key Decision
+
+GuestStay records use:
+
+```javascript
+guestStay.id
+```
+
+as the React list key.
+
+The record identifier is preferred because it represents the identity of the actual GuestStay entity.
+
+Array indexes should not be used when a stable entity identifier is available.
+
+#### 14. Electron Decision
+
+No Electron architecture changes are required for M21.
+
+The feature does not require:
+
+* native filesystem access,
+* native OS integration,
+* desktop menus,
+* IPC,
+* preload API changes,
+* main-process business logic.
+
+Therefore the implementation remains inside the React renderer and backend layers.
+
+#### 15. Architectural Boundaries
+
+The following boundaries must remain intact:
+
+```text
+┌─────────────────────────────┐
+│ Electron Main Process       │
+│ Desktop responsibilities    │
+└──────────────┬──────────────┘
+               │
+               │ secure bridge when required
+               ▼
+┌─────────────────────────────┐
+│ React Renderer              │
+│ UI + state + interaction    │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Frontend Services           │
+│ API communication           │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ FastAPI Backend             │
+│ Business logic + data       │
+└─────────────────────────────┘
+```
+
+M21 does not change this architecture.
+
+#### 16. Consequences
+
+##### Positive Consequences
+
+* Clear separation of concerns.
+* Easy-to-understand React components.
+* API logic remains reusable.
+* FastAPI remains the source of truth.
+* GuestStay can evolve independently.
+* Shared UI infrastructure can be reused.
+* Future CRUD functionality can be added incrementally.
+* Electron remains free from unnecessary business logic.
+
+##### Trade-Offs
+
+The read-only implementation does not provide complete GuestStay management functionality.
+
+This is intentional.
+
+The architecture prioritizes:
+
+```text
+Correct foundation
+      >
+Premature completeness
+```
+
+#### 17. Future Extension
+
+Future GuestStay functionality should extend this foundation rather than replace it.
+
+The expected progression is:
+
+```text
+M21
+Read-only foundation
+       │
+       ▼
+M22
+Create + Guest Assignment
+       │
+       ▼
+M23
+Edit + Delete
+       │
+       ▼
+M24
+UX Refinement + Code Cleanup
+```
+
+Each milestone should add only the responsibilities planned for that milestone.
+
+#### 18. Rejected Approaches
+
+##### Putting API Calls Directly Everywhere
+
+Rejected because it couples UI components tightly to backend communication.
+
+##### Putting GuestStay Business Logic in React
+
+Rejected because FastAPI is the source of truth for business logic.
+
+##### Putting GuestStay Logic in Electron
+
+Rejected because Electron is responsible for desktop capabilities, not hotel business rules.
+
+##### Copying the Stays Table CSS
+
+Rejected because GuestStay requires reusable table styling rather than duplication of Stays-specific styles.
+
+##### Implementing CRUD in M21
+
+Rejected because it violates the planned milestone boundaries and introduces unnecessary complexity before the read-only foundation is established.
+
+#### 19. Architectural Principles Reinforced
+
+M21 reinforces these HelloStay principles:
+
+* Backend remains the source of truth.
+* React owns presentation and UI state.
+* Services own API communication.
+* Electron owns desktop concerns.
+* Shared UI infrastructure should be reused.
+* Modules should have clear responsibilities.
+* Features should be implemented incrementally.
+* Architecture decisions should be respected across milestones.
+* Do not introduce future functionality prematurely.
+
+#### 20. Final Decision
+
+The GuestStay frontend will remain based on:
+
+```text
+Dedicated GuestStay service
+          +
+Read-only React page
+          +
+Shared UI components
+          +
+Shared table foundation
+          +
+Existing dashboard routing
+          +
+FastAPI as source of truth
+```
+
+This architecture is accepted as the foundation for subsequent GuestStay milestones.
+
+**AD21 Status: ACCEPTED**
+
+---
+
 ## Backend Milestone History
 
 ### Frontend Rebuild Note
+
 The previous frontend/Electron implementation milestones have been intentionally removed from this history because the frontend will be rebuilt from scratch. The related frontend decisions are now tracked under Future Requirements instead of Architecture Decisions.
 
 ### Backend Milestone 0 — Project Planning & Documentation
+
 **Status:** Completed
 Project vision, technology stack, architecture approach, and documentation structure defined.
 
 ### Backend Milestone 1 — Development Environment Setup
+
 **Status:** Completed
 Git repository, virtual environment, dependency installation, requirements.txt.
 
 ### Backend Milestone 2 — Backend Architecture Setup
+
 **Status:** Completed
 Layered backend structure (api/, core/, database/, models/, schemas/).
 
 ### Backend Milestone 3 — Database Foundation
+
 **Status:** Completed
 SQLite integration, engine, SessionLocal, Base model, first SystemInfo model.
 
 ### Backend Milestone 4 — CRUD API Development
+
 **Status:** Completed
 Complete CRUD for SystemInfo using FastAPI and SQLAlchemy.
 
 ### Backend Milestone 5 — API Testing & Validation
+
 **Status:** Completed
 Swagger UI testing of all CRUD operations.
 
 ### Backend Milestone 6 — Room API Foundation
+
 **Status:** Completed
 RoomCreate/RoomResponse/RoomUpdate schemas, get_db dependency, APIRouter, response_model.
 
 ### Backend Milestone 7 — First Room API Registration
+
 **Status:** Completed
 Room router registered in main.py, Swagger integration.
 
 ### Backend Milestone 8 — Room Retrieval APIs
+
 **Status:** Completed
 GET /rooms (list all), GET /rooms/{room_id} (single with 404 handling).
 
 ### Backend Milestone 9 — Room Retrieval API
+
 **Status:** Completed
 List response model, ORM serialization for collections.
 
 ### Backend Milestone 10 — Single Room Retrieval
+
 **Status:** Completed
 GET /rooms/{room_id} with HTTPException 404.
 
 ### Backend Milestone 11 — Room CRUD Module
+
 **Status:** COMPLETED
 Full CRUD: POST, GET (list + single), PUT (partial update), DELETE with proper error handling.
 
 ### Backend Milestone 12 — Guest CRUD API
+
 **Status:** Completed
 Full guest CRUD with Alembic migration.
 
 ### Backend Milestone 13 — Stay Management System
+
 **Status:** Completed
 Stay model with foreign keys, price snapshot, nullable checkout, full CRUD.
 
 ### Backend Milestone 14 — Documentation Restructuring
+
 **Status:** Completed
 LEARNING_NOTES.md split into BACKEND_CONCEPTS.md, FRONTEND_CONCEPTS.md, ELECTRON_CONCEPTS.md, FULLSTACK_FLOW.md.
 
 ### Backend Milestone 15 — Guest Stay Module
+
 **Status:** Completed
 GuestStay junction table for many-to-many Guest-Stay relationship with is_primary_guest flag.
 
 ### Backend Milestone 16 — Backend Authentication Setup
+
 **Status:** Completed
 passlib[bcrypt], python-jose for JWT, core/security.py, schemas/token.py.
 
@@ -4846,9 +5396,9 @@ The following is the authoritative implementation order.
 
 #### Application-Wide Refinement
 
-33. **M32 — Application-Wide UX and Feedback Refinement**
 34. **M33 — Accessibility and Desktop UX Review**
-35. **M34 — Frontend Architecture and Code Quality Review**
+35. **M32 — Application-Wide UX and Feedback Refinement**
+36. **M34 — Frontend Architecture and Code Quality Review**
 
 #### Electron Production Readiness
 
@@ -5624,48 +6174,48 @@ The completed milestone history is the historical source of truth.
 
 The remaining milestone list is the future implementation source of truth.
 
-The Current Frontend Project State is the present-state source of truth.
----
+## The Current Frontend Project State is the present-state source of truth.
 
 ## Completed Frontend Milestones
 
 ### Frontend Milestone 0 — Frontend Orientation, Backend Contract Review, and Architecture Boundary Confirmation
+
 **Status:** Completed
 **Date Recorded:** 2026-06-29
 
 Frontend orientation was completed before writing new React/Electron frontend code.
 
 **What was completed:**
-* Reviewed the current HelloStay backend files before starting the frontend rebuild.
-* Confirmed that the frontend must be built from actual backend API contracts, not assumptions.
-* Confirmed that FastAPI remains the source of truth for business logic, validation, authentication, database operations, and hotel workflow rules.
-* Confirmed that React is responsible for renderer UI only: screens, forms, components, routing, loading states, error states, and API calls.
-* Confirmed that Electron is responsible for desktop shell behavior only: app window, lifecycle, startup flow, native desktop integration, and packaging.
-* Confirmed that preload/IPC should be used only for safe desktop communication when React needs controlled access to Electron functionality.
-* Reviewed the currently registered backend routers.
-* Confirmed that the backend currently supports Health Check, System Info, Rooms, Guests, Stays, and Guest-Stays.
-* Confirmed that the backend currently exposes CRUD-style APIs for Rooms, Guests, Stays, and Guest-Stays.
-* Confirmed that the backend has JWT/security helper utilities and token schemas, but no registered authentication router was visible in the uploaded `main.py`.
-* Confirmed that real frontend authentication should not be implemented until backend auth routes exist.
-* Confirmed that the current backend uses `Stay`, not `Booking`, so the frontend should use `Stay` internally until a true booking/reservation API exists.
-* Confirmed that the first frontend-backend integration should be the backend health check using `GET /`.
-* Confirmed that the frontend should use a central API client instead of scattered `fetch()` calls.
-* Confirmed that future frontend folders should be feature-based, not random or prematurely over-structured.
-* Recorded the following architecture decisions from this milestone:
 
-  * Backend contract first.
-  * FastAPI remains the source of truth.
-  * React is the renderer UI layer.
-  * Electron is the desktop shell only.
-  * Preload/IPC is only for safe desktop access.
-  * A central API client is required.
-  * A feature-based folder structure should be used.
-  * Real auth must wait until backend auth API exists.
-  * Use backend term `Stay` internally.
-  * First API integration must be the backend health check.
-  * Build Rooms before Guests, Guests before Stays.
-  * Dashboard should not be built first.
-  * Finance must eventually come from backend-calculated APIs.
+- Reviewed the current HelloStay backend files before starting the frontend rebuild.
+- Confirmed that the frontend must be built from actual backend API contracts, not assumptions.
+- Confirmed that FastAPI remains the source of truth for business logic, validation, authentication, database operations, and hotel workflow rules.
+- Confirmed that React is responsible for renderer UI only: screens, forms, components, routing, loading states, error states, and API calls.
+- Confirmed that Electron is responsible for desktop shell behavior only: app window, lifecycle, startup flow, native desktop integration, and packaging.
+- Confirmed that preload/IPC should be used only for safe desktop communication when React needs controlled access to Electron functionality.
+- Reviewed the currently registered backend routers.
+- Confirmed that the backend currently supports Health Check, System Info, Rooms, Guests, Stays, and Guest-Stays.
+- Confirmed that the backend currently exposes CRUD-style APIs for Rooms, Guests, Stays, and Guest-Stays.
+- Confirmed that the backend has JWT/security helper utilities and token schemas, but no registered authentication router was visible in the uploaded `main.py`.
+- Confirmed that real frontend authentication should not be implemented until backend auth routes exist.
+- Confirmed that the current backend uses `Stay`, not `Booking`, so the frontend should use `Stay` internally until a true booking/reservation API exists.
+- Confirmed that the first frontend-backend integration should be the backend health check using `GET /`.
+- Confirmed that the frontend should use a central API client instead of scattered `fetch()` calls.
+- Confirmed that future frontend folders should be feature-based, not random or prematurely over-structured.
+- Recorded the following architecture decisions from this milestone:
+  - Backend contract first.
+  - FastAPI remains the source of truth.
+  - React is the renderer UI layer.
+  - Electron is the desktop shell only.
+  - Preload/IPC is only for safe desktop access.
+  - A central API client is required.
+  - A feature-based folder structure should be used.
+  - Real auth must wait until backend auth API exists.
+  - Use backend term `Stay` internally.
+  - First API integration must be the backend health check.
+  - Build Rooms before Guests, Guests before Stays.
+  - Dashboard should not be built first.
+  - Finance must eventually come from backend-calculated APIs.
 
 **Final approved source structure:**
 No frontend source structure was created or modified during this milestone.
@@ -5688,103 +6238,112 @@ hooks/
 utils/
 
 **Files reviewed and approved:**
-* Backend `main.py`
-* Backend room API file
-* Backend guest API file
-* Backend stay API file
-* Backend guest-stay API file
-* Backend system-info API file
-* Backend security utility file
-* Backend token schema file
-* Backend database connection/session/base files
-* Backend Room model
-* Backend Guest model
-* Backend Stay model
-* Backend GuestStay model
-* Backend SystemInfo model
-* Backend Room schema
-* Backend Guest schema
-* Backend Stay schema
-* Backend GuestStay schema
-* Existing `PROJECT_NOTES.md`
+
+- Backend `main.py`
+- Backend room API file
+- Backend guest API file
+- Backend stay API file
+- Backend guest-stay API file
+- Backend system-info API file
+- Backend security utility file
+- Backend token schema file
+- Backend database connection/session/base files
+- Backend Room model
+- Backend Guest model
+- Backend Stay model
+- Backend GuestStay model
+- Backend SystemInfo model
+- Backend Room schema
+- Backend Guest schema
+- Backend Stay schema
+- Backend GuestStay schema
+- Existing `PROJECT_NOTES.md`
 
 **Why this milestone matters:**
 This milestone prevents the frontend rebuild from starting with guesses, fake APIs, or premature UI decisions.
 
 It establishes the correct engineering direction before implementation:
-* The backend API contract drives frontend development.
-* React must not contain backend business rules.
-* Electron must not become a second backend.
-* The preload layer must remain secure and limited.
-* Frontend modules must be built in dependency order.
-* Authentication must not be faked before backend support exists.
-* The first integration must be small, real, and testable.
+
+- The backend API contract drives frontend development.
+- React must not contain backend business rules.
+- Electron must not become a second backend.
+- The preload layer must remain secure and limited.
+- Frontend modules must be built in dependency order.
+- Authentication must not be faked before backend support exists.
+- The first integration must be small, real, and testable.
 
 This milestone protects the project from rebuilding the deleted frontend blindly and keeps the new implementation understandable for learning.
 
 **Backend/API contracts involved:**
 
 Current backend APIs confirmed:
-* `GET /`
-* `GET /system-info`
+
+- `GET /`
+- `GET /system-info`
 
 Rooms:
-* `POST /rooms`
-* `GET /rooms`
-* `GET /rooms/{room_id}`
-* `PUT /rooms/{room_id}`
-* `DELETE /rooms/{room_id}`
+
+- `POST /rooms`
+- `GET /rooms`
+- `GET /rooms/{room_id}`
+- `PUT /rooms/{room_id}`
+- `DELETE /rooms/{room_id}`
 
 Guests:
-* `POST /guests`
-* `GET /guests`
-* `GET /guests/{guest_id}`
-* `PUT /guests/{guest_id}`
-* `DELETE /guests/{guest_id}`
+
+- `POST /guests`
+- `GET /guests`
+- `GET /guests/{guest_id}`
+- `PUT /guests/{guest_id}`
+- `DELETE /guests/{guest_id}`
 
 Stays:
-* `POST /stay`
-* `GET /stay`
-* `GET /stay/{stay_id}`
-* `PUT /stay/{stay_id}`
-* `DELETE /stay/{stay_id}`
+
+- `POST /stay`
+- `GET /stay`
+- `GET /stay/{stay_id}`
+- `PUT /stay/{stay_id}`
+- `DELETE /stay/{stay_id}`
 
 Guest-Stays:
-* `POST /guest-stays`
-* `GET /guest-stays`
-* `GET /guest-stays/{guest_stay_id}`
-* `PUT /guest-stays/{guest_stay_id}`
-* `DELETE /guest-stays/{guest_stay_id}`
+
+- `POST /guest-stays`
+- `GET /guest-stays`
+- `GET /guest-stays/{guest_stay_id}`
+- `PUT /guest-stays/{guest_stay_id}`
+- `DELETE /guest-stays/{guest_stay_id}`
 
 Backend/API gaps identified:
-* No registered auth router was visible in the uploaded backend entry file.
-* No confirmed register endpoint.
-* No confirmed login endpoint.
-* No confirmed current-user/session endpoint.
-* No dashboard summary endpoint.
-* No finance summary endpoint.
-* No true `/bookings` API.
-* No available-room search endpoint.
-* No dedicated check-in/check-out workflow endpoints.
+
+- No registered auth router was visible in the uploaded backend entry file.
+- No confirmed register endpoint.
+- No confirmed login endpoint.
+- No confirmed current-user/session endpoint.
+- No dashboard summary endpoint.
+- No finance summary endpoint.
+- No true `/bookings` API.
+- No available-room search endpoint.
+- No dedicated check-in/check-out workflow endpoints.
 
 **What was intentionally deferred:**
-* Writing React code
-* Writing Electron code
-* Creating frontend folders
-* Creating reusable components
-* Creating API service files
-* Creating routing
-* Creating authentication UI
-* Creating dashboard UI
-* Creating rooms UI
-* Creating guests UI
-* Creating stays/bookings UI
-* Creating finance/history UI
-* Creating shared state/context
-* Creating custom hooks
-* Creating preload/IPC APIs
-* Starting FastAPI from Electron
-* Packaging the desktop app
+
+- Writing React code
+- Writing Electron code
+- Creating frontend folders
+- Creating reusable components
+- Creating API service files
+- Creating routing
+- Creating authentication UI
+- Creating dashboard UI
+- Creating rooms UI
+- Creating guests UI
+- Creating stays/bookings UI
+- Creating finance/history UI
+- Creating shared state/context
+- Creating custom hooks
+- Creating preload/IPC APIs
+- Starting FastAPI from Electron
+- Packaging the desktop app
 
 **Cleanup performed:**
 No code cleanup was performed because this milestone did not modify source files.
@@ -5793,20 +6352,21 @@ Planning cleanup was performed by separating confirmed backend-supported feature
 
 Confirmed as currently supported:
 
-* Health check
-* System info
-* Rooms
-* Guests
-* Stays
-* Guest-Stays
+- Health check
+- System info
+- Rooms
+- Guests
+- Stays
+- Guest-Stays
 
 Marked as pending or future backend support:
-* Authentication
-* Dashboard summary
-* Finance summary
-* True bookings/reservations
-* Available-room search
-* Dedicated check-in/check-out workflow
+
+- Authentication
+- Dashboard summary
+- Finance summary
+- True bookings/reservations
+- Available-room search
+- Dedicated check-in/check-out workflow
 
 **Debugging/learning conclusion:**
 Before building a frontend feature, always inspect the backend route, schema, model, and response shape.
@@ -5815,13 +6375,13 @@ Do not guess endpoint names or field names.
 
 For HelloStay, frontend debugging should start with the smallest possible full-stack check:
 React Start Page
-  ↓
+↓
 systemApi
-  ↓
+↓
 apiClient
-  ↓
+↓
 GET /
-  ↓
+↓
 FastAPI health check response
 
 This confirms that React, FastAPI, CORS, and the API client are working before any hotel module is added.
@@ -5832,37 +6392,39 @@ Frontend Milestone 1 — React Project Setup.
 ---
 
 ### Frontend Milestone 1 — React Project Setup
+
 **Status:** Completed
 **Date Recorded:** 2026-06-29
 
 React frontend setup was completed using Vite with JavaScript.
 
 **What was completed:**
-* Created a new React frontend using Vite.
-* Used JavaScript instead of TypeScript.
-* Created a minimal root React app.
-* Added `src/main.jsx` as the React entry point.
-* Added `src/App.jsx` as the root component.
-* Added `src/styles/global.css` for basic global styling.
-* Configured Vite to run on port `5173`.
-* Enabled `strictPort: true` so Vite does not silently switch ports.
-* Removed unused Vite starter files and assets.
-* Kept the frontend free of feature logic.
+
+- Created a new React frontend using Vite.
+- Used JavaScript instead of TypeScript.
+- Created a minimal root React app.
+- Added `src/main.jsx` as the React entry point.
+- Added `src/App.jsx` as the root component.
+- Added `src/styles/global.css` for basic global styling.
+- Configured Vite to run on port `5173`.
+- Enabled `strictPort: true` so Vite does not silently switch ports.
+- Removed unused Vite starter files and assets.
+- Kept the frontend free of feature logic.
 
 **Final approved source structure:**
 frontend/
-  src/
-    main.jsx
-    App.jsx
-    styles/
-      global.css
+src/
+main.jsx
+App.jsx
+styles/
+global.css
 
 **Files reviewed and approved:**
 
-* `frontend/src/App.jsx`
-* `frontend/src/main.jsx`
-* `frontend/src/styles/global.css`
-* `frontend/vite.config.js`
+- `frontend/src/App.jsx`
+- `frontend/src/main.jsx`
+- `frontend/src/styles/global.css`
+- `frontend/vite.config.js`
 
 **Why this milestone matters:**
 This milestone establishes a clean React renderer foundation before Electron, routing, authentication, API services, or hotel modules are introduced. It keeps the frontend rebuild understandable and prevents premature architecture decisions.
@@ -5871,24 +6433,26 @@ This milestone establishes a clean React renderer foundation before Electron, ro
 No backend API integration was implemented. However, the frontend port was aligned with the backend CORS configuration, which currently allows `http://localhost:5173`.
 
 **What was intentionally deferred:**
-* Electron desktop shell
-* React Router
-* API services
-* Authentication
-* Dashboard
-* Rooms module
-* Guests module
-* Stays/bookings module
-* Finance/history
-* Feature components
-* Shared context/state management
-* Custom hooks
-* Utility modules
+
+- Electron desktop shell
+- React Router
+- API services
+- Authentication
+- Dashboard
+- Rooms module
+- Guests module
+- Stays/bookings module
+- Finance/history
+- Feature components
+- Shared context/state management
+- Custom hooks
+- Utility modules
 
 **Cleanup performed:**
-* Removed unused default Vite CSS files.
-* Removed unused starter image assets.
-* Avoided creating empty future folders such as `components`, `pages`, `routes`, `services`, `hooks`, `context`, and `utils`.
+
+- Removed unused default Vite CSS files.
+- Removed unused starter image assets.
+- Avoided creating empty future folders such as `components`, `pages`, `routes`, `services`, `hooks`, `context`, and `utils`.
 
 **Debugging/learning conclusion:**
 When checking project structure, avoid listing `node_modules` because it contains dependency files and creates noisy output. Prefer:
@@ -5903,63 +6467,69 @@ Frontend Milestone 2 — Electron Desktop Shell Setup.
 ---
 
 ### Frontend Milestone 2 — Electron Desktop Shell Setup
+
 **Status:** Completed
 **Milestone Number:** 2
 **Layer:** Desktop / Frontend Shell
 **Technology Used:** Electron, Vite, React, JavaScript
 
 #### Objective
+
 Set up the basic Electron desktop shell around the existing Vite React frontend without adding hotel features, routing, authentication, backend integration, packaging, or business logic.
 
 The goal of this milestone was to make HelloStay open as a desktop application while keeping React as the renderer process and Electron as the desktop shell.
 
 #### Completed Work
-* Installed Electron as the desktop runtime.
 
-* Installed `concurrently` to run Vite and Electron together during development.
+- Installed Electron as the desktop runtime.
 
-* Installed `wait-on` to wait for the Vite dev server before launching Electron.
+- Installed `concurrently` to run Vite and Electron together during development.
 
-* Created the Electron main process file:
+- Installed `wait-on` to wait for the Vite dev server before launching Electron.
+
+- Created the Electron main process file:
   frontend/electron/main.js
 
-* Created the Electron preload file:
+- Created the Electron preload file:
   frontend/electron/preload.js
 
-* Configured Electron to create a secure `BrowserWindow`.
+- Configured Electron to create a secure `BrowserWindow`.
 
-* Configured Electron to load the Vite React app from:
+- Configured Electron to load the Vite React app from:
   http://localhost:5173
 
-* Kept `nodeIntegration` disabled.
+- Kept `nodeIntegration` disabled.
 
-* Kept `contextIsolation` enabled.
+- Kept `contextIsolation` enabled.
 
-* Added Electron development scripts in `package.json`.
+- Added Electron development scripts in `package.json`.
 
-* Verified that the React app opens inside a native Electron desktop window.
+- Verified that the React app opens inside a native Electron desktop window.
 
 #### Files Added
+
 frontend/electron/main.js
 frontend/electron/preload.js
 
 #### Files Updated
+
 frontend/package.json
 
-
 #### Final Electron Main Process Responsibility
+
 The Electron main process is responsible only for desktop application lifecycle concerns:
 
-* Starting the Electron app.
-* Creating the main desktop window.
-* Loading the React Vite development server during development.
-* Preparing for future production loading from the React build output.
-* Handling macOS activate behavior.
-* Quitting the app on non-macOS platforms when all windows are closed.
+- Starting the Electron app.
+- Creating the main desktop window.
+- Loading the React Vite development server during development.
+- Preparing for future production loading from the React build output.
+- Handling macOS activate behavior.
+- Quitting the app on non-macOS platforms when all windows are closed.
 
 The Electron main process does not contain hotel business logic, database logic, authentication logic, API logic, room logic, booking logic, guest logic, or financial logic.
 
 #### Final Preload Responsibility
+
 The preload file exists as a future secure bridge between Electron and React.
 
 For this milestone, the preload file intentionally exposes nothing.
@@ -5967,6 +6537,7 @@ For this milestone, the preload file intentionally exposes nothing.
 No IPC, desktop APIs, filesystem access, or backend logic were added.
 
 #### Development Script Setup
+
 The project now supports running the desktop app during development using:
 
 ```bash
@@ -5980,35 +6551,38 @@ Electron desktop shell
 Electron waits for Vite to become available before opening the desktop window.
 
 #### Important Security Decisions Preserved
-* React renderer does not get direct Node.js access.
-* Electron APIs are not exposed directly to React.
-* `nodeIntegration` remains disabled.
-* `contextIsolation` remains enabled.
-* Preload remains empty until a real desktop capability is needed.
-* Backend business logic remains in FastAPI.
-* Database operations remain outside React and Electron.
+
+- React renderer does not get direct Node.js access.
+- Electron APIs are not exposed directly to React.
+- `nodeIntegration` remains disabled.
+- `contextIsolation` remains enabled.
+- Preload remains empty until a real desktop capability is needed.
+- Backend business logic remains in FastAPI.
+- Database operations remain outside React and Electron.
 
 #### What Was Intentionally Not Added
+
 The following were intentionally excluded from this milestone:
 
-* React Router
-* Authentication
-* Dashboard
-* Rooms module
-* Guests module
-* Stays module
-* Bookings module
-* Finance module
-* History module
-* API service layer
-* FastAPI backend startup from Electron
-* SQLite access from Electron
-* IPC communication
-* App packaging
-* Installer setup
-* Production build configuration beyond a basic future loading branch
+- React Router
+- Authentication
+- Dashboard
+- Rooms module
+- Guests module
+- Stays module
+- Bookings module
+- Finance module
+- History module
+- API service layer
+- FastAPI backend startup from Electron
+- SQLite access from Electron
+- IPC communication
+- App packaging
+- Installer setup
+- Production build configuration beyond a basic future loading branch
 
 #### Verification Result
+
 The command:
 
 ```bash
@@ -6018,19 +6592,21 @@ npm run desktop
 successfully opened the HelloStay React frontend inside an Electron desktop window.
 
 #### Summary
+
 Milestone 2 successfully introduced Electron as the desktop shell for HelloStay while preserving a clean architecture:
 
 Electron main process → desktop lifecycle
-React renderer        → user interface
-Preload script        → future safe bridge
-FastAPI backend       → business logic and API contracts
-SQLite database       → persistence
+React renderer → user interface
+Preload script → future safe bridge
+FastAPI backend → business logic and API contracts
+SQLite database → persistence
 
 This milestone completed the basic desktop foundation without mixing frontend UI, desktop lifecycle, backend logic, or database responsibilities.
 
 ---
 
 ### Frontend Milestone 3: Startup Flow and Routing
+
 **Status:** Completed
 **Date Completed:** 2026-06-30
 **Project:** HelloStay — Offline Hotel Management System
@@ -6038,6 +6614,7 @@ This milestone completed the basic desktop foundation without mixing frontend UI
 **Desktop Shell:** Electron
 
 #### 1. Milestone Objective
+
 The objective of Milestone 3 was to introduce a clean startup flow and basic routing structure inside the React renderer process.
 
 This milestone focused only on navigation between minimal placeholder pages. No hotel features, backend integration, authentication, dashboard layout, protected routes, Electron backend startup, or packaging logic were added.
@@ -6045,58 +6622,60 @@ This milestone focused only on navigation between minimal placeholder pages. No 
 #### 2. Scope of This Milestone
 
 Milestone 3 included:
-* Installing React Router DOM.
-* Creating a clean routing structure.
-* Creating a minimal `StartPage`.
-* Creating a minimal `LoginPage` placeholder.
-* Creating a `NotFoundPage` fallback route.
-* Setting up routing through `BrowserRouter`.
-* Moving route definitions into a dedicated `AppRoutes.jsx` file.
-* Making the app open on the startup page.
-* Adding a button on the startup page that navigates to the login page.
+
+- Installing React Router DOM.
+- Creating a clean routing structure.
+- Creating a minimal `StartPage`.
+- Creating a minimal `LoginPage` placeholder.
+- Creating a `NotFoundPage` fallback route.
+- Setting up routing through `BrowserRouter`.
+- Moving route definitions into a dedicated `AppRoutes.jsx` file.
+- Making the app open on the startup page.
+- Adding a button on the startup page that navigates to the login page.
 
 #### 3. Out of Scope
 
 The following were intentionally not added:
-* Real authentication.
-* Login form.
-* JWT handling.
-* Auth state.
-* Protected routes.
-* Dashboard routes.
-* Dashboard layout.
-* Rooms module.
-* Guests module.
-* Stays or bookings module.
-* Finance module.
-* History module.
-* Settings module.
-* Backend API calls.
-* FastAPI startup from Electron.
-* Electron packaging.
+
+- Real authentication.
+- Login form.
+- JWT handling.
+- Auth state.
+- Protected routes.
+- Dashboard routes.
+- Dashboard layout.
+- Rooms module.
+- Guests module.
+- Stays or bookings module.
+- Finance module.
+- History module.
+- Settings module.
+- Backend API calls.
+- FastAPI startup from Electron.
+- Electron packaging.
 
 This was intentional because the milestone was only about routing foundation.
 
 #### 4. Final Route Structure
 
 The app now supports the following routes:
-/          → StartPage
-/login     → LoginPage
-*          → NotFoundPage
+/ → StartPage
+/login → LoginPage
+
+-          → NotFoundPage
 
 The `*` route acts as a fallback for unknown paths.
 
 Example:
 /random-page → NotFoundPage
 
-
 #### 5. Final Folder Structure
 
 The frontend now follows this structure:
 frontend/
-  src/
-    main.jsx
-    App.jsx
+src/
+main.jsx
+App.jsx
 
     routes/
       AppRoutes.jsx
@@ -6124,20 +6703,19 @@ src/main.jsx
 src/App.jsx
 src/styles/global.css
 
-
 #### 8. Implementation Summary
+
 `main.jsx` now wraps the React application with `BrowserRouter`.
 
 main.jsx
-  ↓
+↓
 BrowserRouter
-  ↓
+↓
 App.jsx
-  ↓
+↓
 AppRoutes.jsx
-  ↓
+↓
 Page components
-
 
 `App.jsx` was kept small and only renders `AppRoutes`.
 
@@ -6154,47 +6732,51 @@ The not-found page uses `Link` to return to the startup page.
 #### React Renderer Process
 
 React owns:
-* Page rendering.
-* Route definitions.
-* Client-side navigation.
-* Startup page.
-* Login placeholder page.
-* Fallback route.
+
+- Page rendering.
+- Route definitions.
+- Client-side navigation.
+- Startup page.
+- Login placeholder page.
+- Fallback route.
 
 #### Electron Main Process
 
 Electron owns:
-* Desktop window creation.
-* App lifecycle.
-* Loading the React app.
-* Desktop shell behavior.
+
+- Desktop window creation.
+- App lifecycle.
+- Loading the React app.
+- Desktop shell behavior.
 
 Electron does not know about React routes such as `/login`.
 
 #### FastAPI Backend
 
 FastAPI remains responsible for:
-* Business logic.
-* Validation.
-* Database operations.
-* API contracts.
-* Authentication logic later.
+
+- Business logic.
+- Validation.
+- Database operations.
+- API contracts.
+- Authentication logic later.
 
 No backend integration was added in this milestone.
 
 #### 10. Key Concepts Learned
 
 This milestone introduced the following concepts:
-* Routing in a React single-page application.
-* Difference between client-side navigation and full page reload.
-* Why Electron desktop apps can still use React Router.
-* Why routes belong in the React renderer process.
-* What `BrowserRouter` does.
-* What `Routes` does.
-* What `Route` does.
-* What `Link` does.
-* What `useNavigate` does.
-* Why authentication and protected routes should wait for later milestones.
+
+- Routing in a React single-page application.
+- Difference between client-side navigation and full page reload.
+- Why Electron desktop apps can still use React Router.
+- Why routes belong in the React renderer process.
+- What `BrowserRouter` does.
+- What `Routes` does.
+- What `Route` does.
+- What `Link` does.
+- What `useNavigate` does.
+- Why authentication and protected routes should wait for later milestones.
 
 #### 11. Verification Steps Completed
 
@@ -6203,19 +6785,19 @@ http://localhost:5173/
 http://localhost:5173/login
 http://localhost:5173/random-page
 
-
 Expected results:
-/              shows StartPage
-/login         shows LoginPage
-/random-page   shows NotFoundPage
-
+/ shows StartPage
+/login shows LoginPage
+/random-page shows NotFoundPage
 
 The app was also verified through Electron using:
+
 ```bash
 npm run desktop
 ```
 
 #### 12. Milestone Result
+
 Milestone 3 was completed successfully.
 
 HelloStay now has a clean routing foundation inside the React renderer process while preserving the separation between React, Electron, and FastAPI.
@@ -6247,40 +6829,40 @@ This milestone does not build hotel features. It prepares the frontend so future
 
 The focus is on:
 
-* CSS variables
-* Global styling organization
-* Reusable UI components
-* Basic placeholder page improvement
-* Renderer-only UI responsibilities
+- CSS variables
+- Global styling organization
+- Reusable UI components
+- Basic placeholder page improvement
+- Renderer-only UI responsibilities
 
 #### What Was Already Completed Before This Milestone
 
 #### Milestone 1
 
-* React frontend was created using Vite.
-* JavaScript was selected instead of TypeScript.
-* The app runs on `http://localhost:5173`.
-* A clean minimal frontend structure was created.
-* No feature logic was added.
+- React frontend was created using Vite.
+- JavaScript was selected instead of TypeScript.
+- The app runs on `http://localhost:5173`.
+- A clean minimal frontend structure was created.
+- No feature logic was added.
 
 #### Milestone 2
 
-* Electron was installed.
-* A basic Electron desktop shell was created.
-* Electron opens the Vite React app in a desktop window.
-* Electron main process, preload script, and renderer process responsibilities were separated.
-* `nodeIntegration` remains disabled.
-* `contextIsolation` remains enabled.
-* No backend startup, packaging, authentication, routing, or hotel features were added.
+- Electron was installed.
+- A basic Electron desktop shell was created.
+- Electron opens the Vite React app in a desktop window.
+- Electron main process, preload script, and renderer process responsibilities were separated.
+- `nodeIntegration` remains disabled.
+- `contextIsolation` remains enabled.
+- No backend startup, packaging, authentication, routing, or hotel features were added.
 
 #### Milestone 3
 
-* React Router was introduced.
-* A basic routing structure was created.
-* `AppRoutes.jsx` was created.
-* `StartPage`, `LoginPage`, and `NotFoundPage` were created.
-* The app can navigate from the start page to the login page.
-* No real authentication, protected routes, dashboard, backend calls, or hotel features were added.
+- React Router was introduced.
+- A basic routing structure was created.
+- `AppRoutes.jsx` was created.
+- `StartPage`, `LoginPage`, and `NotFoundPage` were created.
+- The app can navigate from the start page to the login page.
+- No real authentication, protected routes, dashboard, backend calls, or hotel features were added.
 
 #### Milestone 4 Scope
 
@@ -6288,38 +6870,38 @@ Milestone 4 adds a reusable UI foundation only.
 
 Included:
 
-* Improved `global.css`
-* CSS variables for design tokens
-* Basic page helper classes
-* Reusable UI component classes
-* `Button` component
-* `Input` component
-* `Card` component
-* `Loading` component
-* `ErrorMessage` component
-* Light usage of these components in existing placeholder pages
+- Improved `global.css`
+- CSS variables for design tokens
+- Basic page helper classes
+- Reusable UI component classes
+- `Button` component
+- `Input` component
+- `Card` component
+- `Loading` component
+- `ErrorMessage` component
+- Light usage of these components in existing placeholder pages
 
 Excluded:
 
-* Real authentication
-* Backend API calls
-* Protected routes
-* Dashboard layout
-* Sidebar
-* Topbar
-* Rooms module
-* Guests module
-* Stays module
-* Bookings module
-* Finance module
-* History module
-* Settings module
-* Electron backend startup
-* App packaging
-* Tailwind CSS
-* UI libraries
-* Icon libraries
-* Animation libraries
+- Real authentication
+- Backend API calls
+- Protected routes
+- Dashboard layout
+- Sidebar
+- Topbar
+- Rooms module
+- Guests module
+- Stays module
+- Bookings module
+- Finance module
+- History module
+- Settings module
+- Electron backend startup
+- App packaging
+- Tailwind CSS
+- UI libraries
+- Icon libraries
+- Animation libraries
 
 #### Final Folder Direction
 
@@ -6354,16 +6936,16 @@ In this milestone, the design system is intentionally small.
 
 It includes:
 
-* Colors
-* Spacing
-* Border radius
-* Shadows
-* Font family
-* Button styles
-* Input styles
-* Card styles
-* Error styles
-* Loading styles
+- Colors
+- Spacing
+- Border radius
+- Shadows
+- Font family
+- Button styles
+- Input styles
+- Card styles
+- Error styles
+- Loading styles
 
 The goal is not to create a complete enterprise design system yet. The goal is to avoid duplicated visual decisions and create a consistent foundation.
 
@@ -6507,12 +7089,12 @@ Creates a reusable button component.
 
 Supports:
 
-* `children`
-* `variant`
-* `type`
-* `disabled`
-* `className`
-* extra props such as `onClick`
+- `children`
+- `variant`
+- `type`
+- `disabled`
+- `className`
+- extra props such as `onClick`
 
 Common usage:
 
@@ -6530,12 +7112,12 @@ Creates a reusable input component.
 
 Supports:
 
-* `label`
-* `error`
-* `helperText`
-* `id`
-* `className`
-* normal input props such as `type`, `placeholder`, and `value`
+- `label`
+- `error`
+- `helperText`
+- `id`
+- `className`
+- normal input props such as `type`, `placeholder`, and `value`
 
 Common usage:
 
@@ -6597,11 +7179,11 @@ Stores the global visual foundation.
 
 Includes:
 
-* CSS variables
-* global reset
-* body styles
-* page helper classes
-* reusable UI classes
+- CSS variables
+- global reset
+- body styles
+- page helper classes
+- reusable UI classes
 
 Important sections:
 
@@ -6689,13 +7271,13 @@ Dashboard layout is intentionally delayed.
 
 A real dashboard shell usually needs:
 
-* authenticated user state
-* protected routes
-* sidebar navigation
-* topbar
-* logout behavior
-* active route highlighting
-* feature sections
+- authenticated user state
+- protected routes
+- sidebar navigation
+- topbar
+- logout behavior
+- active route highlighting
+- feature sections
 
 Since real authentication and protected routes are not built yet, building the dashboard shell now would create premature structure.
 
@@ -6711,12 +7293,12 @@ The project goal is to learn frontend architecture from first principles.
 
 Plain CSS helps teach:
 
-* CSS variables
-* reusable class names
-* layout basics
-* component styling
-* separation of concerns
-* design token thinking
+- CSS variables
+- reusable class names
+- layout basics
+- component styling
+- separation of concerns
+- design token thinking
 
 External libraries can be useful later, but they are unnecessary for this foundation milestone.
 
@@ -6738,15 +7320,15 @@ http://localhost:5173
 
 Verify:
 
-* Start page loads.
-* Start page uses the new card/button styling.
-* Clicking the login navigation opens the login page.
-* Login page shows placeholder inputs.
-* Login button remains disabled.
-* Back navigation works.
-* Unknown routes show the not found page.
-* No console import errors appear.
-* No CSS import errors appear.
+- Start page loads.
+- Start page uses the new card/button styling.
+- Clicking the login navigation opens the login page.
+- Login page shows placeholder inputs.
+- Login button remains disabled.
+- Back navigation works.
+- Unknown routes show the not found page.
+- No console import errors appear.
+- No CSS import errors appear.
 
 If using Electron development command, verify:
 
@@ -6756,9 +7338,9 @@ npm run desktop
 
 Expected result:
 
-* Electron opens the React app.
-* The same styled pages appear inside the desktop window.
-* No Electron main/preload changes are required.
+- Electron opens the React app.
+- The same styled pages appear inside the desktop window.
+- No Electron main/preload changes are required.
 
 #### Common Errors and Fixes
 
@@ -6828,15 +7410,15 @@ Check that `/login` exists in `AppRoutes.jsx`.
 
 Milestone 4 teaches:
 
-* How a small design system begins.
-* How CSS variables reduce duplication.
-* How reusable components make pages cleaner.
-* How props customize components.
-* How `children` makes wrapper components flexible.
-* How `className` connects JSX to CSS.
-* Why UI belongs in React, not Electron main.
-* Why building features too early creates confusion.
-* Why production apps grow through small stable foundations.
+- How a small design system begins.
+- How CSS variables reduce duplication.
+- How reusable components make pages cleaner.
+- How props customize components.
+- How `children` makes wrapper components flexible.
+- How `className` connects JSX to CSS.
+- Why UI belongs in React, not Electron main.
+- Why building features too early creates confusion.
+- Why production apps grow through small stable foundations.
 
 #### Production Lessons Learned
 
@@ -6844,11 +7426,11 @@ A production frontend should not grow randomly.
 
 Before creating many feature screens, it needs:
 
-* consistent styling rules
-* reusable primitives
-* clear folder structure
-* predictable component APIs
-* clean architecture boundaries
+- consistent styling rules
+- reusable primitives
+- clear folder structure
+- predictable component APIs
+- clean architecture boundaries
 
 Milestone 4 establishes those basics.
 
@@ -6888,16 +7470,17 @@ Build the login page properly as a frontend-only form first.
 
 That would teach:
 
-* controlled inputs
-* React state
-* form submission
-* validation
-* error display
-* disabled submit behavior
-* loading state simulation
-* preparing for future backend authentication
+- controlled inputs
+- React state
+- form submission
+- validation
+- error display
+- disabled submit behavior
+- loading state simulation
+- preparing for future backend authentication
 
 ```
+
 ```
 
 ---
@@ -7055,13 +7638,13 @@ Service files describe backend capabilities in frontend-friendly function names.
 Example:
 
 ```js
-getBackendHealth()
+getBackendHealth();
 ```
 
 is clearer than writing:
 
 ```js
-apiClient.get("/")
+apiClient.get("/");
 ```
 
 directly inside many components.
@@ -7294,31 +7877,31 @@ This milestone focused on frontend form structure, React state, validation, load
 
 Milestone 6 completed the following:
 
-* Converted `LoginPage.jsx` from a placeholder screen into a real login form UI.
-* Created `RegisterPage.jsx` for the V1 account creation direction.
-* Added a `/register` route in `AppRoutes.jsx`.
-* Used existing shared UI components such as:
+- Converted `LoginPage.jsx` from a placeholder screen into a real login form UI.
+- Created `RegisterPage.jsx` for the V1 account creation direction.
+- Added a `/register` route in `AppRoutes.jsx`.
+- Used existing shared UI components such as:
+  - `Button`
+  - `Input`
+  - `Card`
+  - `Loading`
+  - `ErrorMessage`
 
-  * `Button`
-  * `Input`
-  * `Card`
-  * `Loading`
-  * `ErrorMessage`
-* Used controlled components for form fields.
-* Used React `useState` for form values.
-* Added field-level validation.
-* Added form-level error state.
-* Added loading/submitting state.
-* Disabled form controls while submitting.
-* Added `authService.js` as the dedicated authentication service layer.
-* Prepared login/register service functions for future backend integration.
-* Avoided direct API calls inside page components.
-* Avoided fake authentication.
-* Avoided hardcoded users.
-* Avoided dashboard redirect.
-* Avoided token persistence.
-* Avoided protected routes.
-* Kept Electron separate from authentication form logic.
+- Used controlled components for form fields.
+- Used React `useState` for form values.
+- Added field-level validation.
+- Added form-level error state.
+- Added loading/submitting state.
+- Disabled form controls while submitting.
+- Added `authService.js` as the dedicated authentication service layer.
+- Prepared login/register service functions for future backend integration.
+- Avoided direct API calls inside page components.
+- Avoided fake authentication.
+- Avoided hardcoded users.
+- Avoided dashboard redirect.
+- Avoided token persistence.
+- Avoided protected routes.
+- Kept Electron separate from authentication form logic.
 
 #### Files Added
 
@@ -7441,10 +8024,10 @@ Input displays new value
 
 `useState` was used to remember:
 
-* Form field values.
-* Field validation errors.
-* General form error.
-* Loading/submitting state.
+- Form field values.
+- Field validation errors.
+- General form error.
+- Loading/submitting state.
 
 #### preventDefault
 
@@ -7472,21 +8055,21 @@ This keeps the architecture cleaner and prepares the project for future backend 
 
 The following were intentionally not added in Milestone 6:
 
-* Real login API integration.
-* Real register API integration.
-* Fake users.
-* Fake successful login.
-* Dashboard redirect.
-* AuthContext.
-* ProtectedRoute.
-* Token storage.
-* Logout.
-* Current user restore.
-* Role-based authorization.
-* Dashboard layout.
-* Rooms, guests, stays, bookings, finance, or history screens.
-* Electron backend startup.
-* Electron packaging.
+- Real login API integration.
+- Real register API integration.
+- Fake users.
+- Fake successful login.
+- Dashboard redirect.
+- AuthContext.
+- ProtectedRoute.
+- Token storage.
+- Logout.
+- Current user restore.
+- Role-based authorization.
+- Dashboard layout.
+- Rooms, guests, stays, bookings, finance, or history screens.
+- Electron backend startup.
+- Electron packaging.
 
 #### Why These Were Not Added
 
@@ -7494,14 +8077,14 @@ These features depend on a confirmed authentication contract from the backend.
 
 Before adding them, the project needs to know:
 
-* Which endpoint handles login.
-* Which endpoint handles registration.
-* What request body each endpoint expects.
-* What response body each endpoint returns.
-* Whether JWT is returned.
-* How the current user is fetched.
-* How logout should behave.
-* How token storage should work in an offline Electron app.
+- Which endpoint handles login.
+- Which endpoint handles registration.
+- What request body each endpoint expects.
+- What response body each endpoint returns.
+- Whether JWT is returned.
+- How the current user is fetched.
+- How logout should behave.
+- How token storage should work in an offline Electron app.
 
 Adding protected routes or token persistence before answering these questions would create unstable architecture.
 
@@ -7593,15 +8176,15 @@ Frontend Milestone 7 — Authentication Contract and Auth State Foundation
 
 Milestone 7 should focus on:
 
-* Verifying or defining the backend auth API contract.
-* Deciding the login request shape.
-* Deciding the login response shape.
-* Planning token handling.
-* Planning current user restore.
-* Planning AuthContext.
-* Planning ProtectedRoute.
-* Preparing redirect-after-login behavior.
-* Still avoiding dashboard feature development until the auth foundation is stable.
+- Verifying or defining the backend auth API contract.
+- Deciding the login request shape.
+- Deciding the login response shape.
+- Planning token handling.
+- Planning current user restore.
+- Planning AuthContext.
+- Planning ProtectedRoute.
+- Preparing redirect-after-login behavior.
+- Still avoiding dashboard feature development until the auth foundation is stable.
 
 ---
 
@@ -8342,15 +8925,15 @@ The Rooms page was updated from a placeholder page into a real read-only data pa
 
 The frontend now:
 
-* Uses the existing shared API client.
-* Adds a room-specific service file.
-* Calls the backend `GET /rooms` endpoint.
-* Fetches rooms when the Rooms page loads.
-* Stores room data in React state.
-* Shows a loading state while the request is running.
-* Shows an error state if the backend request fails.
-* Shows an empty state if no rooms exist.
-* Shows a read-only room list/card layout when rooms are available.
+- Uses the existing shared API client.
+- Adds a room-specific service file.
+- Calls the backend `GET /rooms` endpoint.
+- Fetches rooms when the Rooms page loads.
+- Stores room data in React state.
+- Shows a loading state while the request is running.
+- Shows an error state if the backend request fails.
+- Shows an empty state if no rooms exist.
+- Shows a read-only room list/card layout when rooms are available.
 
 #### Files Added
 
@@ -8380,17 +8963,17 @@ through the existing `apiRequest` helper from `apiClient.js`.
 The `RoomsPage.jsx` file was updated to use:
 
 ```js
-useState
-useEffect
-getRooms
+useState;
+useEffect;
+getRooms;
 ```
 
 The page manages three main pieces of state:
 
 ```js
-rooms
-isLoading
-error
+rooms;
+isLoading;
+error;
 ```
 
 The page now handles four important UI states:
@@ -8514,16 +9097,16 @@ This keeps the application clean, testable, and easier to maintain.
 
 The milestone is considered complete because:
 
-* The room service file was created.
-* The `getRooms` function calls the existing API client.
-* `RoomsPage.jsx` fetches room data on page load.
-* Loading state appears while data is being fetched.
-* Error state appears when the backend request fails.
-* Empty state appears when no rooms exist.
-* Room records display successfully when backend data exists.
-* No CRUD functionality was added.
-* Electron files were not modified.
-* Backend business logic remained inside FastAPI.
+- The room service file was created.
+- The `getRooms` function calls the existing API client.
+- `RoomsPage.jsx` fetches room data on page load.
+- Loading state appears while data is being fetched.
+- Error state appears when the backend request fails.
+- Empty state appears when no rooms exist.
+- Room records display successfully when backend data exists.
+- No CRUD functionality was added.
+- Electron files were not modified.
+- Backend business logic remained inside FastAPI.
 
 #### Final Outcome
 
@@ -8547,42 +9130,42 @@ Add the ability to create new room records from the Rooms page using the existin
 **Starting point:**
 Milestone 9 had already completed the read-only Rooms foundation:
 
-* `RoomsPage.jsx` displayed rooms from the backend
-* `roomService.js` had `getRooms()`
-* `GET /rooms` was connected through `apiClient.js`
-* loading state was implemented
-* error state was implemented
-* empty state was implemented
-* rooms were displayed in a card-based read-only UI
+- `RoomsPage.jsx` displayed rooms from the backend
+- `roomService.js` had `getRooms()`
+- `GET /rooms` was connected through `apiClient.js`
+- loading state was implemented
+- error state was implemented
+- empty state was implemented
+- rooms were displayed in a card-based read-only UI
 
 Milestone 10 continued from that foundation without rebuilding the Rooms page from scratch.
 
 **Completed work:**
 
-* Added `createRoom()` to `roomService.js`
-* Connected `createRoom()` to `POST /rooms`
-* Kept room API calls inside the service layer
-* Added an inline Add New Room form to `RoomsPage.jsx`
-* Used existing reusable UI components:
+- Added `createRoom()` to `roomService.js`
+- Connected `createRoom()` to `POST /rooms`
+- Kept room API calls inside the service layer
+- Added an inline Add New Room form to `RoomsPage.jsx`
+- Used existing reusable UI components:
+  - `Card`
+  - `Button`
+  - `Input`
+  - `Loading`
+  - `ErrorMessage`
 
-  * `Card`
-  * `Button`
-  * `Input`
-  * `Loading`
-  * `ErrorMessage`
-* Added controlled form state using `useState`
-* Added form input handling with `handleInputChange`
-* Added frontend validation with `validateRoomForm`
-* Added submit handling with `handleCreateRoom`
-* Used `event.preventDefault()` to stop default browser form submission
-* Converted input strings into backend-friendly payload values
-* Added `isCreating` loading state for room creation
-* Added `createError` state for creation errors
-* Cleared the form after successful room creation
-* Refreshed the rooms list after successful creation
-* Verified backend persistence by refreshing the page
-* Verified duplicate room-number behavior
-* Fixed a React effect warning by avoiding the problematic `loadRooms()` call pattern inside `useEffect`
+- Added controlled form state using `useState`
+- Added form input handling with `handleInputChange`
+- Added frontend validation with `validateRoomForm`
+- Added submit handling with `handleCreateRoom`
+- Used `event.preventDefault()` to stop default browser form submission
+- Converted input strings into backend-friendly payload values
+- Added `isCreating` loading state for room creation
+- Added `createError` state for creation errors
+- Cleared the form after successful room creation
+- Refreshed the rooms list after successful creation
+- Verified backend persistence by refreshing the page
+- Verified duplicate room-number behavior
+- Fixed a React effect warning by avoiding the problematic `loadRooms()` call pattern inside `useEffect`
 
 **Final frontend behavior:**
 
@@ -8612,72 +9195,72 @@ New room appears on the page
 
 **Form fields added:**
 
-* Room Number
-* Room Type
-* Price Per Night
-* Max Occupancy
-* Room Status
-* Facilities
+- Room Number
+- Room Type
+- Price Per Night
+- Max Occupancy
+- Room Status
+- Facilities
 
 **Validation rules added:**
 
-* Room number is required
-* Price per night is required
-* Price per night must be a valid positive number
-* Room status is required
-* Max occupancy must be a valid positive whole number if provided
+- Room number is required
+- Price per night is required
+- Price per night must be a valid positive number
+- Room status is required
+- Max occupancy must be a valid positive whole number if provided
 
 **Important React concepts practiced:**
 
-* controlled components
-* `useState`
-* `useEffect`
-* event handling
-* form submission
-* `event.preventDefault()`
-* conditional rendering
-* loading states
-* error states
-* async/await
-* service-layer API calls
-* refreshing data after mutation
+- controlled components
+- `useState`
+- `useEffect`
+- event handling
+- form submission
+- `event.preventDefault()`
+- conditional rendering
+- loading states
+- error states
+- async/await
+- service-layer API calls
+- refreshing data after mutation
 
 **Important JavaScript concepts practiced:**
 
-* object state
-* object spreading
-* computed property names
-* string trimming
-* number conversion
-* async functions
-* try/catch/finally
-* validation functions
-* conditional payload values
+- object state
+- object spreading
+- computed property names
+- string trimming
+- number conversion
+- async functions
+- try/catch/finally
+- validation functions
+- conditional payload values
 
 **Important frontend architecture concepts practiced:**
 
-* page components should not directly contain raw fetch logic
-* service functions make API usage cleaner
-* backend remains the source of truth
-* frontend validation improves UX but does not replace backend validation
-* refetching after create is safer than optimistic updates in early milestones
-* Electron should not contain room business logic
-* features should be added in small, testable milestones
+- page components should not directly contain raw fetch logic
+- service functions make API usage cleaner
+- backend remains the source of truth
+- frontend validation improves UX but does not replace backend validation
+- refetching after create is safer than optimistic updates in early milestones
+- Electron should not contain room business logic
+- features should be added in small, testable milestones
 
 **Verification completed:**
 
 The following behavior was confirmed:
 
-* Rooms page loads successfully
-* Existing rooms are displayed
-* Add New Room form appears
-* New room can be created successfully
-* Form clears after successful creation
-* Rooms list refreshes after successful creation
-* Created room remains after page refresh
-* Duplicate room number produces backend/database uniqueness behavior
-* React effect warning was resolved
-* No edit/delete/status update behavior was added
+- Rooms page loads successfully
+- Existing rooms are displayed
+- Add New Room form appears
+- New room can be created successfully
+- Form clears after successful creation
+- Rooms list refreshes after successful creation
+- Created room remains after page refresh
+- Duplicate room number produces backend/database uniqueness behavior
+- React effect warning was resolved
+- No edit/delete/status update behavior was added
 
 **Known backend improvement discovered:**
 When a duplicate room number is submitted, the database correctly blocks the duplicate because room numbers are unique. However, the backend currently surfaces this as an internal server error. A future backend polish task should convert this into a clean user-facing error such as:
@@ -8711,20 +9294,20 @@ frontend/
 
 **What was not included in this milestone:**
 
-* room editing
-* room deletion
-* room status mutation
-* booking integration
-* availability calculation
-* room images
-* pagination
-* sorting
-* advanced filtering
-* modal form
-* room-specific component extraction
-* Electron backend startup
-* packaging
-* guest, booking, finance, history, or settings logic
+- room editing
+- room deletion
+- room status mutation
+- booking integration
+- availability calculation
+- room images
+- pagination
+- sorting
+- advanced filtering
+- modal form
+- room-specific component extraction
+- Electron backend startup
+- packaging
+- guest, booking, finance, history, or settings logic
 
 **Completion summary:**
 Milestone 10 successfully introduced the first create workflow in the Rooms module. The implementation stayed beginner-friendly and production-oriented by using the existing service layer, controlled form state, basic validation, backend submission, loading/error handling, and post-create refetching.
@@ -8738,14 +9321,14 @@ Milestone 11 — Rooms Module Edit Foundation
 
 Recommended focus:
 
-* add `updateRoom()` in `roomService.js`
-* connect to `PUT /rooms/{room_id}`
-* allow selecting one room for editing
-* reuse the existing room form pattern where reasonable
-* keep delete separate
-* keep room status mutation separate
-* keep booking availability separate
-* avoid advanced filters and pagination for now
+- add `updateRoom()` in `roomService.js`
+- connect to `PUT /rooms/{room_id}`
+- allow selecting one room for editing
+- reuse the existing room form pattern where reasonable
+- keep delete separate
+- keep room status mutation separate
+- keep booking availability separate
+- avoid advanced filters and pagination for now
 
 ---
 
@@ -8765,8 +9348,8 @@ Before this milestone, the Rooms module already supported reading rooms from the
 
 The existing `roomService.js` file was extended with two new service functions:
 
-* `updateRoom(roomId, roomData)`
-* `deleteRoom(roomId)`
+- `updateRoom(roomId, roomData)`
+- `deleteRoom(roomId)`
 
 The `updateRoom` function sends room updates to the backend using:
 
@@ -8811,18 +9394,18 @@ frontend/
 
 This milestone reinforced several important React and frontend engineering concepts:
 
-* Service-layer API organization
-* Controlled form inputs
-* Reusing a form for create and edit workflows
-* Pre-filling form state from selected data
-* Tracking edit mode with React state
-* Canceling edit mode safely
-* Handling destructive actions with confirmation
-* Managing update and delete loading states
-* Managing update and delete error states
-* Refreshing server data after mutations
-* Keeping FastAPI as the source of truth
-* Keeping Electron out of business logic
+- Service-layer API organization
+- Controlled form inputs
+- Reusing a form for create and edit workflows
+- Pre-filling form state from selected data
+- Tracking edit mode with React state
+- Canceling edit mode safely
+- Handling destructive actions with confirmation
+- Managing update and delete loading states
+- Managing update and delete error states
+- Refreshing server data after mutations
+- Keeping FastAPI as the source of truth
+- Keeping Electron out of business logic
 
 #### Backend Integration
 
@@ -8866,20 +9449,20 @@ Refresh rooms list
 
 This milestone intentionally did not add:
 
-* Booking-based room availability
-* Room status automation
-* Stays or bookings integration
-* Guests module logic
-* Finance module logic
-* History module logic
-* Advanced filtering
-* Pagination
-* Sorting
-* Room images
-* Optimistic updates
-* Modal system
-* Electron backend startup
-* Electron room API logic
+- Booking-based room availability
+- Room status automation
+- Stays or bookings integration
+- Guests module logic
+- Finance module logic
+- History module logic
+- Advanced filtering
+- Pagination
+- Sorting
+- Room images
+- Optimistic updates
+- Modal system
+- Electron backend startup
+- Electron room API logic
 
 These features are reserved for future milestones.
 
@@ -8887,19 +9470,19 @@ These features are reserved for future milestones.
 
 Milestone 11 was considered complete after verifying that:
 
-* Rooms still load correctly.
-* New rooms can still be created.
-* Existing rooms can be selected for editing.
-* The edit form is pre-filled correctly.
-* Edited room details are saved through the backend.
-* The rooms list refreshes after update.
-* Edit mode can be canceled.
-* Delete confirmation appears before deletion.
-* Clicking cancel prevents deletion.
-* Confirming delete removes the room through the backend.
-* The rooms list refreshes after deletion.
-* Errors are shown when update or delete fails.
-* The UI remains visually consistent with the HelloStay V1 design direction.
+- Rooms still load correctly.
+- New rooms can still be created.
+- Existing rooms can be selected for editing.
+- The edit form is pre-filled correctly.
+- Edited room details are saved through the backend.
+- The rooms list refreshes after update.
+- Edit mode can be canceled.
+- Delete confirmation appears before deletion.
+- Clicking cancel prevents deletion.
+- Confirming delete removes the room through the backend.
+- The rooms list refreshes after deletion.
+- Errors are shown when update or delete fails.
+- The UI remains visually consistent with the HelloStay V1 design direction.
 
 #### Summary
 
@@ -8936,29 +9519,29 @@ The Rooms module remains connected to the FastAPI backend through the existing r
 
 **What was completed:**
 
-* Reviewed the existing `RoomsPage.jsx` after room listing, creation, editing, and deletion had already been implemented.
-* Identified that the page had grown large enough to benefit from small, focused component extraction.
-* Refactored the Rooms module without rewriting it from scratch.
-* Preserved existing backend integration and CRUD behavior.
-* Kept room API calls inside `roomService.js`.
-* Improved the visual layout of the Rooms page.
-* Improved the page heading, spacing, card surfaces, form layout, and room list display.
-* Improved the create/edit form experience.
-* Made edit mode easier to understand by changing the form heading and showing a cancel edit action.
-* Improved success and error message placement.
-* Improved validation messages for required room fields.
-* Improved delete confirmation behavior and delete loading feedback.
-* Ensured errors do not break the entire Rooms page.
-* Preserved room list refresh behavior after create, update, and delete operations.
-* Kept reusable UI components generic.
-* Extracted room-specific components only where they improved readability.
+- Reviewed the existing `RoomsPage.jsx` after room listing, creation, editing, and deletion had already been implemented.
+- Identified that the page had grown large enough to benefit from small, focused component extraction.
+- Refactored the Rooms module without rewriting it from scratch.
+- Preserved existing backend integration and CRUD behavior.
+- Kept room API calls inside `roomService.js`.
+- Improved the visual layout of the Rooms page.
+- Improved the page heading, spacing, card surfaces, form layout, and room list display.
+- Improved the create/edit form experience.
+- Made edit mode easier to understand by changing the form heading and showing a cancel edit action.
+- Improved success and error message placement.
+- Improved validation messages for required room fields.
+- Improved delete confirmation behavior and delete loading feedback.
+- Ensured errors do not break the entire Rooms page.
+- Preserved room list refresh behavior after create, update, and delete operations.
+- Kept reusable UI components generic.
+- Extracted room-specific components only where they improved readability.
 
 **Files added or refined:**
 
-* `src/pages/RoomsPage.jsx`
-* `src/components/rooms/RoomForm.jsx`
-* `src/components/rooms/RoomTable.jsx`
-* `src/styles/global.css`
+- `src/pages/RoomsPage.jsx`
+- `src/components/rooms/RoomForm.jsx`
+- `src/components/rooms/RoomTable.jsx`
+- `src/styles/global.css`
 
 **Responsibilities after this milestone:**
 
@@ -8974,52 +9557,52 @@ The Rooms module remains connected to the FastAPI backend through the existing r
 
 **Important concepts learned:**
 
-* Refactoring means improving code structure without changing behavior.
-* Refactoring is different from rewriting.
-* Refactoring is safest after a feature already works.
-* Component extraction should be done only when it improves readability.
-* Too many components too early can make code harder to understand.
-* Props allow parent components to pass data and functions to child components.
-* Page components should coordinate feature behavior.
-* Feature components should render focused parts of the UI.
-* Service files should isolate API communication.
-* React renderer owns UI, state, forms, and user interaction.
-* Electron main process should not contain room API logic or UI logic.
-* Backend business rules should not be moved into React or Electron.
+- Refactoring means improving code structure without changing behavior.
+- Refactoring is different from rewriting.
+- Refactoring is safest after a feature already works.
+- Component extraction should be done only when it improves readability.
+- Too many components too early can make code harder to understand.
+- Props allow parent components to pass data and functions to child components.
+- Page components should coordinate feature behavior.
+- Feature components should render focused parts of the UI.
+- Service files should isolate API communication.
+- React renderer owns UI, state, forms, and user interaction.
+- Electron main process should not contain room API logic or UI logic.
+- Backend business rules should not be moved into React or Electron.
 
 **Verification completed or required:**
 
 The following behavior should work after Milestone 12:
 
-* Rooms load from the backend.
-* A new room can be created.
-* The room list refreshes after creation.
-* Existing rooms can be edited.
-* The form clearly switches into edit mode.
-* Edit mode can be cancelled.
-* The room list refreshes after update.
-* Rooms can be deleted after confirmation.
-* Delete state is visible while deletion is happening.
-* Validation messages appear for invalid form input.
-* Success messages appear after successful create, update, and delete actions.
-* API errors are shown clearly without crashing the page.
-* The Rooms page still feels like part of the dashboard layout introduced in Milestone 8.
+- Rooms load from the backend.
+- A new room can be created.
+- The room list refreshes after creation.
+- Existing rooms can be edited.
+- The form clearly switches into edit mode.
+- Edit mode can be cancelled.
+- The room list refreshes after update.
+- Rooms can be deleted after confirmation.
+- Delete state is visible while deletion is happening.
+- Validation messages appear for invalid form input.
+- Success messages appear after successful create, update, and delete actions.
+- API errors are shown clearly without crashing the page.
+- The Rooms page still feels like part of the dashboard layout introduced in Milestone 8.
 
 **What was intentionally not added:**
 
-* No Guests module.
-* No Bookings or Stays workflow.
-* No finance, history, or settings logic.
-* No room availability calculation based on bookings.
-* No room image upload.
-* No dashboard metrics.
-* No backend changes.
-* No Electron backend startup.
-* No packaging work.
-* No global room state.
-* No reducers.
-* No external state library.
-* No custom room hook yet.
+- No Guests module.
+- No Bookings or Stays workflow.
+- No finance, history, or settings logic.
+- No room availability calculation based on bookings.
+- No room image upload.
+- No dashboard metrics.
+- No backend changes.
+- No Electron backend startup.
+- No packaging work.
+- No global room state.
+- No reducers.
+- No external state library.
+- No custom room hook yet.
 
 **Result:**
 
@@ -9044,12 +9627,12 @@ The backend endpoint used in this milestone was:
 
 This endpoint returns a list of guest records containing:
 
-* `id`
-* `guest_name`
-* `guest_phone_number`
-* `guest_address`
-* `id_proof_type`
-* `id_proof_number`
+- `id`
+- `guest_name`
+- `guest_phone_number`
+- `guest_address`
+- `id_proof_type`
+- `id_proof_number`
 
 A new service file was added:
 
@@ -9059,18 +9642,18 @@ This file contains the `getGuests()` function, which calls the backend through t
 
 The existing `GuestsPage.jsx` placeholder from the dashboard area was updated into a working read-only page. The page now uses React state to manage:
 
-* guest records
-* loading state
-* error state
+- guest records
+- loading state
+- error state
 
 The page uses `useEffect` to fetch guests when the component first loads. This means the guest list is requested automatically when the user opens the Guests page.
 
 The Guests page now handles the main API UI states:
 
-* Loading state while guest data is being fetched
-* Error state if the backend request fails
-* Empty state if no guests are available
-* Success state when guest records are returned and displayed
+- Loading state while guest data is being fetched
+- Error state if the backend request fails
+- Empty state if no guests are available
+- Success state when guest records are returned and displayed
 
 Guest records are displayed in a clean, simple, read-only UI consistent with the HelloStay V1 design direction. The guest display includes useful guest information such as guest name, phone number, ID proof type, ID proof number, and address. A simple initials/avatar placeholder may be used to make the guest cards more readable and visually clear.
 
@@ -9078,11 +9661,11 @@ No create, edit, delete, modal, form, stay history, booking integration, guest t
 
 This milestone respected the responsibility separation of the HelloStay architecture:
 
-* FastAPI remains responsible for guest data, validation, database operations, and API contracts.
-* React is responsible for displaying the Guests page and managing UI state.
-* `guestService.js` is responsible for guest-related API calls.
-* `apiClient.js` remains responsible for common request handling.
-* Electron main process is not involved in guest data fetching.
+- FastAPI remains responsible for guest data, validation, database operations, and API contracts.
+- React is responsible for displaying the Guests page and managing UI state.
+- `guestService.js` is responsible for guest-related API calls.
+- `apiClient.js` remains responsible for common request handling.
+- Electron main process is not involved in guest data fetching.
 
 This milestone successfully established the read-only Guests module foundation and prepared the project for future guest creation, editing, deletion, and guest-stay integration milestones.
 
@@ -9100,40 +9683,40 @@ The goal of this milestone was not to build the full Guests module. The mileston
 
 The existing `GuestsPage.jsx` was preserved and extended instead of being rebuilt from scratch. A new guest creation form was added to the Guests page using controlled React form inputs. The form collects the required guest fields expected by the backend:
 
-* `guest_name`
-* `guest_phone_number`
-* `guest_address`
-* `id_proof_type`
-* `id_proof_number`
+- `guest_name`
+- `guest_phone_number`
+- `guest_address`
+- `id_proof_type`
+- `id_proof_number`
 
 The `guestService.js` file was updated with a new `createGuest(guestData)` function. This function sends a `POST /guests` request through the existing `apiClient.js`, keeping all guest-related API communication inside the service layer.
 
 The Guests page now supports:
 
-* Fetching existing guests from the backend
-* Displaying loading, error, empty, and success states
-* Entering guest details through a controlled form
-* Basic frontend validation for required fields
-* Submitting guest data to the backend
-* Showing creation errors clearly
-* Clearing the form after successful guest creation
-* Refreshing the guest list after a new guest is created
+- Fetching existing guests from the backend
+- Displaying loading, error, empty, and success states
+- Entering guest details through a controlled form
+- Basic frontend validation for required fields
+- Submitting guest data to the backend
+- Showing creation errors clearly
+- Clearing the form after successful guest creation
+- Refreshing the guest list after a new guest is created
 
 A React Hooks ESLint issue appeared during the milestone because `loadGuests()` was called inside `useEffect`, and that function immediately triggered synchronous state updates. The implementation was corrected by separating pure guest fetching from state-updating logic. A `fetchGuests()` function was introduced to only fetch and return data, while state updates were handled after the asynchronous request completed. This kept the code aligned with React Hooks linting expectations and improved the structure of the data-fetching logic.
 
 This milestone also reinforced important frontend concepts:
 
-* Controlled components
-* `useState` for form data
-* `useEffect` for initial data loading
-* Form submission using `onSubmit`
-* `event.preventDefault()`
-* Client-side validation
-* Backend validation as the final source of truth
-* Service-layer API organization
-* Refetching data after create operations
-* Avoiding direct state mutation
-* Avoiding premature abstraction
+- Controlled components
+- `useState` for form data
+- `useEffect` for initial data loading
+- Form submission using `onSubmit`
+- `event.preventDefault()`
+- Client-side validation
+- Backend validation as the final source of truth
+- Service-layer API organization
+- Refetching data after create operations
+- Avoiding direct state mutation
+- Avoiding premature abstraction
 
 Electron responsibilities did not change in this milestone. Guest creation remains a renderer process concern that communicates with the FastAPI backend through the frontend service layer. No guest business logic was moved into Electron main process, preload scripts, or IPC.
 
@@ -9141,8 +9724,8 @@ This milestone intentionally did not add guest edit, guest delete, guest stay hi
 
 **Files affected:**
 
-* `frontend/src/services/guestService.js`
-* `frontend/src/pages/GuestsPage.jsx`
+- `frontend/src/services/guestService.js`
+- `frontend/src/pages/GuestsPage.jsx`
 
 **Outcome:**
 
@@ -9161,36 +9744,36 @@ The implementation continued from the completed Guests module created in Milesto
 
 **Completed work:**
 
-* Reviewed and extended the existing Milestone 14 Guests page.
-* Added `updateGuest(guestId, guestData)` to `guestService.js`.
-* Added `deleteGuest(guestId)` to `guestService.js`.
-* Integrated `PUT /guests/{guest_id}` through the shared API client.
-* Integrated `DELETE /guests/{guest_id}` through the shared API client.
-* Kept all guest-related HTTP operations inside `guestService.js`.
-* Added an Edit action to each displayed guest.
-* Added selected guest state for identifying the guest being edited.
-* Added separate controlled edit-form state.
-* Pre-filled the edit form using the selected guest’s current values.
-* Added edit-form change handling.
-* Added edit cancellation behavior.
-* Added frontend validation for all required guest fields.
-* Added normalization and trimming of edited guest data.
-* Added comparison between original and edited values.
-* Added partial update payload construction containing only changed fields.
-* Prevented unnecessary update requests when no values changed.
-* Added update loading state.
-* Added update error state.
-* Displayed backend update errors when available.
-* Refetched the guest list after a successful update.
-* Added a Delete action to each displayed guest.
-* Added beginner-friendly inline delete confirmation.
-* Added delete cancellation behavior.
-* Added per-guest deletion loading state.
-* Added delete error handling.
-* Refetched the guest list after successful deletion.
-* Closed edit mode when the currently edited guest was deleted.
-* Preserved the existing create-guest workflow.
-* Kept the UI aligned with the desktop-first HelloStay dashboard design.
+- Reviewed and extended the existing Milestone 14 Guests page.
+- Added `updateGuest(guestId, guestData)` to `guestService.js`.
+- Added `deleteGuest(guestId)` to `guestService.js`.
+- Integrated `PUT /guests/{guest_id}` through the shared API client.
+- Integrated `DELETE /guests/{guest_id}` through the shared API client.
+- Kept all guest-related HTTP operations inside `guestService.js`.
+- Added an Edit action to each displayed guest.
+- Added selected guest state for identifying the guest being edited.
+- Added separate controlled edit-form state.
+- Pre-filled the edit form using the selected guest’s current values.
+- Added edit-form change handling.
+- Added edit cancellation behavior.
+- Added frontend validation for all required guest fields.
+- Added normalization and trimming of edited guest data.
+- Added comparison between original and edited values.
+- Added partial update payload construction containing only changed fields.
+- Prevented unnecessary update requests when no values changed.
+- Added update loading state.
+- Added update error state.
+- Displayed backend update errors when available.
+- Refetched the guest list after a successful update.
+- Added a Delete action to each displayed guest.
+- Added beginner-friendly inline delete confirmation.
+- Added delete cancellation behavior.
+- Added per-guest deletion loading state.
+- Added delete error handling.
+- Refetched the guest list after successful deletion.
+- Closed edit mode when the currently edited guest was deleted.
+- Preserved the existing create-guest workflow.
+- Kept the UI aligned with the desktop-first HelloStay dashboard design.
 
 **Guest update flow:**
 
@@ -9246,11 +9829,11 @@ Deletion is not performed from the first click because it is a destructive actio
 
 The edit form validates the following required fields:
 
-* `guest_name`
-* `guest_phone_number`
-* `guest_address`
-* `id_proof_type`
-* `id_proof_number`
+- `guest_name`
+- `guest_phone_number`
+- `guest_address`
+- `id_proof_type`
+- `id_proof_number`
 
 Whitespace is removed before validation and submission.
 
@@ -9260,18 +9843,18 @@ Frontend validation provides immediate feedback, while FastAPI remains responsib
 
 The Guests page now manages separate state for:
 
-* Loaded guest records
-* Initial loading
-* Guest-loading errors
-* Create form data
-* Create loading and errors
-* Selected editing guest
-* Edit form data
-* Edit validation errors
-* Update loading and errors
-* Active delete confirmation
-* Guest currently being deleted
-* Delete errors
+- Loaded guest records
+- Initial loading
+- Guest-loading errors
+- Create form data
+- Create loading and errors
+- Selected editing guest
+- Edit form data
+- Edit validation errors
+- Update loading and errors
+- Active delete confirmation
+- Guest currently being deleted
+- Delete errors
 
 Separating these states prevents one operation from incorrectly controlling another operation’s UI.
 
@@ -9279,10 +9862,10 @@ Separating these states prevents one operation from incorrectly controlling anot
 
 `guestService.js` now provides the complete guest CRUD foundation required so far:
 
-* `getGuests()`
-* `createGuest(guestData)`
-* `updateGuest(guestId, guestData)`
-* `deleteGuest(guestId)`
+- `getGuests()`
+- `createGuest(guestData)`
+- `updateGuest(guestId, guestData)`
+- `deleteGuest(guestId)`
 
 The page does not contain hardcoded backend URLs or direct `fetch()` calls.
 
@@ -9290,78 +9873,78 @@ The page does not contain hardcoded backend URLs or direct `fetch()` calls.
 
 The completed module supports:
 
-* Loading existing guests.
-* Creating new guests.
-* Opening edit mode.
-* Pre-filling current guest data.
-* Cancelling edit mode.
-* Validating edited data.
-* Updating one or more fields.
-* Detecting submissions with no changes.
-* Showing update progress.
-* Showing update failures.
-* Persisting updates after refresh.
-* Opening inline delete confirmation.
-* Cancelling deletion.
-* Confirming deletion.
-* Showing delete progress.
-* Showing delete failures.
-* Persisting deletion after refresh.
+- Loading existing guests.
+- Creating new guests.
+- Opening edit mode.
+- Pre-filling current guest data.
+- Cancelling edit mode.
+- Validating edited data.
+- Updating one or more fields.
+- Detecting submissions with no changes.
+- Showing update progress.
+- Showing update failures.
+- Persisting updates after refresh.
+- Opening inline delete confirmation.
+- Cancelling deletion.
+- Confirming deletion.
+- Showing delete progress.
+- Showing delete failures.
+- Persisting deletion after refresh.
 
 **Architecture responsibilities preserved:**
 
 **React renderer process:**
 
-* Displays guest records.
-* Manages forms and controlled inputs.
-* Manages edit selection.
-* Manages loading and error UI.
-* Manages inline delete confirmation.
-* Calls guest service functions.
+- Displays guest records.
+- Manages forms and controlled inputs.
+- Manages edit selection.
+- Manages loading and error UI.
+- Manages inline delete confirmation.
+- Calls guest service functions.
 
 **Service layer:**
 
-* Defines guest update and delete requests.
-* Hides endpoint and HTTP-method details from the page.
-* Uses the shared API client.
+- Defines guest update and delete requests.
+- Hides endpoint and HTTP-method details from the page.
+- Uses the shared API client.
 
 **FastAPI backend:**
 
-* Finds guest records.
-* Validates update data.
-* Applies partial updates.
-* Enforces database constraints.
-* Commits updates and deletions.
-* Returns success or error responses.
+- Finds guest records.
+- Validates update data.
+- Applies partial updates.
+- Enforces database constraints.
+- Commits updates and deletions.
+- Returns success or error responses.
 
 **Electron:**
 
-* No guest business logic was added to the Electron main process.
-* No guest API calls were added to preload scripts.
-* Electron continues to act only as the desktop shell.
+- No guest business logic was added to the Electron main process.
+- No guest API calls were added to preload scripts.
+- Electron continues to act only as the desktop shell.
 
 **Files changed:**
 
-* `frontend/src/services/guestService.js`
-* `frontend/src/pages/GuestsPage.jsx`
-* Existing stylesheet containing guest-related styles
+- `frontend/src/services/guestService.js`
+- `frontend/src/pages/GuestsPage.jsx`
+- Existing stylesheet containing guest-related styles
 
 **Not included in this milestone:**
 
-* Guest stay history
-* Booking or stay integration
-* Guest activity timelines
-* ID document uploads
-* OCR
-* Pagination
-* Sorting
-* Advanced filtering
-* Optimistic updates
-* Modal infrastructure
-* Finance logic
-* History module logic
-* Electron backend startup
-* Desktop packaging
+- Guest stay history
+- Booking or stay integration
+- Guest activity timelines
+- ID document uploads
+- OCR
+- Pagination
+- Sorting
+- Advanced filtering
+- Optimistic updates
+- Modal infrastructure
+- Finance logic
+- History module logic
+- Electron backend startup
+- Desktop packaging
 
 **Result:**
 
@@ -9379,13 +9962,13 @@ Milestone 16 should focus on Guests Module UX Refinement and Code Cleanup.
 
 Recommended areas include:
 
-* Reviewing the size and readability of `GuestsPage.jsx`.
-* Extracting guest-specific components only where they simplify the page.
-* Reusing a shared `GuestForm` for create and edit if the resulting prop design remains clear.
-* Improving action-button variants and destructive-action styling.
-* Improving field-level validation presentation.
-* Improving loading, empty, and mutation feedback.
-* Preserving the existing API behavior without adding guest stays or booking integration.
+- Reviewing the size and readability of `GuestsPage.jsx`.
+- Extracting guest-specific components only where they simplify the page.
+- Reusing a shared `GuestForm` for create and edit if the resulting prop design remains clear.
+- Improving action-button variants and destructive-action styling.
+- Improving field-level validation presentation.
+- Improving loading, empty, and mutation feedback.
+- Preserving the existing API behavior without adding guest stays or booking integration.
 
 ---
 
@@ -9405,29 +9988,29 @@ It does not introduce GuestStay integration, bookings, stay history, pagination,
 
 The current Guests module and related frontend files were reviewed, including:
 
-* `GuestsPage.jsx`
-* `guestService.js`
-* `apiClient.js`
-* shared `Input`, `Button`, `Card`, and `ErrorMessage` components
-* guest-related styles in `global.css`
+- `GuestsPage.jsx`
+- `guestService.js`
+- `apiClient.js`
+- shared `Input`, `Button`, `Card`, and `ErrorMessage` components
+- guest-related styles in `global.css`
 
 The review confirmed that:
 
-* guest API operations remain centralized in `guestService.js`
-* the service uses the correct guest endpoints
-* creation sends all required guest fields
-* updates send only changed fields
-* guest cards use stable database IDs as React keys
-* edit cancellation safely clears edit state
-* deletion requires explicit confirmation
-* create, update, and delete operations use separate loading and error states
+- guest API operations remain centralized in `guestService.js`
+- the service uses the correct guest endpoints
+- creation sends all required guest fields
+- updates send only changed fields
+- guest cards use stable database IDs as React keys
+- edit cancellation safely clears edit state
+- deletion requires explicit confirmation
+- create, update, and delete operations use separate loading and error states
 
 **Collection Error-State Refinement**
 
 The previous general guest-list error state was divided into:
 
-* `loadError`
-* `refreshError`
+- `loadError`
+- `refreshError`
 
 `loadError` now represents failure of the initial `GET /guests` request.
 
@@ -9441,117 +10024,117 @@ This ensures that a failed refresh does not hide previously loaded guest records
 
 Before creating a guest:
 
-* the create loading state begins
-* the previous create error is cleared
-* an old refresh warning is cleared
+- the create loading state begins
+- the previous create error is cleared
+- an old refresh warning is cleared
 
 After successful creation:
 
-* the create form is cleared
-* the guest collection is refreshed
+- the create form is cleared
+- the guest collection is refreshed
 
 When creation succeeds but refreshing fails:
 
-* creation is still treated as successful
-* a non-blocking refresh warning is displayed
-* the existing guest collection remains visible
+- creation is still treated as successful
+- a non-blocking refresh warning is displayed
+- the existing guest collection remains visible
 
 **Update Behavior**
 
 Before updating a guest:
 
-* the update loading state begins
-* update errors are cleared
-* edit validation errors are cleared
-* an old refresh warning is cleared
+- the update loading state begins
+- update errors are cleared
+- edit validation errors are cleared
+- an old refresh warning is cleared
 
 After successful update:
 
-* edit mode closes
-* edit-form state is cleared
-* the guest collection is refreshed
+- edit mode closes
+- edit-form state is cleared
+- the guest collection is refreshed
 
 When updating succeeds but refreshing fails:
 
-* the update is not incorrectly reported as failed
-* a non-blocking refresh warning is displayed
-* the existing guest collection remains visible
+- the update is not incorrectly reported as failed
+- a non-blocking refresh warning is displayed
+- the existing guest collection remains visible
 
 **Delete Behavior**
 
 Before deleting a guest:
 
-* the active guest ID is stored
-* delete errors are cleared
-* an old refresh warning is cleared
+- the active guest ID is stored
+- delete errors are cleared
+- an old refresh warning is cleared
 
 After successful deletion:
 
-* delete confirmation closes
-* matching edit state is cleared when necessary
-* the guest collection is refreshed
+- delete confirmation closes
+- matching edit state is cleared when necessary
+- the guest collection is refreshed
 
 When deletion succeeds but refreshing fails:
 
-* deletion remains successful
-* a non-blocking refresh warning is displayed
-* the previously loaded collection remains visible until a later successful refresh
+- deletion remains successful
+- a non-blocking refresh warning is displayed
+- the previously loaded collection remains visible until a later successful refresh
 
 **Initial-Load Behavior**
 
 When FastAPI is not running:
 
-* the API client produces a readable backend connection message
-* the loading state ends
-* the message is stored in `loadError`
-* the blocking load error is displayed
-* the empty state is not displayed
+- the API client produces a readable backend connection message
+- the loading state ends
+- the message is stored in `loadError`
+- the blocking load error is displayed
+- the empty state is not displayed
 
 When FastAPI is running:
 
-* `GET /guests` succeeds
-* guests are displayed normally
-* collection-level errors are cleared
+- `GET /guests` succeeds
+- guests are displayed normally
+- collection-level errors are cleared
 
 **Verification Completed**
 
 The following cases have been tested successfully:
 
-* backend unavailable during initial loading
-* backend available during initial loading
-* correct rendering of the blocking load error
-* correct prevention of an inaccurate empty state during backend failure
-* successful guest update before a simulated refresh failure
-* correct display of a non-blocking refresh warning
-* preservation of existing guest cards during the refresh warning
-* removal of temporary refresh-failure simulation code
+- backend unavailable during initial loading
+- backend available during initial loading
+- correct rendering of the blocking load error
+- correct prevention of an inaccurate empty state during backend failure
+- successful guest update before a simulated refresh failure
+- correct display of a non-blocking refresh warning
+- preservation of existing guest cards during the refresh warning
+- removal of temporary refresh-failure simulation code
 
 **Architecture Boundaries Preserved**
 
 React continues to own:
 
-* guest page rendering
-* controlled form state
-* loading states
-* validation feedback
-* edit selection
-* deletion confirmation
-* collection error presentation
+- guest page rendering
+- controlled form state
+- loading states
+- validation feedback
+- edit selection
+- deletion confirmation
+- collection error presentation
 
 `guestService.js` continues to own:
 
-* `GET /guests`
-* `POST /guests`
-* `PUT /guests/{guest_id}`
-* `DELETE /guests/{guest_id}`
+- `GET /guests`
+- `POST /guests`
+- `PUT /guests/{guest_id}`
+- `DELETE /guests/{guest_id}`
 
 FastAPI remains responsible for:
 
-* guest validation
-* guest business rules
-* database operations
-* API contracts
-* persistent guest data
+- guest validation
+- guest business rules
+- database operations
+- API contracts
+- persistent guest data
 
 Electron main and preload processes contain no guest CRUD logic.
 
@@ -9559,18 +10142,18 @@ Electron main and preload processes contain no guest CRUD logic.
 
 Before Milestone 16 can be marked fully complete, the following planned work remains:
 
-* add field-specific validation to the create form
-* make create and edit validation presentation consistent
-* consider extracting the duplicated guest form into `GuestForm.jsx`
-* consider extracting substantial guest-card markup into `GuestCard.jsx`
-* improve create, edit, cancel, and delete button hierarchy
-* add or correct missing guest-specific CSS selectors
-* clean directly related duplicate CSS without rewriting unrelated styles
-* improve operation-specific control disabling
-* improve shared input and error accessibility
-* verify duplicate phone-number feedback
-* verify duplicate ID-proof-number feedback
-* complete the full create, edit, delete, browser, Electron, route-regression, and ESLint verification matrix
+- add field-specific validation to the create form
+- make create and edit validation presentation consistent
+- consider extracting the duplicated guest form into `GuestForm.jsx`
+- consider extracting substantial guest-card markup into `GuestCard.jsx`
+- improve create, edit, cancel, and delete button hierarchy
+- add or correct missing guest-specific CSS selectors
+- clean directly related duplicate CSS without rewriting unrelated styles
+- improve operation-specific control disabling
+- improve shared input and error accessibility
+- verify duplicate phone-number feedback
+- verify duplicate ID-proof-number feedback
+- complete the full create, edit, delete, browser, Electron, route-regression, and ESLint verification matrix
 
 **Current Outcome**
 
@@ -9592,96 +10175,92 @@ Introduce the first functional read-only frontend view for hotel Stay records an
 
 #### Completed Work
 
-* Confirmed that the project already used consistent Stay terminology.
+- Confirmed that the project already used consistent Stay terminology.
 
-* Confirmed that no duplicate `BookingsPage.jsx` or `/bookings` route existed.
+- Confirmed that no duplicate `BookingsPage.jsx` or `/bookings` route existed.
 
-* Confirmed that the sidebar already linked to:
+- Confirmed that the sidebar already linked to:
 
   `/dashboard/stays`
 
-* Confirmed that `StaysPage.jsx` was registered as a protected nested dashboard route.
+- Confirmed that `StaysPage.jsx` was registered as a protected nested dashboard route.
 
-* Created `src/services/stayService.js`.
+- Created `src/services/stayService.js`.
 
-* Added `getStays()` to the Stay service.
+- Added `getStays()` to the Stay service.
 
-* Connected `getStays()` to the backend endpoint:
+- Connected `getStays()` to the backend endpoint:
 
   `GET /stay`
 
-* Kept all Stay-related HTTP communication inside `stayService.js`.
+- Kept all Stay-related HTTP communication inside `stayService.js`.
 
-* Reused the existing centralized `apiClient.js`.
+- Reused the existing centralized `apiClient.js`.
 
-* Did not call `fetch()` directly from `StaysPage.jsx`.
+- Did not call `fetch()` directly from `StaysPage.jsx`.
 
-* Replaced the static Stays placeholder with a functional read-only page.
+- Replaced the static Stays placeholder with a functional read-only page.
 
-* Added page-level state for:
+- Added page-level state for:
+  - Stay records
+  - Initial loading state
+  - Initial loading error
 
-  * Stay records
-  * Initial loading state
-  * Initial loading error
+- Used `useEffect` to request Stay records when the page mounts.
 
-* Used `useEffect` to request Stay records when the page mounts.
+- Kept the `useEffect` callback synchronous and declared the asynchronous loading function inside it.
 
-* Kept the `useEffect` callback synchronous and declared the asynchronous loading function inside it.
+- Added a cleanup guard to prevent obsolete asynchronous results from updating state after the component unmounts.
 
-* Added a cleanup guard to prevent obsolete asynchronous results from updating state after the component unmounts.
+- Verified that the backend response is an array before storing or rendering it.
 
-* Verified that the backend response is an array before storing or rendering it.
+- Added explicit rendering for:
+  - Loading state
+  - Backend or network error state
+  - Empty Stay list
+  - Successful Stay list
 
-* Added explicit rendering for:
+- Displayed Stay records in a desktop-oriented table.
 
-  * Loading state
-  * Backend or network error state
-  * Empty Stay list
-  * Successful Stay list
+- Used `stay_id` as the React list key.
 
-* Displayed Stay records in a desktop-oriented table.
+- Displayed:
+  - Stay ID
+  - Room reference
+  - Stay status
+  - Check-in date and time
+  - Check-out date and time
+  - Historical price per night
 
-* Used `stay_id` as the React list key.
+- Displayed `Room ID: <id>` as the safe room-reference fallback.
 
-* Displayed:
+- Displayed `Not checked out` when `check_out_datetime` is null.
 
-  * Stay ID
-  * Room reference
-  * Stay status
-  * Check-in date and time
-  * Check-out date and time
-  * Historical price per night
+- Added safe handling for missing or invalid date values.
 
-* Displayed `Room ID: <id>` as the safe room-reference fallback.
+- Formatted dates and times for human-readable display without changing the raw backend data.
 
-* Displayed `Not checked out` when `check_out_datetime` is null.
+- Formatted price values without introducing a hardcoded currency symbol.
 
-* Added safe handling for missing or invalid date values.
+- Displayed the backend-owned `stay_status` value directly.
 
-* Formatted dates and times for human-readable display without changing the raw backend data.
+- Added restrained visual badges for:
+  - Checked In
+  - Checked Out
 
-* Formatted price values without introducing a hardcoded currency symbol.
+- Kept unknown backend status values readable with the default badge appearance.
 
-* Displayed the backend-owned `stay_status` value directly.
+- Added horizontal overflow protection for the Stay table.
 
-* Added restrained visual badges for:
+- Added a minimum table width to preserve readable operational columns.
 
-  * Checked In
-  * Checked Out
+- Reused the existing Card, Loading, ErrorMessage, empty-state, and status-badge UI foundations.
 
-* Kept unknown backend status values readable with the default badge appearance.
+- Added only the Stay-specific CSS required for the read-only table.
 
-* Added horizontal overflow protection for the Stay table.
+- Verified the page in the browser and Electron desktop shell.
 
-* Added a minimum table width to preserve readable operational columns.
-
-* Reused the existing Card, Loading, ErrorMessage, empty-state, and status-badge UI foundations.
-
-* Added only the Stay-specific CSS required for the read-only table.
-
-* Verified the page in the browser and Electron desktop shell.
-
-* Confirmed that existing Rooms, Guests, authentication, logout, and protected routing behavior remained unaffected.
+- Confirmed that existing Rooms, Guests, authentication, logout, and protected routing behavior remained unaffected.
 
 #### Data Flow
 
@@ -9723,80 +10302,80 @@ frontend/src/layouts/DashboardLayout.jsx
 
 #### Important Technical Concepts Practised
 
-* Master data versus transactional data
-* Stay records as operational hotel transactions
-* Historical nightly-price snapshots
-* Foreign-key references through `room_id`
-* Nullable checkout timestamps for active Stays
-* Service-layer boundaries
-* React `useState`
-* React `useEffect`
-* Asynchronous request handling
-* Effect cleanup and obsolete-result protection
-* Loading, error, empty, and success states
-* Conditional rendering
-* List rendering with stable keys
-* API-response validation
-* Null-safe rendering
-* JavaScript Date parsing
-* `Intl.DateTimeFormat`
-* `Intl.NumberFormat`
-* Raw values versus formatted display values
-* Derived values instead of unnecessary state
-* Status-to-CSS-class mapping
-* Accessible semantic tables
-* Responsive table overflow inside Electron
+- Master data versus transactional data
+- Stay records as operational hotel transactions
+- Historical nightly-price snapshots
+- Foreign-key references through `room_id`
+- Nullable checkout timestamps for active Stays
+- Service-layer boundaries
+- React `useState`
+- React `useEffect`
+- Asynchronous request handling
+- Effect cleanup and obsolete-result protection
+- Loading, error, empty, and success states
+- Conditional rendering
+- List rendering with stable keys
+- API-response validation
+- Null-safe rendering
+- JavaScript Date parsing
+- `Intl.DateTimeFormat`
+- `Intl.NumberFormat`
+- Raw values versus formatted display values
+- Derived values instead of unnecessary state
+- Status-to-CSS-class mapping
+- Accessible semantic tables
+- Responsive table overflow inside Electron
 
 #### Verification Completed
 
-* Confirmed the Stays route is protected.
-* Confirmed sidebar navigation opens `/dashboard/stays`.
-* Confirmed the Stays page renders inside `DashboardLayout`.
-* Verified `GET /stay` through the backend.
-* Verified the loading state.
-* Verified the backend-unavailable error state.
-* Verified an empty Stay response.
-* Verified an active Stay with a null checkout timestamp.
-* Verified a checked-out Stay.
-* Verified multiple Stay records.
-* Verified status badge rendering.
-* Verified human-readable date and time formatting.
-* Verified price formatting.
-* Verified non-array response protection.
-* Verified table horizontal scrolling.
-* Verified the page in the browser.
-* Verified the page inside Electron.
-* Confirmed Rooms still works.
-* Confirmed Guests still works.
-* Confirmed login, logout, and protected routing still work.
-* Confirmed ESLint and regression checks were completed successfully.
+- Confirmed the Stays route is protected.
+- Confirmed sidebar navigation opens `/dashboard/stays`.
+- Confirmed the Stays page renders inside `DashboardLayout`.
+- Verified `GET /stay` through the backend.
+- Verified the loading state.
+- Verified the backend-unavailable error state.
+- Verified an empty Stay response.
+- Verified an active Stay with a null checkout timestamp.
+- Verified a checked-out Stay.
+- Verified multiple Stay records.
+- Verified status badge rendering.
+- Verified human-readable date and time formatting.
+- Verified price formatting.
+- Verified non-array response protection.
+- Verified table horizontal scrolling.
+- Verified the page in the browser.
+- Verified the page inside Electron.
+- Confirmed Rooms still works.
+- Confirmed Guests still works.
+- Confirmed login, logout, and protected routing still work.
+- Confirmed ESLint and regression checks were completed successfully.
 
 #### Deliberately Deferred
 
 The following features were intentionally excluded from Milestone 17:
 
-* Creating Stay records
-* Updating Stay records
-* Deleting Stay records
-* Check-in actions
-* Checkout actions
-* Stay lifecycle transitions
-* GuestStay API integration
-* Guest assignment
-* Primary-guest selection
-* Guest-name lookup
-* Room-number lookup enhancement
-* Stay duration calculation
-* Billing or total-charge calculation
-* Payment tracking
-* Room-availability calculation
-* Booking conflict validation
-* Automatic Room-status changes
-* Search, sorting, filtering, and pagination
-* A future reservation or Bookings module
-* Electron IPC for normal backend requests
-* Electron-controlled FastAPI startup
-* Desktop packaging
+- Creating Stay records
+- Updating Stay records
+- Deleting Stay records
+- Check-in actions
+- Checkout actions
+- Stay lifecycle transitions
+- GuestStay API integration
+- Guest assignment
+- Primary-guest selection
+- Guest-name lookup
+- Room-number lookup enhancement
+- Stay duration calculation
+- Billing or total-charge calculation
+- Payment tracking
+- Room-availability calculation
+- Booking conflict validation
+- Automatic Room-status changes
+- Search, sorting, filtering, and pagination
+- A future reservation or Bookings module
+- Electron IPC for normal backend requests
+- Electron-controlled FastAPI startup
+- Desktop packaging
 
 #### Milestone Result
 
@@ -9816,21 +10395,21 @@ The milestone focuses only on the creation workflow. Edit and delete functionali
 
 #### Completed Work
 
-* Added Create Stay form to `StaysPage.jsx`.
-* Added room selection using rooms retrieved from the backend.
-* Added price-per-night input.
-* Added check-in date and time input.
-* Added stay status selection.
-* Added controlled form state using React `useState`.
-* Added field-level client-side validation.
-* Added stay payload construction before API submission.
-* Added `createStay()` integration through `stayService.js`.
-* Added submission/loading state using `isSubmitting`.
-* Added backend creation error handling.
-* Added successful creation feedback.
-* Added automatic stay-list refresh after successful creation.
-* Added form reset after successful creation.
-* Added UX refinements to keep the form consistent with the existing HelloStay interface.
+- Added Create Stay form to `StaysPage.jsx`.
+- Added room selection using rooms retrieved from the backend.
+- Added price-per-night input.
+- Added check-in date and time input.
+- Added stay status selection.
+- Added controlled form state using React `useState`.
+- Added field-level client-side validation.
+- Added stay payload construction before API submission.
+- Added `createStay()` integration through `stayService.js`.
+- Added submission/loading state using `isSubmitting`.
+- Added backend creation error handling.
+- Added successful creation feedback.
+- Added automatic stay-list refresh after successful creation.
+- Added form reset after successful creation.
+- Added UX refinements to keep the form consistent with the existing HelloStay interface.
 
 #### Backend Integration
 
@@ -9869,11 +10448,11 @@ FastAPI remains the source of truth for backend validation, business rules, and 
 
 The Create Stay form validates:
 
-* Room is required.
-* Price per night is required.
-* Price must be greater than zero.
-* Check-in date and time is required.
-* Stay status is required.
+- Room is required.
+- Price per night is required.
+- Price must be greater than zero.
+- Check-in date and time is required.
+- Stay status is required.
 
 Validation errors are stored separately from the form values and displayed next to the corresponding fields.
 
@@ -9913,10 +10492,10 @@ The room selector uses the existing `getRooms()` service.
 
 The UI handles:
 
-* Loading rooms.
-* Successfully loaded rooms.
-* No available rooms.
-* Room-loading errors.
+- Loading rooms.
+- Successfully loaded rooms.
+- No available rooms.
+- Room-loading errors.
 
 The frontend does not maintain a hard-coded list of rooms.
 
@@ -9924,10 +10503,10 @@ The frontend does not maintain a hard-coded list of rooms.
 
 The milestone separates different error categories:
 
-* Stay-list loading errors.
-* Room-loading errors.
-* Field-level validation errors.
-* Stay-creation request errors.
+- Stay-list loading errors.
+- Room-loading errors.
+- Field-level validation errors.
+- Stay-creation request errors.
 
 This keeps errors associated with the operation that caused them.
 
@@ -9949,13 +10528,13 @@ The Create Stay form follows the existing HelloStay UX.
 
 It uses the application's existing:
 
-* Card layout.
-* Form styling.
-* Error presentation.
-* Button styling.
-* Spacing.
-* Typography.
-* Loading and feedback patterns.
+- Card layout.
+- Form styling.
+- Error presentation.
+- Button styling.
+- Spacing.
+- Typography.
+- Loading and feedback patterns.
 
 The submit button is disabled while the creation request is in progress and displays an appropriate loading label.
 
@@ -9963,12 +10542,12 @@ The submit button is disabled while the creation request is in progress and disp
 
 The following features were intentionally not implemented:
 
-* Stay editing.
-* Stay deletion.
-* Check-out workflow.
-* Stay detail view.
-* Advanced stay-management workflows.
-* Global state management.
+- Stay editing.
+- Stay deletion.
+- Check-out workflow.
+- Stay detail view.
+- Advanced stay-management workflows.
+- Global state management.
 
 These features remain outside the scope of Milestone 18.
 
@@ -9976,20 +10555,20 @@ These features remain outside the scope of Milestone 18.
 
 Milestone 18 is considered complete when:
 
-* The Create Stay form renders correctly.
-* Rooms can be selected from backend data.
-* Form state works correctly.
-* Validation works correctly.
-* Invalid submissions are prevented.
-* Valid data is submitted to `POST /stay`.
-* Submission state works correctly.
-* Backend errors are displayed.
-* Successful creation is communicated to the user.
-* The stay list refreshes after successful creation.
-* The form resets after successful creation.
-* Existing read-only stay functionality continues to work.
-* The form follows the existing HelloStay UX.
-* Edit and delete functionality remain excluded.
+- The Create Stay form renders correctly.
+- Rooms can be selected from backend data.
+- Form state works correctly.
+- Validation works correctly.
+- Invalid submissions are prevented.
+- Valid data is submitted to `POST /stay`.
+- Submission state works correctly.
+- Backend errors are displayed.
+- Successful creation is communicated to the user.
+- The stay list refreshes after successful creation.
+- The form resets after successful creation.
+- Existing read-only stay functionality continues to work.
+- The form follows the existing HelloStay UX.
+- Edit and delete functionality remain excluded.
 
 #### Result
 
@@ -10009,21 +10588,21 @@ The milestone focuses on connecting the existing Stays UI to the backend `PUT` a
 
 #### Completed Work
 
-* Added stay editing functionality to `StaysPage.jsx`.
-* Added an edit form for modifying editable stay fields.
-* Added edit-specific form state and validation state.
-* Added `isUpdating` state to prevent duplicate update submissions.
-* Added update loading feedback through the edit form button.
-* Added support for the backend `StayUpdate` contract.
-* Added stay deletion functionality to the Stays table.
-* Added a delete confirmation UI before performing deletion.
-* Added delete-specific state for the selected stay and deletion operation.
-* Added deletion loading and error handling.
-* Added refresh of the stay list after successful update or deletion.
-* Added success and error feedback for stay operations.
-* Added button states to prevent repeated submissions while requests are in progress.
-* Added CSS required for the newly introduced stay action buttons and related UI.
-* Preserved the existing read and create workflows.
+- Added stay editing functionality to `StaysPage.jsx`.
+- Added an edit form for modifying editable stay fields.
+- Added edit-specific form state and validation state.
+- Added `isUpdating` state to prevent duplicate update submissions.
+- Added update loading feedback through the edit form button.
+- Added support for the backend `StayUpdate` contract.
+- Added stay deletion functionality to the Stays table.
+- Added a delete confirmation UI before performing deletion.
+- Added delete-specific state for the selected stay and deletion operation.
+- Added deletion loading and error handling.
+- Added refresh of the stay list after successful update or deletion.
+- Added success and error feedback for stay operations.
+- Added button states to prevent repeated submissions while requests are in progress.
+- Added CSS required for the newly introduced stay action buttons and related UI.
+- Preserved the existing read and create workflows.
 
 #### Edit Workflow
 
@@ -10045,9 +10624,9 @@ The edit workflow follows this sequence:
 
 The frontend edit form supports the fields defined by the backend `StayUpdate` schema:
 
-* `room_id`
-* `price_per_night`
-* `check_in_datetime`
+- `room_id`
+- `price_per_night`
+- `check_in_datetime`
 
 The frontend intentionally does not modify `stay_status` or `check_out_datetime` through the edit workflow because those fields are not part of the existing `StayUpdate` contract used for this milestone.
 
@@ -10070,20 +10649,20 @@ The delete workflow follows this sequence:
 
 The Stays page now maintains separate state for different responsibilities:
 
-* Stay collection state.
-* Create form state.
-* Create validation state.
-* Create submission state.
-* Edit form state.
-* Edit validation state.
-* Edit submission state.
-* Selected stay for editing.
-* Selected stay for deletion.
-* Delete submission state.
-* Create/update/delete error states.
-* Success message state.
-* Room loading and error state.
-* Initial stay loading and error state.
+- Stay collection state.
+- Create form state.
+- Create validation state.
+- Create submission state.
+- Edit form state.
+- Edit validation state.
+- Edit submission state.
+- Selected stay for editing.
+- Selected stay for deletion.
+- Delete submission state.
+- Create/update/delete error states.
+- Success message state.
+- Room loading and error state.
+- Initial stay loading and error state.
 
 This separation keeps unrelated operations from unnecessarily sharing the same state.
 
@@ -10091,9 +10670,9 @@ This separation keeps unrelated operations from unnecessarily sharing the same s
 
 The edit form validates:
 
-* Room selection.
-* Price per night.
-* Check-in date and time.
+- Room selection.
+- Price per night.
+- Check-in date and time.
 
 The existing create validation remains unchanged.
 
@@ -10140,11 +10719,11 @@ check_in_datetime
 
 The milestone maintains separate error handling for:
 
-* Initial stay loading.
-* Room loading.
-* Stay creation.
-* Stay editing.
-* Stay deletion.
+- Initial stay loading.
+- Room loading.
+- Stay creation.
+- Stay editing.
+- Stay deletion.
 
 Request failures are surfaced to the user instead of silently failing.
 
@@ -10154,11 +10733,11 @@ Operation-specific loading states were maintained so that one operation does not
 
 Examples include:
 
-* `isLoading`
-* `isLoadingRooms`
-* `isSubmitting`
-* `isUpdating`
-* `isDeleting`
+- `isLoading`
+- `isLoadingRooms`
+- `isSubmitting`
+- `isUpdating`
+- `isDeleting`
 
 Buttons are disabled while their corresponding operation is running to reduce the possibility of duplicate requests.
 
@@ -10206,17 +10785,17 @@ Milestone 19 was manually verified after implementation.
 
 The following workflows were confirmed to be working:
 
-* Stay loading.
-* Stay creation.
-* Stay editing.
-* Stay deletion.
-* Edit cancellation.
-* Delete cancellation.
-* Loading states.
-* Error states.
-* Success feedback.
-* Stay list refresh after mutations.
-* Action button behavior.
+- Stay loading.
+- Stay creation.
+- Stay editing.
+- Stay deletion.
+- Edit cancellation.
+- Delete cancellation.
+- Loading states.
+- Error states.
+- Success feedback.
+- Stay list refresh after mutations.
+- Action button behavior.
 
 #### Completion Status
 
@@ -10224,10 +10803,10 @@ The following workflows were confirmed to be working:
 
 The Stays module now has a functional frontend foundation for:
 
-* Read
-* Create
-* Edit
-* Delete
+- Read
+- Create
+- Edit
+- Delete
 
 Further Stays-specific refinement or additional workflows should be introduced through a future milestone rather than expanding Milestone 19 retrospectively.
 
@@ -10334,3 +10913,343 @@ Verified:
 #### Result
 
 The Stays module now has a complete and more robust CRUD interaction foundation with **row-level asynchronous operation handling** and **same-record conflict protection**.
+
+---
+
+### Frontend Milestone 21 — GuestStay Read-Only Foundation
+
+#### 1. Milestone Overview
+
+**Milestone:** M21
+**Name:** GuestStay Read-Only Foundation
+**Status:** Completed
+**Module:** GuestStay
+**Frontend:** React + JavaScript
+**Desktop Shell:** Electron
+**Backend:** FastAPI
+
+M21 establishes the initial frontend foundation for the **GuestStay** module.
+
+The purpose of this milestone is to provide a read-only view of the relationship between guests and stays. It does not introduce GuestStay creation, editing, deletion, or assignment workflows.
+
+The implementation follows the planned milestone order and does not introduce functionality belonging to later GuestStay milestones.
+
+#### 2. Objective
+
+The objectives of M21 were:
+
+- Introduce the GuestStay frontend service.
+- Create the GuestStays page.
+- Retrieve GuestStay records from the FastAPI backend.
+- Display GuestStay records in a read-only table.
+- Handle loading, error, empty, and successful data states.
+- Integrate GuestStays into the existing dashboard routing system.
+- Add Guest Stays to dashboard navigation.
+- Establish reusable table styling.
+- Preserve the existing Guests and Stays modules.
+
+#### 3. GuestStay Responsibility
+
+GuestStay represents the relationship between a **Guest** and a **Stay**.
+
+Conceptually:
+
+```text
+Guest
+  │
+  │
+  ▼
+GuestStay
+  │
+  │
+  ▼
+Stay
+```
+
+The GuestStay module should therefore not be treated as another copy of the Guests or Stays modules.
+
+Its responsibility is to represent the association between a guest and a stay.
+
+#### 4. Scope Completed
+
+The following functionality was implemented:
+
+- GuestStay API service.
+- GuestStays React page.
+- GuestStay data retrieval.
+- Read-only GuestStay table.
+- Loading state.
+- Error state.
+- Empty state.
+- Successful data state.
+- Protected dashboard route.
+- Dashboard navigation item.
+- Shared data-table CSS foundation.
+- Responsive horizontal table handling.
+
+#### 5. GuestStay Service
+
+A dedicated service was created:
+
+```text
+src/services/guestStayService.js
+```
+
+The service is responsible for communicating with the backend GuestStay API.
+
+This maintains separation between:
+
+```text
+UI
+ │
+ ▼
+GuestStaysPage
+ │
+ ▼
+guestStayService
+ │
+ ▼
+FastAPI
+```
+
+The React page therefore does not need to contain the details of the backend request.
+
+#### 6. GuestStays Page
+
+The page was created at:
+
+```text
+src/pages/GuestStaysPage.jsx
+```
+
+The page manages the UI state required for the initial read-only implementation.
+
+The main state values are:
+
+```javascript
+guestStays;
+isLoading;
+error;
+```
+
+These represent:
+
+- the retrieved GuestStay records,
+- whether the initial request is still running,
+- whether the request failed.
+
+#### 7. Loading State
+
+While the backend request is running, the page displays the shared `Loading` component.
+
+This gives the user immediate feedback that the application is working instead of displaying an apparently empty page.
+
+#### 8. Error State
+
+If the API request fails, the page displays the shared `ErrorMessage` component.
+
+The implementation also clears the existing GuestStay list when the initial request fails.
+
+This prevents stale or misleading data from being displayed together with an error.
+
+#### 9. Empty State
+
+When the backend successfully returns an empty array, the page displays an empty-state message.
+
+This distinguishes:
+
+```text
+No GuestStay records exist
+```
+
+from:
+
+```text
+GuestStay request failed
+```
+
+These are different application states and should not be represented by the same UI.
+
+#### 10. Successful Data State
+
+When GuestStay records are successfully returned, they are displayed in a read-only table.
+
+The table currently displays:
+
+| Field         | Meaning                                |
+| ------------- | -------------------------------------- |
+| GuestStay ID  | GuestStay relationship identifier      |
+| Guest ID      | Associated guest identifier            |
+| Stay ID       | Associated stay identifier             |
+| Primary Guest | Whether the guest is the primary guest |
+
+The frontend only displays fields supplied by the backend response.
+
+No additional guest or stay information was invented in the UI.
+
+#### 11. React List Rendering
+
+GuestStay records are rendered using JavaScript's `map()` method.
+
+Each row uses the GuestStay identifier as the React key:
+
+```javascript
+key={guestStay.id}
+```
+
+A stable entity identifier is preferred over an array index because the identifier represents the actual record.
+
+#### 12. Defensive Response Validation
+
+The page verifies that the backend response is an array:
+
+```javascript
+if (!Array.isArray(guestStaysData)) {
+  throw new Error("Unexpected GuestStay data received from the backend.");
+}
+```
+
+This provides a defensive boundary between the backend response and the UI.
+
+The frontend should not blindly assume that every response has the expected structure.
+
+#### 13. Async Effect Cleanup
+
+The initial GuestStay request is performed inside `useEffect()`.
+
+A cleanup mechanism prevents an asynchronous result from updating the component after the component has been unmounted.
+
+Conceptually:
+
+```text
+Component mounted
+      │
+      ▼
+API request starts
+      │
+      ├── Component still mounted → update state
+      │
+      └── Component unmounted → ignore result
+```
+
+This is an important pattern when working with asynchronous operations inside React effects.
+
+#### 14. Routing Integration
+
+The GuestStay page was integrated into the protected dashboard route:
+
+```text
+/dashboard/guest-stays
+```
+
+The existing dashboard routing architecture was preserved.
+
+No separate routing architecture was introduced for GuestStay.
+
+#### 15. Dashboard Navigation
+
+A **Guest Stays** navigation item was added to the dashboard navigation.
+
+This allows users to reach the new module through the normal application navigation structure.
+
+#### 16. Shared Table Styling
+
+Generic table classes were introduced:
+
+```css
+.table-wrapper
+.data-table
+```
+
+The table wrapper provides horizontal overflow handling:
+
+```css
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+```
+
+The table itself has a minimum width so that its columns remain usable on narrower windows.
+
+The styling was intentionally kept generic so that it can potentially be reused by other data tables.
+
+#### 17. Electron Responsibility
+
+M21 does not require changes to Electron's main process, preload layer, or IPC.
+
+The feature is entirely a renderer-side application feature:
+
+```text
+Electron
+   │
+   ▼
+React Renderer
+   │
+   ▼
+GuestStaysPage
+   │
+   ▼
+GuestStay Service
+   │
+   ▼
+FastAPI Backend
+```
+
+No backend business logic was moved into Electron or React.
+
+#### 18. Functionality Intentionally Excluded
+
+The following functionality was **not** implemented because it belongs to later GuestStay milestones:
+
+- GuestStay creation.
+- Guest assignment workflow.
+- GuestStay editing.
+- GuestStay deletion.
+- Search.
+- Filtering.
+- Pagination.
+- Sorting.
+- Advanced GuestStay actions.
+
+Keeping these features outside M21 preserves the planned milestone boundaries.
+
+#### 19. Verification
+
+The completed implementation was manually verified.
+
+The following were confirmed:
+
+- GuestStay route opens correctly.
+- Guest Stays navigation works.
+- GuestStay records load successfully.
+- Read-only table displays correctly.
+- Loading behavior works.
+- Error behavior works.
+- Empty-state behavior works.
+- Table remains usable when the Electron window is resized.
+- Existing Guests functionality remains unaffected.
+- Existing Stays functionality remains unaffected.
+
+#### 20. Engineering Lessons
+
+M21 reinforced several important frontend engineering principles:
+
+1. Components should focus on UI responsibilities.
+2. API communication should be separated into services.
+3. Loading, error, empty, and success states are all legitimate UI states.
+4. Backend response contracts should be respected.
+5. React lists require stable keys.
+6. Async effects require careful cleanup.
+7. Shared UI styles should be reusable where appropriate.
+8. Milestones should remain narrowly scoped.
+9. Electron should not contain frontend business logic.
+10. FastAPI remains the source of truth for backend behavior.
+
+#### 21. Completion Status
+
+**M21 — GuestStay Read-Only Foundation: COMPLETE**
+
+The GuestStay module now has a working read-only frontend foundation and is ready for the next planned GuestStay milestone.
+
+---
